@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>mondrian 源码解读（九）-聚集层 | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的un">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mondrian 源码解读（九）-聚集层">
+<meta property="og:url" content="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的un">
+<meta property="og:image" content="/img/mondrain_agg1.png">
+<meta property="og:image" content="/img/mondrain_agg2.png">
+<meta property="og:image" content="/img/mondrain_agg3.png">
+<meta property="og:image" content="/img/mondrain_agg4.png">
+<meta property="og:image" content="/img/mondrain_agg5.png">
+<meta property="og:image" content="/img/mondrain_agg6.png">
+<meta property="og:image" content="/img/mondrain_agg7.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mondrian 源码解读（九）-聚集层">
+<meta name="twitter:description" content="包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的un">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">蜻蜓点水</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">if you never try , you will lost forever.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://sqtds.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/04/mondrian-source-code-9/" class="article-date">
+  <time datetime="2015-04-04T10:41:49.000Z" itemprop="datePublished">4月 4 2015</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      mondrian 源码解读（九）-聚集层
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。<br>RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的unit sales)来限定，如：<code>(Unit sales, Gender = &#39;F&#39;, State  in {&#39;CA&#39;,&#39;OR&#39;}, Marital Status = anything)</code>，由于其中的列值可能会取多个，因此最终表达的cell值也可能是多个。RolapStar中有一个aggregations，是一个map对象，通过request的constrainedColumnsBitKey来索引一个aggregation。</p>
+<h2 id="聚合装载过程">聚合装载过程</h2><p>实际中无论是底层的单元值还是聚合后的单元值都是放在聚合对象aggregation中的。以aggregation.load(colums,measures,predicates,pinnedSegments)为入口：</p>
+<p>参数中的除了measure不一样外，其限定的列(colums)及列值（prediactes）都是一致的。因此转换成对对若干segment[]的求值： Segment.load(segment[]，….)，在该方法内部：</p>
+<ul>
+<li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
+<li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
+<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/mondrain_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/mondrain_agg2.png" alt=""></li>
+<li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
+<li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
+</ul>
+<h2 id="segment详解">segment详解</h2><p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/mondrain_agg3.png" alt=""><br><img src="/img/mondrain_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/mondrain_agg5.png" alt=""></p>
+<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/mondrain_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/mondrain_agg7.png" alt=""></p>
+<p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
+<pre><code><span class="type">Query</span> query = connection.parseQuery(
+    <span class="string">"SELECT"</span> +
+    <span class="string">" {[Time].[1997],"</span> +
+    <span class="string">" [Time].[1997].Children} ON COLUMNS,"</span> +
+    <span class="string">" {[Customer].[USA],"</span> +
+    <span class="string">" [Customer].[USA].[OR],"</span> +
+    <span class="string">" [Customer].[USA].[WA]} ON ROWS"</span> +
+    <span class="string">"FROM [Sales]"</span>);
+<span class="type">Result</span> <span class="literal">result</span> = connection.execute(query);
+</code></pre><p>该语句执行后产生的segment分别为(除了第一个外，其他segment都会包含多个cell，因为它们的限定列中含有多值的情况)：</p>
+<pre><code>Segment YN<span class="comment">#1    Year Nation Unit Sales</span>
+                <span class="number">1997</span> USA    xxx
+Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA
+
+Segment YNS<span class="comment">#1    Year Nation State Unit Sales</span>
+                <span class="number">1997</span> USA    OR    xxx
+                <span class="number">1997</span> USA    WA    xxx
+Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
+
+Segment YQN<span class="comment">#1    Year Quarter Nation Unit Sales</span>
+                <span class="number">1997</span> Q1      USA    xxx
+                <span class="number">1997</span> Q2      USA    xxx
+Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA
+
+Segment YQNS<span class="comment">#1    Year Quarter Nation State Unit Sales</span>
+                <span class="number">1997</span> Q1      USA    OR    xxx
+                <span class="number">1997</span> Q1      USA    WA    xxx
+                <span class="number">1997</span> Q2      USA    OR    xxx
+                <span class="number">1997</span> Q2      USA    WA    xxx
+Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci82ves800012gggoqqy0l6ls" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/04/04/mondrian-source-code-8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">mondrian 源码解读（八）-计算结果</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">28</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/04/04/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/04/mondrian-source-code-8/">mondrian 源码解读（八）-计算结果</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/31/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 sqtds<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
