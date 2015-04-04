@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>linux常用命令 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="目录和文件处理目录符号
+.   : 当前目录。
+..  : 当前的上一级目录。
+~   ： 用户主目录，即/home/我的登录名。当然你直接输入cd，也有同样功效
+
+mkdir建立目录用法：mkdir [OPTION] DIRECTORY…例：mkdir test">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux常用命令">
+<meta property="og:url" content="http://yoursite.com/2014/06/14/linuxcommand/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="目录和文件处理目录符号
+.   : 当前目录。
+..  : 当前的上一级目录。
+~   ： 用户主目录，即/home/我的登录名。当然你直接输入cd，也有同样功效
+
+mkdir建立目录用法：mkdir [OPTION] DIRECTORY…例：mkdir test">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux常用命令">
+<meta name="twitter:description" content="目录和文件处理目录符号
+.   : 当前目录。
+..  : 当前的上一级目录。
+~   ： 用户主目录，即/home/我的登录名。当然你直接输入cd，也有同样功效
+
+mkdir建立目录用法：mkdir [OPTION] DIRECTORY…例：mkdir test">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-linuxcommand" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/14/linuxcommand/" class="article-date">
+  <time datetime="2014-06-14T11:02:11.000Z" itemprop="datePublished">2014-06-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/linux/">linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      linux常用命令
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="目录和文件处理">目录和文件处理</h2><h3 id="目录符号">目录符号</h3><ul>
+<li>.   : 当前目录。</li>
+<li>..  : 当前的上一级目录。</li>
+<li>~   ： 用户主目录，即/home/我的登录名。当然你直接输入cd，也有同样功效</li>
+</ul>
+<h3 id="mkdir">mkdir</h3><p>建立目录<br>用法：mkdir [OPTION] DIRECTORY…<br>例：mkdir test<br><a id="more"></a></p>
+<h3 id="ls">ls</h3><p>列出目录下的内容<br>用法: ls [OPTION]… [FILE]…<br>例：ls -t  按时间降序排序</p>
+<h3 id="cd">cd</h3><p>更换工作目录<br>用法：cd [DIRECTORY]<br>例：cd test</p>
+<h3 id="pwd">pwd</h3><p>显示当前工作目录<br>用法：pwd</p>
+<h3 id="vim">vim</h3><p>增强版文本编辑器<br>用法：vim [OPTION] [file]<br>例：vim test.txt</p>
+<h3 id="cp">cp</h3><p>拷贝文件及其目录<br>用法：cp [OPTION]… SOURCE DEST<br>例：cp test.txt text.txt.bak</p>
+<h3 id="mv">mv</h3><p>移动（重命名）文件<br>用法：mv [OPTION]… SOURCE DEST<br>例：mv test newtest</p>
+<h3 id="rm">rm</h3><p>删除文件或目录<br>用法：rm [OPTION]… FILE…<br>例：rm -­rf test 慎用-f选项。</p>
+<h3 id="touch">touch</h3><p>改变文件或目录时间<br>用法：touch [-acfm][-d &lt;日期时间&gt;][-r &lt;参考文件或目录&gt;][-t &lt;日期时间&gt;][—help]   [—version][文件或目录…] 或 touch [-acfm][—help][—version][日期时间][文件或目录…]</p>
+<p>参  数：<br> -a或—time=atime或—time=access或—time=use  只更改存取时间。<br> -c或—no-create  不建立任何文件。<br> -d&lt;时间日期&gt;  使用指定的日期时间，而非现在的时间。<br> -f  此参数将忽略不予处理，仅负责解决BSD版本touch指令的兼容性问题。<br> -m或—time=mtime或—time=modify  只更改变动时间。<br> -r&lt;参考文件或目录&gt;  把指定文件或目录的日期时间，统统设成和参考文件或目录的日期时间相同。<br> -t&lt;日期时间&gt;  使用指定的日期时间，而非现在的时间。</p>
+<h3 id="find">find</h3><p>在目录及其子目录查找文件<br>用法：find [OPTION] [path] [pattern]<br>例：find ­test test*.txt</p>
+<h2 id="文本处理">文本处理</h2><h3 id="cat">cat</h3><p>连结文件打印到标准输出。<br>用法：cat [OPTION] [FILE]…<br>例：cat pic.png love.txt &gt; pic1.png</p>
+<h3 id="echo">echo</h3><p>显示一行文本<br>用法：echo [OPTION] [string]<br>例：echo $HOME</p>
+<h3 id="grep">grep</h3><p>搜索特定的内容并将含有这些内容的行标准输出<br>用法：grep [OPTION] PATTERN [FILE]<br>例：grep ­i Jagen magicLinux.txt</p>
+<h3 id="wc">wc</h3><p>统计指定文件中的字节数、字数、行数,并将统计结果显示输出。<br>用法：wc [OPTION]… [FILE]<br>例：wc -L magicLinux.txt</p>
+<h3 id="sort">sort</h3><p>对文件中的各行进行排序<br>用法：sort [OPTION]… [FILE]<br>例：sort ­r magicLinux.txt</p>
+<h3 id="sed">sed</h3><p>一种在线编辑器，它一次处理一行内容<br>用法：sed [OPTION] [input­file]<br>例：sed ‘s/love/hate/g’ loveletter.txt</p>
+<h2 id="系统管理">系统管理</h2><p>Linux系统上文件有三种权限-读，写和执行。敲入ls –l命令后，我们发现用10位表示文件信息<br>第1位表示是否是目录，第2-4位表示文件类型拥有者（owner）<br>第5-7位表示群组成员（groups）第8-10位表示其他人（others）<br>例：drwxrw­r­­ 意味着拥有者拥有三种权限，群组成员拥有读写权限，其他人只拥有可读权限。<br>权限位相应的数值读-4 写-2 执行-1<br>例 rwxrw­r­­ = 764<br>673 = rw­rwx­wx</p>
+<h3 id="chmod">chmod</h3><p>控制用户对文件的权限<br>用法：chmod [OPTION] [MODE] [FILE]<br>例：chmod 775 count.sh</p>
+<h3 id="chown">chown</h3><p>改变档案的拥有者<br>用法：chown [OPTION]… OWNER[:[GROUP]] FILE<br>例：chown hadoop test.txt</p>
+<h3 id="su">su</h3><p>su 是切换到其他用户，但是不切换环境变量<br>su - 是完整的切换到一个用户环境<br>要知两者的区别，用export命令一查便知。<br>用法：su [OPTION] [LOGIN]<br>例：su hadoop</p>
+<h3 id="passwd">passwd</h3><p>更改使用者的密码参数<br>/etc/passwd<br>该目录存储的是操作系统用户信息，该文件为所有用户可见。</p>
+<p>/etc/shadow<br>被称为/etc/passwd 的影子文件。它们之间的内容是互补的。shadow内容包括用户及被加密的密码以及其它/etc/passwd 不能包括的信息，比如用户的有效期限等</p>
+<p>用法：passwd [OPTION]<br>例：passwd hadoop</p>
+<h3 id="who">who</h3><p>显示目前登入系统的用户信息<br>用法：who [OPTION]<br>例：who ­,whoami</p>
+<h2 id="进程管理">进程管理</h2><h2 id="ps">ps</h2><p>强悍的进程查看命令<br>用法：ps [OPTION]<br>例：ps –aef</p>
+<h3 id="kill">kill</h3><p>删除执行中的程序或工作<br>用法：kill [OPTION]<br>例：kill ­9 3154</p>
+<h3 id="jobs">jobs</h3><p>通过jobs命令查到后台正在执行的命令的序号(非进程号pid)<br>用法：jobs</p>
+<h3 id="bg">bg</h3><p>指定号码（非进程号）的命令进程放到后台运行<br>用法：输入’ctrl+z’ 然后输入 ‘bg ‘<br>例：bg</p>
+<h3 id="fg">fg</h3><p>指定号码（非进程号）的命令进程放到前台运行<br>用法：fg [jobid]</p>
+<h2 id="监控">监控</h2><h3 id="iostat">iostat</h3><p>用于收集显示系统存储设备输入和输出状态统计的简单工具。这个工具常常用来追踪存储设备的性能问题，其中存储设备包括设备、本地磁盘，以及诸如使用NFS等的远端磁盘。<br>iostat 1 ，每隔一秒</p>
+<h3 id="free">free</h3><p>查看内存利用率<br>free -m</p>
+<h3 id="top">top</h3><p>监控系统运行状态<br>top 然后shift+m ，按内存排序</p>
+<h3 id="sar">sar</h3><p>历史性能监控<br>用法： sar [ options… ] [ <interval> [ <count> ] ]<br>sar 1 10 ，每隔一秒监控一次，共10次</count></interval></p>
+<h3 id="lsof">lsof</h3><p>以列表的形式显示所有打开的文件和进程.<br>打开的文件包括磁盘文件、网络套接字、管道、设备和进程。使用这条命令的主要情形之一就是在无法挂载磁盘和显示正在使用或者打开某个文件的错误信息的时候。使用这条命令，你可以很容易地看到正在使用哪个文件。<br>lsof</p>
+<h3 id="vmstat">vmstat</h3><p>虚拟内存、内核线程、磁盘、系统进程、I/O 块、中断、CPU 活动的统计信息。<br>vmstat</p>
+<h2 id="档案">档案</h2><h3 id="tar">tar</h3><p>压缩和解压<br>用法：tar [OPTION] DEST SOURCE<br>例：tar ­cvf /home/archive.tar （压缩）<br>tar ­xvf /home/archive.tar （解压）</p>
+<h3 id="zip">zip</h3><p>打包压缩<br>用法：zip [OPTION] DEST SOURSE<br>例：zip original.zip original</p>
+<h3 id="unzip">unzip</h3><p>解压缩zip文件<br>用法：unzip filename<br>例：unzip original.zip</p>
+<h2 id="网络">网络</h2><h3 id="ssh">ssh</h3><p>远程登录的客户端<br>用法：ssh [options] [user]@hostname<br>例：ssh ­X hadoop@10.105.11.20</p>
+<h3 id="scp">scp</h3><p>基于ssh登陆进行安全的远程文件拷贝命令<br>用法：scp [options] [[user]@host1:file1] [[user]@host2:file2]<br>例：scp file1.txt hadoop@10.105.11.20:~/</p>
+<h2 id="文件系统">文件系统</h2><h3 id="fdisk">fdisk</h3><p>观察硬盘之实体使用情形与分割硬盘用<br>用法：fdisk [options]<br>例：sudo fdisk ­l</p>
+<h3 id="mount">mount</h3><p>如果你要使用储存设备(Mo、硬盘、光驱等)，就得先将它挂上(Mount)，而当储存设备挂上了之后，就可以把它当成一个目录来进行访问。挂上一个设备使用mount命令。<br>在使用mount这个指令时，至少要先知道下列三种信息：  </p>
+<ol>
+<li>要Mount对象的文件系统类型？(File  system type)  </li>
+<li>要Mount对象的设备名称? (/dev/)</li>
+<li>要将设备Mount到哪个目录去？<br>用法：mount ­t type device dir<br>例：mount /dev/sda5 /media/target</li>
+</ol>
+<h3 id="umount">umount</h3><p>卸除文件系统<br>用法：umount [OPTIONS] dir | device<br>例：umount /media/target</p>
+<h3 id="du">du</h3><p>查看目录或文件所占用磁盘空间的大小<br>用法：du [OPTION]… [FILE]…<br>例：du</p>
+<h3 id="df">df</h3><p>检查文件系统的磁盘空间占用情况。<br>用法：df [OPTION]… [FILE]…<br>例：df</p>
+<h3 id="quota">quota</h3><p>显示磁盘使用情况和限制情况<br>用法：quota [OPTION]<br>例：quota ­v</p>
+<h2 id="扩展">扩展</h2><h3 id="history">history</h3><p>显示最近使用过的命令<br>用法：history</p>
+<h3 id="reboot">reboot</h3><p>重启系统<br>用法：reboot [OPTION]<br>例：reboot</p>
+<h3 id="poweroff">poweroff</h3><p>关闭系统<br>用法：poweroff [OPTION]<br>例：poweroff</p>
+<h3 id="source">source</h3><p>刷新系统配置<br>source /etc/profile</p>
+<h3 id="export">export</h3><p>设置环境变量<br>export JAVA_HOME=/usr/java</p>
+<h3 id="hostname">hostname</h3><p>查看主机名</p>
+<h3 id="ifconfig">ifconfig</h3><p>查看主机ip地址</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/06/14/linuxcommand/" data-id="ci82rmxx90020t8go39c2n6o6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/08/09/int/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          int源码赏析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/06/09/spring-tx2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">spring事务原理2-隔离级别</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/antlr4/">antlr4</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/database/">database</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/exception/">exception</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hadoop/">hadoop</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/impala/">impala</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/jdk源码/">jdk源码</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/self/">self</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/框架/">框架</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DriverManager/">DriverManager</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/int/">int</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DriverManager/" style="font-size: 10px;">DriverManager</a><a href="/tags/android/" style="font-size: 15px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 10px;">exception</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/int/" style="font-size: 10px;">int</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 12.5px;">linux</a><a href="/tags/mondrian/" style="font-size: 17.5px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tx/" style="font-size: 12.5px;">tx</a><a href="/tags/源码/" style="font-size: 10px;">源码</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">12</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/04/03/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/31/oracle-group-by/">&#39;Oracle rollup、cube、grouping sets&#39;</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-8/">mondrian 源码解读（八）-执行轴</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

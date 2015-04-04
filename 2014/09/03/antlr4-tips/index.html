@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>antlr4-技巧（十） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。
+在不同的通道广播tokens绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。但是如果我们想留下注释可空格的话，应该怎么做呢？
+antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="antlr4-技巧（十）">
+<meta property="og:url" content="http://yoursite.com/2014/09/03/antlr4-tips/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。
+在不同的通道广播tokens绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。但是如果我们想留下注释可空格的话，应该怎么做呢？
+antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析">
+<meta property="og:image" content="/img/QQ图片20140903210244.jpg">
+<meta property="og:image" content="/img/QQ图片20140903210304.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="antlr4-技巧（十）">
+<meta name="twitter:description" content="在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。
+在不同的通道广播tokens绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。但是如果我们想留下注释可空格的话，应该怎么做呢？
+antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/09/03/antlr4-tips/" class="article-date">
+  <time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">2014-09-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/antlr4/">antlr4</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      antlr4-技巧（十）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
+<h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
+<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/QQ图片20140903210304.jpg" alt=""></p>
+<h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
+<pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
+<span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
+walker.walk(extractor, tree); <span class="comment">// initiate walk of tree with listener</span>
+
+public <span class="class"><span class="keyword">class</span> <span class="title">InsertSerialIDListener</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">JavaBaseListener</span> {</span>
+    <span class="type">TokenStreamRewriter</span> rewriter;
+    public <span class="type">InsertSerialIDListener</span>(<span class="type">TokenStream</span> tokens) {
+    rewriter = <span class="keyword">new</span> <span class="type">TokenStreamRewriter</span>(tokens);
+}
+<span class="annotation">@Override</span>
+public void enterClassBody(<span class="type">JavaParser</span>.<span class="type">ClassBodyContext</span> ctx) {
+        <span class="type">String</span> field = <span class="string">"\n\tpublic static final long serialVersionUID = 1L;"</span>;
+        rewriter.insertAfter(ctx.start, field);
+    }
+}
+</code></pre><p>回到最开始，我们看看如何使用隐藏的通道。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">CommentShifter</span> <span class="title">extends</span> <span class="title">CymbolBaseListener</span> {
+    BufferedTokenStream tokens;
+    TokenStreamRewriter rewriter;
+    <span class="comment">/** Create TokenStreamRewriter attached to token stream
+     *  sitting between the Cymbol lexer and parser.
+     */</span>
+    <span class="function"><span class="keyword">public</span> <span class="title">CommentShifter</span><span class="params">(BufferedTokenStream tokens)</span> </span>{
+        <span class="keyword">this</span>.tokens = tokens;
+        rewriter = <span class="keyword">new</span> TokenStreamRewriter(tokens);
+    }
+
+    @<span class="function">Override
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitVarDecl</span><span class="params">(CymbolParser.VarDeclContext ctx)</span> </span>{
+        Token semi = ctx.getStop(); 
+        <span class="keyword">int</span> i = semi.getTokenIndex();
+        List&lt;Token&gt; cmtChannel =
+            tokens.getHiddenTokensToRight(i, CymbolLexer.COMMENTS); 
+        <span class="keyword">if</span> ( cmtChannel!=<span class="keyword">null</span> ) {
+            Token cmt = cmtChannel.<span class="keyword">get</span>(<span class="number">0</span>); 
+            <span class="keyword">if</span> ( cmt!=<span class="keyword">null</span> ) {
+                String txt = cmt.getText().substring(<span class="number">2</span>);
+                String newCmt = <span class="string">"/* "</span> + txt.trim() + <span class="string">" */\n"</span>;
+                rewriter.insertBefore(ctx.start, newCmt); 
+                rewriter.replace(cmt, <span class="string">"\n"</span>);              
+            }
+        }
+    }
+}
+
+ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
+CymbolLexer lexer = <span class="keyword">new</span> CymbolLexer(input);
+CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+CymbolParser parser = <span class="keyword">new</span> CymbolParser(tokens);
+RuleContext tree = parser.file();
+
+ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
+CommentShifter shifter = <span class="keyword">new</span> CommentShifter(tokens);
+walker.walk(shifter, tree);
+
+
+lexmagic/t.cym
+<span class="keyword">int</span> n = <span class="number">0</span>; <span class="comment">// define a counter</span>
+<span class="keyword">int</span> i = <span class="number">9</span>;
+we want to generate the following output:
+<span class="comment">/* define a counter */</span>
+<span class="keyword">int</span> n = <span class="number">0</span>;
+<span class="keyword">int</span> i = <span class="number">9</span>;
+</code></pre><p>所有的工作都发送在exitVarDecl()中。首先，我们得到‘；’所在的位置。然后我们查询它的后面是否有隐藏的通道，如果有的话，我们将获取通道的第一个字符来判断通道中是否有tokens，最后插入到最前面即可。</p>
+<h2 id="上下文敏感的词法">上下文敏感的词法</h2><h2 id="在流中孤立">在流中孤立</h2><p>这里需要注意一点，.*？表示非贪婪操作符。他们一直扫描直到遇到符合下一个规则的操作符为止。</p>
+<pre><code><span class="xml">COMMENT : '<span class="comment">&lt;!--' .*? '--&gt;</span>' -&gt; skip ;
+CDATA : '<span class="cdata">&lt;![CDATA[' .*? ']]&gt;</span>' ;
+TAG : '<span class="tag">&lt;<span class="title">'</span> <span class="attribute">.</span>*? '&gt;</span>' ; // must come after other tag-like structures
+ENTITY : '&amp;' .*? ';' ;
+TEXT : ~[<span class="tag">&lt;<span class="title">&amp;]+</span> ; // <span class="attribute">any</span> <span class="attribute">sequence</span> <span class="attribute">of</span> <span class="attribute">chars</span> <span class="attribute">except</span> &lt; <span class="attribute">and</span> &amp; <span class="attribute">chars</span></span></span>
+</code></pre><p>在某种场景下，一个语言可能有几种不同的模式。词法模式可以允许我们分离单个的词法语言到多个子规则。当进入到当前规则的模式时，词法仅仅返回符合的token。最常用的需求可能是在不同的词法之间进行转换。          例如，对于一个xml文件，我们可以定义2个模式，在标签‘&lt;’之外的模式和在‘&gt;’之内的模式。这2中模式是孤立的，下面是这个例子的语法：</p>
+<pre><code>lexer grammar ModeTagsLexer;
+<span class="comment">// Default mode rules (the SEA)</span>
+<span class="string">OPEN :</span> <span class="string">'&lt;'</span> -&gt; mode(ISLAND) ; <span class="comment">// switch to ISLAND mode</span>
+<span class="string">TEXT :</span> ~<span class="string">'&lt;'</span> + ; <span class="comment">// clump all text together</span>
+mode ISLAND;
+<span class="string">CLOSE :</span> <span class="string">'&gt;'</span> -&gt; mode(DEFAULT_MODE) ; <span class="comment">// back to SEA mode</span>
+<span class="string">SLASH :</span> <span class="string">'/'</span> ;
+<span class="string">ID :</span> [a-zA-Z]+ ; <span class="comment">// match/send ID in tag to parser</span>
+
+parser grammar ModeTagsParser;
+options { tokenVocab=ModeTagsLexer; } <span class="comment">// use tokens from ModeTagsLexer.g4</span>
+<span class="string">file:</span> (tag | TEXT)* ;
+<span class="string">tag :</span> <span class="string">'&lt;'</span> ID <span class="string">'&gt;'</span>
+| <span class="string">'&lt;'</span> <span class="string">'/'</span> ID <span class="string">'&gt;'</span>
+;
+</code></pre><p>在这个例子中，仅仅是options tokenVocab不常用的。它的意思是保持lexer和parser是同步的，即有相同的token类型。</p>
+<h2 id="解析xml">解析xml</h2><p>在这个例子中，我们只需要了解有pushMode和popMode即可，就像入栈和出栈一样，挺简单的。</p>
+<pre><code>lexer grammar XMLLexer;
+
+<span class="comment">// Default "mode": Everything OUTSIDE of a tag</span>
+COMMENT     :   <span class="string">'&lt;!--'</span> .*? <span class="string">'--&gt;'</span> ;
+CDATA       :   <span class="string">'&lt;![CDATA['</span> .*? <span class="string">']]&gt;'</span> ;
+<span class="comment">/** Scarf all DTD stuff, Entity Declarations like &lt;!ENTITY ...&gt;,
+ *  and Notation Declarations &lt;!NOTATION ...&gt;
+ */</span>
+DTD         :   <span class="string">'&lt;!'</span> .*? <span class="string">'&gt;'</span>            -&gt; skip ; 
+EntityRef   :   <span class="string">'&amp;'</span> Name <span class="string">';'</span> ;
+CharRef     :   <span class="string">'&amp;#'</span> DIGIT+ <span class="string">';'</span>
+            |   <span class="string">'&amp;#x'</span> HEXDIGIT+ <span class="string">';'</span>
+            ;
+SEA_WS      :   (<span class="string">' '</span>|<span class="string">'\t'</span>|<span class="string">'\r'</span>? <span class="string">'\n'</span>) ;
+
+OPEN        :   <span class="string">'&lt;'</span>                     -&gt; pushMode(INSIDE) ;
+XMLDeclOpen :   <span class="string">'&lt;?xml'</span> S               -&gt; pushMode(INSIDE) ;
+SPECIAL_OPEN:   <span class="string">'&lt;?'</span> Name               -&gt; more, pushMode(PROC_INSTR) ;
+
+TEXT        :   ~[&lt;&amp;]+ ;        <span class="comment">// match any 16 bit char other than &lt; and &amp;</span>
+
+<span class="comment">// ----------------- Everything INSIDE of a tag ---------------------</span>
+mode INSIDE;
+
+CLOSE       :   <span class="string">'&gt;'</span>                     -&gt; popMode ;
+SPECIAL_CLOSE:  <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?xml...?&gt;</span>
+SLASH_CLOSE :   <span class="string">'/&gt;'</span>                    -&gt; popMode ;
+SLASH       :   <span class="string">'/'</span> ;
+EQUALS      :   <span class="string">'='</span> ;
+STRING      :   <span class="string">'"'</span> ~[&lt;<span class="string">"]* '"</span><span class="string">'
+            |   '</span>\<span class="string">''</span> ~[&lt;<span class="string">']* '</span>\<span class="string">''</span>
+            ;
+Name        :   NameStartChar NameChar* ;
+S           :   [ \t\r\n]               -&gt; skip ;
+
+fragment
+HEXDIGIT    :   [a-fA-F0-<span class="number">9</span>] ;
+
+fragment
+DIGIT       :   [<span class="number">0</span>-<span class="number">9</span>] ;
+
+fragment
+NameChar    :   NameStartChar
+            |   <span class="string">'-'</span> | <span class="string">'.'</span> | DIGIT 
+            |   <span class="string">'\u00B7'</span>
+            |   <span class="string">'\u0300'</span>..<span class="string">'\u036F'</span>
+            |   <span class="string">'\u203F'</span>..<span class="string">'\u2040'</span>
+            ;
+
+fragment
+NameStartChar
+            :   [:a-zA-Z]
+            |   <span class="string">'\u2070'</span>..<span class="string">'\u218F'</span> 
+            |   <span class="string">'\u2C00'</span>..<span class="string">'\u2FEF'</span> 
+            |   <span class="string">'\u3001'</span>..<span class="string">'\uD7FF'</span> 
+            |   <span class="string">'\uF900'</span>..<span class="string">'\uFDCF'</span> 
+            |   <span class="string">'\uFDF0'</span>..<span class="string">'\uFFFD'</span>
+            ;
+
+<span class="comment">// ----------------- Handle &lt;? ... ?&gt; ---------------------</span>
+mode PROC_INSTR;
+PI          :   <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?...?&gt;</span>
+IGNORE      :   .                       -&gt; more ;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/09/03/antlr4-tips/" data-id="ci82rmxzf003mt8goptu4zztj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/10/26/mondrian-source-code-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          mondrian 源码解读（一）-部署mondrian项目
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/09/03/antlr4-semantic-predicate/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">antlr4-语义预测（九）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/antlr4/">antlr4</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/database/">database</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/exception/">exception</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hadoop/">hadoop</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/impala/">impala</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/jdk源码/">jdk源码</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/self/">self</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/框架/">框架</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DriverManager/">DriverManager</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/int/">int</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DriverManager/" style="font-size: 10px;">DriverManager</a><a href="/tags/android/" style="font-size: 15px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 10px;">exception</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/int/" style="font-size: 10px;">int</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 12.5px;">linux</a><a href="/tags/mondrian/" style="font-size: 17.5px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tx/" style="font-size: 12.5px;">tx</a><a href="/tags/源码/" style="font-size: 10px;">源码</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">12</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/04/03/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/03/31/oracle-group-by/">&#39;Oracle rollup、cube、grouping sets&#39;</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-8/">mondrian 源码解读（八）-执行轴</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
