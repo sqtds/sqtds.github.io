@@ -127,7 +127,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/25/Activity生命周期/" data-id="ci82svywc004mp8go1vaz1f0m" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/25/Activity生命周期/" data-id="ci82v00lr004pjggo9pzkd91s" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -192,7 +192,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/25/intent/" data-id="ci82svyu0002kp8go8hyfb1nu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/25/intent/" data-id="ci82v00jw002kjggo9qsqzho4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -267,62 +267,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/23/impalajdbcpool/" data-id="ci82svyu8002up8gortxhjxxm" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/23/impalajdbcpool/" data-id="ci82v00k2002ujggowjek3ja9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/impala/">impala</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-android事件处理机制" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/05/23/android事件处理机制/" class="article-date">
-  <time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/android/">android</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/23/android事件处理机制/">android 事件机制</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>android提供了2中事件处理方式:基于回调的事件处理和基于监听器的事件处理。</p>
-<h3 id="基于监听的事件处理">基于监听的事件处理</h3><p>在事件监听处理的处理模型中，主要涉及如下3种类型：</p>
-<ul>
-<li>Event Source（事件源）：事件发生的各个场所，通常是各个组件，例如按钮，窗口，菜单等。</li>
-<li>Event（事件）：事件封装了界面组件上发生的特定事件（通常就是一次用户操作）。</li>
-<li>Event Listener（事件监听器）：监听事件源发生的事件，对各个事件做出响应。</li>
-</ul>
-<p>Android的事件处理机制是一种委派式事件处理方式：普通组件（事件源）将整个事件处理委托给特定的对象（事件监听器）；当该事件源发生特定的事件时，就通知所委托的事件监听器，由事件监听器来处理这个事件。<br><img src="/img/QQ图片20140524151941.jpg" alt=""></p>
-<h2 id="基于回调的事件处理">基于回调的事件处理</h2><p>如果说事件监听机制是一种委托的事件处理，那么回调机制正好相反：对于基于回调的时间爱你处理模型来说，事件源与事件监听器是统一的，或者说事件监听器完全消失了。当用户在gui组件上激发某个事件的时候，组件自己特定的方法将会负责处理该事件。</p>
-<h2 id="比较">比较</h2><p>对于基于监听的事件处理模型来说，事件源和事件监听器是分离的，当事件源上发生特定的事件后，该事件交给事件监听器处理；对于基于回调的事件处理模型来说，事件源和事件监听器是统一的，当事件源发生特定的事件后，该事件还是由事件源本身负责处理。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/23/android事件处理机制/" data-id="ci82svyw7004gp8gobumvgvkr" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
 
     </footer>
   </div>
@@ -382,7 +330,59 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/23/android事件处理2/" data-id="ci82svywa004jp8goq3jg6z9t" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/23/android事件处理2/" data-id="ci82v00lp004mjggowu532byj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-android事件处理机制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/23/android事件处理机制/" class="article-date">
+  <time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/android/">android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/23/android事件处理机制/">android 事件机制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>android提供了2中事件处理方式:基于回调的事件处理和基于监听器的事件处理。</p>
+<h3 id="基于监听的事件处理">基于监听的事件处理</h3><p>在事件监听处理的处理模型中，主要涉及如下3种类型：</p>
+<ul>
+<li>Event Source（事件源）：事件发生的各个场所，通常是各个组件，例如按钮，窗口，菜单等。</li>
+<li>Event（事件）：事件封装了界面组件上发生的特定事件（通常就是一次用户操作）。</li>
+<li>Event Listener（事件监听器）：监听事件源发生的事件，对各个事件做出响应。</li>
+</ul>
+<p>Android的事件处理机制是一种委派式事件处理方式：普通组件（事件源）将整个事件处理委托给特定的对象（事件监听器）；当该事件源发生特定的事件时，就通知所委托的事件监听器，由事件监听器来处理这个事件。<br><img src="/img/QQ图片20140524151941.jpg" alt=""></p>
+<h2 id="基于回调的事件处理">基于回调的事件处理</h2><p>如果说事件监听机制是一种委托的事件处理，那么回调机制正好相反：对于基于回调的时间爱你处理模型来说，事件源与事件监听器是统一的，或者说事件监听器完全消失了。当用户在gui组件上激发某个事件的时候，组件自己特定的方法将会负责处理该事件。</p>
+<h2 id="比较">比较</h2><p>对于基于监听的事件处理模型来说，事件源和事件监听器是分离的，当事件源上发生特定的事件后，该事件交给事件监听器处理；对于基于回调的事件处理模型来说，事件源和事件监听器是统一的，当事件源发生特定的事件后，该事件还是由事件源本身负责处理。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/23/android事件处理机制/" data-id="ci82v00lm004jjggoivm21t0t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -430,7 +430,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/23/linux-replace/" data-id="ci82svytq0029p8gob4bv9ejm" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/23/linux-replace/" data-id="ci82v00jp0029jggovy1vi83h" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/字符串替换/">字符串替换</a></li></ul>
@@ -475,7 +475,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/21/exception-idea/" data-id="ci82svyur0039p8go5zb98exy" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/21/exception-idea/" data-id="ci82v00kg0039jggoyimo4vtg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li></ul>
@@ -522,7 +522,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/19/hadoop-start/" data-id="ci82svyun0036p8goi1o8l1d7" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/19/hadoop-start/" data-id="ci82v00ke0036jggofpph32cu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
@@ -614,7 +614,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/19/hadoop2/" data-id="ci82svyui0032p8got71vcwc1" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/19/hadoop2/" data-id="ci82v00k90032jggodue3m6l1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
@@ -661,7 +661,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/18/composition/" data-id="ci82svyuu003ep8go1p8pvvud" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/18/composition/" data-id="ci82v00kk003ejggo8ummjfnb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -725,7 +725,7 @@
       <ul>
         
           <li>
-            <a href="/2015/03/31/oracle-group-by/">&#39;Oracle rollup、cube、grouping sets&#39;</a>
+            <a href="/2015/03/31/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
           </li>
         
           <li>
