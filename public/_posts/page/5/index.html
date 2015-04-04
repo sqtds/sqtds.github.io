@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="蜻蜓点水">
+<meta property="og:url" content="http://sqtds.github.io/public/_posts/page/5/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="蜻蜓点水">
+<meta name="twitter:description">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">蜻蜓点水</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">if you never try , you will lost forever.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://sqtds.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-exception-idea" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/21/exception-idea/" class="article-date">
+  <time datetime="2014-05-21T14:50:27.000Z" itemprop="datePublished">5月 21 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/21/exception-idea/">exception idea Server is not connected. Deploy is not available.</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <pre><code><span class="comment"><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Server</span> <span class="keyword">is</span> <span class="keyword">not</span> connected. Deploy <span class="keyword">is</span> <span class="keyword">not</span> available.</span><br></pre></td></tr></table></figure></span>
+</code></pre><p>当在idea启动tomcat的时候，报如上错误。经过google，是由于在tomcat的bin目录下设置了java_opts指向了其他方向，导致环境变量改变。</p>
+<p>解决的方式就是将自己设置的java_opts去掉即可。 </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/21/exception-idea/" data-id="ci82svyur0039p8go5zb98exy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hadoop-start" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/19/hadoop-start/" class="article-date">
+  <time datetime="2014-05-19T13:50:32.000Z" itemprop="datePublished">5月 19 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/19/hadoop-start/">hadoop的生态圈（1）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hadoop的历史">hadoop的历史</h2><p>谈到 Hadoop 的历史，就不得不提到 Lucene 和 Nutch。Hadoop 开始时是 Nutch 的一个子项目，而 Nutch 又是 Apache Lucene 的子项目。这 3 个项目都是由 Doug Cutting 创立，每个项目在逻辑上都是前一个项目的演进。
+        
+          <p class="article-more-link">
+            <a href="/2014/05/19/hadoop-start/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/19/hadoop-start/" data-id="ci82svyun0036p8goi1o8l1d7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/19/hadoop2/" class="article-date">
+  <time datetime="2014-05-19T02:30:32.000Z" itemprop="datePublished">5月 19 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/19/hadoop2/">hadoop配置信息处理（2）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Hadoop_配置文件的格式">Hadoop 配置文件的格式</h2><pre><code><span class="pi">&lt;?xml version="1.0"?&gt;</span>
+<span class="pi">&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;</span>
+<span class="tag">&lt;<span class="title">configuration</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">name</span>&gt;</span>io.sort.factor<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">value</span>&gt;</span>10<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">description</span>&gt;</span>The number of streams to merge at once while sorting files. This determines the number of open file handles.<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.name.dir<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">value</span>&gt;</span>${hadoop.tmp.dir}/dfs/name<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">description</span>&gt;</span>Determines where on the local filesystem the DFS name nodeshould store the name table(fsimage). ……<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.web.ugi<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">value</span>&gt;</span>webuser,webgroup<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">final</span>&gt;</span>true<span class="tag">&lt;/<span class="title">final</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">description</span>&gt;</span>The user account used by the web interface.Syntax: USERNAME,GROUP1,GROUP2, ……<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">configuration</span>&gt;</span>
+</code></pre><p>Hadoop 配置文件的根元素是 configuration，一般只包含子元素 property。每一个property 元素就是一个配置项，配置文件不支持分层或分级。每个配置项一般包括配置属性的名称 name、值 value 和一个关于配置项的描述 description ；元素 final 和 Java 中的关键字<br>final 类似，意味着这个配置项是“固定不变的”。final 一般不出现，但在合并资源的时候，可以防止配置项的值被覆盖。</p>
+<p>合并资源指将多个配置文件合并，产生一个配置。如果有两个配置文件，也就是两个资源，如 core-default.xml 和 core-site.xml，通过 Configuration 类的 loadResources() 方法，把它们合并成一个配置。代码如下：<br>    Configurationconf = new Configuration();<br>    conf.addResource(“core-default.xml”);<br>    conf.addResource(“core-site.xml”);<br>如果这两个配置资源都包含了相同的配置项，而且前一个资源的配置项没有标记为final，那么，后面的配置将覆盖前面的配置。上面的例子中，core-site.xml 中的配置将覆盖core-default.xml 中的同名配置。如果在第一个资源（core-default.xml）中某配置项被标记为final，那么，在加载第二个资源的时候，会有警告提示。</p>
+<p>Hadoop 配置系统还有一个很重要的功能，就是属性扩展。如配置项 dfs.name.dir 的值是${hadoop.tmp.dir}/dfs/name，其中，${hadoop.tmp.dir} 会使用 Configuration 中的相应属性值进行扩展。如果 hadoop.tmp.dir 的值是“/data”，那么扩展后的 dfs.name.dir 的值就是“/data/dfs/name”。</p>
+<p>使 用 Configuration 类 的 一 般 过 程 是 ： 构 造 Configuration 对 象， 并 通 过 类 的addResource() 方法添加需要加载的资源 ；然后就可以使用 get<em> 方法和 set</em> 方法访问 / 设置配置项，资源会在第一次使用的时候自动加载到对象中。</p>
+<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
+<p>布尔变量quietmode，用来设置加载配置的模式。如果quietmode为true （默认值），则在加载解析配置文件的过程中，不输出日志信息。quietmode只是一个方便开发人员调试的变量。</p>
+<p>数组resources保存了所有通过addResource( ) 方法添加Congiguation对象的资源。</p>
+<p>布尔变量 loadDefaults 用于确定是否加载默认资源，这些默认资源保存在 defaultResources中。注意，defaultResources 是个静态成员变量，通过方法 addDefaultResource() 可以添加系统的默认资源。在 HDFS 中，会把 hdfs-default.xml 和 hdfs-site.xml 作为默认资源，并通过addDefaultResource() 保存在成员变量defaultResources 中 ；在 MapReduce 中，默认资源是mapred-default.xml 和 mapred-site.xml。如 HDFS 的 DataNode 中，就有下面的代码，加载上述两个默认资源：</p>
+<pre><code><span class="comment">//下面的代码来自 org.apache.hadoop.hdfs.server.datanode.DataNode</span>
+<span class="keyword">static</span>{
+    Configuration.addDefaultResource(<span class="string">"hdfs-default.xml"</span>);
+    Configuration.addDefaultResource(<span class="string">"hdfs-site.xml"</span>); 
+}
+</code></pre><p>properties、overlay 和 finalParameters 都是和配置项相关的成员变量。其中，properties和 overlay 的类型都是前面介绍过的 java.util.Properties。Hadoop 配置文件解析后的键 – 值对，都存放在 properties 中。变量 finalParameters 的类型是 Set<string>，用来保存所有在配置文件中已经被声明为 final 的键 – 值对的键，如前面配置文件例子中的键“dfs.web.ugi”。变量overlay 用于记录通过 set() 方式改变的配置项。也就是说，出现在 overlay 中的键 – 值对是应用设置的，而不是通过对配置资源解析得到的。</string></p>
+<p>Configuration 中最后一个重要的成员变量是 classLoader，这是一个类加载器变量，可以通过它来加载指定类，也可以通过它加载相关的资源。上面提到 addResource() 可以通过字符串方式加载 CLASSPATH 资源，它其实通过 Configuration 中的 getResource() 将字符串转换成 URL 资源，相关代码如下：</p>
+<pre><code><span class="keyword">public</span> <span class="function">URL <span class="title">getResource</span><span class="params">(String name)</span> </span>{
+    <span class="function"><span class="keyword">return</span> classLoader.<span class="title">getResource</span><span class="params">(name)</span></span>;
+}
+</code></pre><p>其中，getResource() 用于根据资源的名称查找相应的资源，并返回读取资源的 URL 对象。</p>
+<h2 id="资源加载">资源加载</h2><p>资源通过对象的 addResource() 方法或类的静态 addDefaultResource() 方法（设置了loadDefaults 标志）添加到 Configuration 对象中，添加的资源并不会立即被加载，只是通过reloadConfiguration() 方法清空 properties 和 finalParameters。</p>
+<h2 id="Configurable_接口">Configurable 接口</h2><p>从字面理解，Configurable 的含义是可配置的，如果一个类实现了 Configurable 接口，意味着这个类是可配置的。也就是说，可以通过为这个类的对象传入一个 Configuration 实例，提供对象工作需要的一些配置信息。Hadoop 的代码中有大量的类实现了 Configurable 接口，如<br>org.apache.hadoop.mapred.SequenceFileInputFilter.RegexFilter。<br>RegexFilter 对象工作时，需要提供一个正则表达式，用于过滤读取的记录。由于 RegexFilter的父类 Filter 中实现的 Configurable 接口，RegexFilter 可以在它的 setConf() 方法中，使用Configuration.get() 方法获取以字符串传入的正则表达式，并初始化成员变量 p。相关代码如下：</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setConf</span><span class="params">(Configuration conf)</span> </span>{
+     <span class="comment">//在conf中获取键为"sequencefile.filter.regex"（FILTER_REGEX）的配置项</span>
+     String regex = conf.<span class="keyword">get</span>(FILTER_REGEX);
+     <span class="keyword">if</span> (regex==<span class="keyword">null</span>)
+     <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(FILTER_REGEX + <span class="string">"not set"</span>);
+     <span class="keyword">this</span>.p = Pattern.compile(regex);
+     <span class="keyword">this</span>.conf = conf;
+}
+</code></pre><p>Configurable.setConf() 方法何时被调用呢？一般来说，对象创建以后，就应该使用setConf() 方法，为对象提供进一步的初始化工作。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/19/hadoop2/" data-id="ci82svyui0032p8got71vcwc1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-composition" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/18/composition/" class="article-date">
+  <time datetime="2014-05-18T14:59:53.000Z" itemprop="datePublished">5月 18 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/android/">android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/18/composition/">Android 应用程序的组成部分</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。
+        
+          <p class="article-more-link">
+            <a href="/2014/05/18/composition/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/18/composition/" data-id="ci82svyuu003ep8go1p8pvvud" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-列式存储机制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/11/列式存储机制/" class="article-date">
+  <time datetime="2014-05-11T12:17:33.000Z" itemprop="datePublished">5月 11 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/11/列式存储机制/">列式存储机制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="引言">引言</h3><hr>
+<p>由于大数据的发展，越来越多的企业利用大数据来挖掘数据更多的价值，关系型数据库受到了越来越严重的挑战。人们迫切需要找到一个新的突破口来处理大数据。在这样的环境下，列式存储孕育而出。
+        
+          <p class="article-more-link">
+            <a href="/2014/05/11/列式存储机制/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/11/列式存储机制/" data-id="ci82svyrp0006p8gona34ctko" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/列式/">列式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/存储/">存储</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hexo-cmd" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/11/hexo-cmd/" class="article-date">
+  <time datetime="2014-05-11T09:26:20.000Z" itemprop="datePublished">5月 11 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/11/hexo-cmd/">hexo常用命令</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hexo_g_==_hexo_generate">hexo g == hexo generate</h2><p>记住：每次修改本地文件后，需要hexo generate才能保存。每次使用命令时，都要在H:\hexo目录下。
+        
+          <p class="article-more-link">
+            <a href="/2014/05/11/hexo-cmd/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/05/11/hexo-cmd/" data-id="ci82svyud0031p8gorl1ln07n" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+  
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/public/_posts/page/4/">&laquo; Prev</a><a class="page-number" href="/public/_posts/">1</a><span class="space">&hellip;</span><a class="page-number" href="/public/_posts/page/3/">3</a><a class="page-number" href="/public/_posts/page/4/">4</a><span class="page-number current">5</span>
+    </nav>
+  
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 11.67px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 13.33px;">linux</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tx/" style="font-size: 13.33px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 11.67px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/03/31/oracle-group-by/">&#39;Oracle rollup、cube、grouping sets&#39;</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-8/">mondrian 源码解读（八）-执行轴</a>
+          </li>
+        
+          <li>
+            <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+          </li>
+        
+          <li>
+            <a href="/2014/10/26/mondrian-source-code-10/">mondrian source code 10</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 sqtds<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

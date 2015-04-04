@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo</title>
+  <title>蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/tags/antlr4/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:title" content="蜻蜓点水">
+<meta property="og:url" content="http://sqtds.github.io/tags/antlr4/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="蜻蜓点水">
 <meta name="twitter:description">
   
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -33,8 +33,12 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">蜻蜓点水</a>
       </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">if you never try , you will lost forever.</a>
+        </h2>
       
     </div>
     <div id="header-inner" class="inner">
@@ -53,7 +57,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://sqtds.github.io"></form>
       </div>
     </div>
   </div>
@@ -61,207 +65,1129 @@
       <div class="outer">
         <section id="main">
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2014" class="archive-year">2014</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/09/03/antlr4-tips/" class="archive-article-date">
-  <time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">Sep 3</time>
+    <article id="post-antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/09/03/antlr4-tips/" class="article-date">
+  <time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/09/03/antlr4-tips/">antlr4-技巧（十）</a>
+      <a class="article-title" href="/2014/09/03/antlr4-tips/">antlr4-技巧（十）</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/09/03/antlr4-semantic-predicate/" class="archive-article-date">
-  <time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">Sep 3</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
+<h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
+<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/QQ图片20140903210304.jpg" alt=""></p>
+<h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
+<pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
+<span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
+walker.walk(extractor, tree); <span class="comment">// initiate walk of tree with listener</span>
+
+public <span class="class"><span class="keyword">class</span> <span class="title">InsertSerialIDListener</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">JavaBaseListener</span> {</span>
+    <span class="type">TokenStreamRewriter</span> rewriter;
+    public <span class="type">InsertSerialIDListener</span>(<span class="type">TokenStream</span> tokens) {
+    rewriter = <span class="keyword">new</span> <span class="type">TokenStreamRewriter</span>(tokens);
+}
+<span class="annotation">@Override</span>
+public void enterClassBody(<span class="type">JavaParser</span>.<span class="type">ClassBodyContext</span> ctx) {
+        <span class="type">String</span> field = <span class="string">"\n\tpublic static final long serialVersionUID = 1L;"</span>;
+        rewriter.insertAfter(ctx.start, field);
+    }
+}
+</code></pre><p>回到最开始，我们看看如何使用隐藏的通道。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">CommentShifter</span> <span class="title">extends</span> <span class="title">CymbolBaseListener</span> {
+    BufferedTokenStream tokens;
+    TokenStreamRewriter rewriter;
+    <span class="comment">/** Create TokenStreamRewriter attached to token stream
+     *  sitting between the Cymbol lexer and parser.
+     */</span>
+    <span class="function"><span class="keyword">public</span> <span class="title">CommentShifter</span><span class="params">(BufferedTokenStream tokens)</span> </span>{
+        <span class="keyword">this</span>.tokens = tokens;
+        rewriter = <span class="keyword">new</span> TokenStreamRewriter(tokens);
+    }
+
+    @<span class="function">Override
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitVarDecl</span><span class="params">(CymbolParser.VarDeclContext ctx)</span> </span>{
+        Token semi = ctx.getStop(); 
+        <span class="keyword">int</span> i = semi.getTokenIndex();
+        List&lt;Token&gt; cmtChannel =
+            tokens.getHiddenTokensToRight(i, CymbolLexer.COMMENTS); 
+        <span class="keyword">if</span> ( cmtChannel!=<span class="keyword">null</span> ) {
+            Token cmt = cmtChannel.<span class="keyword">get</span>(<span class="number">0</span>); 
+            <span class="keyword">if</span> ( cmt!=<span class="keyword">null</span> ) {
+                String txt = cmt.getText().substring(<span class="number">2</span>);
+                String newCmt = <span class="string">"/* "</span> + txt.trim() + <span class="string">" */\n"</span>;
+                rewriter.insertBefore(ctx.start, newCmt); 
+                rewriter.replace(cmt, <span class="string">"\n"</span>);              
+            }
+        }
+    }
+}
+
+ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
+CymbolLexer lexer = <span class="keyword">new</span> CymbolLexer(input);
+CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+CymbolParser parser = <span class="keyword">new</span> CymbolParser(tokens);
+RuleContext tree = parser.file();
+
+ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
+CommentShifter shifter = <span class="keyword">new</span> CommentShifter(tokens);
+walker.walk(shifter, tree);
+
+
+lexmagic/t.cym
+<span class="keyword">int</span> n = <span class="number">0</span>; <span class="comment">// define a counter</span>
+<span class="keyword">int</span> i = <span class="number">9</span>;
+we want to generate the following output:
+<span class="comment">/* define a counter */</span>
+<span class="keyword">int</span> n = <span class="number">0</span>;
+<span class="keyword">int</span> i = <span class="number">9</span>;
+</code></pre><p>所有的工作都发送在exitVarDecl()中。首先，我们得到‘；’所在的位置。然后我们查询它的后面是否有隐藏的通道，如果有的话，我们将获取通道的第一个字符来判断通道中是否有tokens，最后插入到最前面即可。</p>
+<h2 id="上下文敏感的词法">上下文敏感的词法</h2><h2 id="在流中孤立">在流中孤立</h2><p>这里需要注意一点，.*？表示非贪婪操作符。他们一直扫描直到遇到符合下一个规则的操作符为止。</p>
+<pre><code><span class="xml">COMMENT : '<span class="comment">&lt;!--' .*? '--&gt;</span>' -&gt; skip ;
+CDATA : '<span class="cdata">&lt;![CDATA[' .*? ']]&gt;</span>' ;
+TAG : '<span class="tag">&lt;<span class="title">'</span> <span class="attribute">.</span>*? '&gt;</span>' ; // must come after other tag-like structures
+ENTITY : '&amp;' .*? ';' ;
+TEXT : ~[<span class="tag">&lt;<span class="title">&amp;]+</span> ; // <span class="attribute">any</span> <span class="attribute">sequence</span> <span class="attribute">of</span> <span class="attribute">chars</span> <span class="attribute">except</span> &lt; <span class="attribute">and</span> &amp; <span class="attribute">chars</span></span></span>
+</code></pre><p>在某种场景下，一个语言可能有几种不同的模式。词法模式可以允许我们分离单个的词法语言到多个子规则。当进入到当前规则的模式时，词法仅仅返回符合的token。最常用的需求可能是在不同的词法之间进行转换。          例如，对于一个xml文件，我们可以定义2个模式，在标签‘&lt;’之外的模式和在‘&gt;’之内的模式。这2中模式是孤立的，下面是这个例子的语法：</p>
+<pre><code>lexer grammar ModeTagsLexer;
+<span class="comment">// Default mode rules (the SEA)</span>
+<span class="string">OPEN :</span> <span class="string">'&lt;'</span> -&gt; mode(ISLAND) ; <span class="comment">// switch to ISLAND mode</span>
+<span class="string">TEXT :</span> ~<span class="string">'&lt;'</span> + ; <span class="comment">// clump all text together</span>
+mode ISLAND;
+<span class="string">CLOSE :</span> <span class="string">'&gt;'</span> -&gt; mode(DEFAULT_MODE) ; <span class="comment">// back to SEA mode</span>
+<span class="string">SLASH :</span> <span class="string">'/'</span> ;
+<span class="string">ID :</span> [a-zA-Z]+ ; <span class="comment">// match/send ID in tag to parser</span>
+
+parser grammar ModeTagsParser;
+options { tokenVocab=ModeTagsLexer; } <span class="comment">// use tokens from ModeTagsLexer.g4</span>
+<span class="string">file:</span> (tag | TEXT)* ;
+<span class="string">tag :</span> <span class="string">'&lt;'</span> ID <span class="string">'&gt;'</span>
+| <span class="string">'&lt;'</span> <span class="string">'/'</span> ID <span class="string">'&gt;'</span>
+;
+</code></pre><p>在这个例子中，仅仅是options tokenVocab不常用的。它的意思是保持lexer和parser是同步的，即有相同的token类型。</p>
+<h2 id="解析xml">解析xml</h2><p>在这个例子中，我们只需要了解有pushMode和popMode即可，就像入栈和出栈一样，挺简单的。</p>
+<pre><code>lexer grammar XMLLexer;
+
+<span class="comment">// Default "mode": Everything OUTSIDE of a tag</span>
+COMMENT     :   <span class="string">'&lt;!--'</span> .*? <span class="string">'--&gt;'</span> ;
+CDATA       :   <span class="string">'&lt;![CDATA['</span> .*? <span class="string">']]&gt;'</span> ;
+<span class="comment">/** Scarf all DTD stuff, Entity Declarations like &lt;!ENTITY ...&gt;,
+ *  and Notation Declarations &lt;!NOTATION ...&gt;
+ */</span>
+DTD         :   <span class="string">'&lt;!'</span> .*? <span class="string">'&gt;'</span>            -&gt; skip ; 
+EntityRef   :   <span class="string">'&amp;'</span> Name <span class="string">';'</span> ;
+CharRef     :   <span class="string">'&amp;#'</span> DIGIT+ <span class="string">';'</span>
+            |   <span class="string">'&amp;#x'</span> HEXDIGIT+ <span class="string">';'</span>
+            ;
+SEA_WS      :   (<span class="string">' '</span>|<span class="string">'\t'</span>|<span class="string">'\r'</span>? <span class="string">'\n'</span>) ;
+
+OPEN        :   <span class="string">'&lt;'</span>                     -&gt; pushMode(INSIDE) ;
+XMLDeclOpen :   <span class="string">'&lt;?xml'</span> S               -&gt; pushMode(INSIDE) ;
+SPECIAL_OPEN:   <span class="string">'&lt;?'</span> Name               -&gt; more, pushMode(PROC_INSTR) ;
+
+TEXT        :   ~[&lt;&amp;]+ ;        <span class="comment">// match any 16 bit char other than &lt; and &amp;</span>
+
+<span class="comment">// ----------------- Everything INSIDE of a tag ---------------------</span>
+mode INSIDE;
+
+CLOSE       :   <span class="string">'&gt;'</span>                     -&gt; popMode ;
+SPECIAL_CLOSE:  <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?xml...?&gt;</span>
+SLASH_CLOSE :   <span class="string">'/&gt;'</span>                    -&gt; popMode ;
+SLASH       :   <span class="string">'/'</span> ;
+EQUALS      :   <span class="string">'='</span> ;
+STRING      :   <span class="string">'"'</span> ~[&lt;<span class="string">"]* '"</span><span class="string">'
+            |   '</span>\<span class="string">''</span> ~[&lt;<span class="string">']* '</span>\<span class="string">''</span>
+            ;
+Name        :   NameStartChar NameChar* ;
+S           :   [ \t\r\n]               -&gt; skip ;
+
+fragment
+HEXDIGIT    :   [a-fA-F0-<span class="number">9</span>] ;
+
+fragment
+DIGIT       :   [<span class="number">0</span>-<span class="number">9</span>] ;
+
+fragment
+NameChar    :   NameStartChar
+            |   <span class="string">'-'</span> | <span class="string">'.'</span> | DIGIT 
+            |   <span class="string">'\u00B7'</span>
+            |   <span class="string">'\u0300'</span>..<span class="string">'\u036F'</span>
+            |   <span class="string">'\u203F'</span>..<span class="string">'\u2040'</span>
+            ;
+
+fragment
+NameStartChar
+            :   [:a-zA-Z]
+            |   <span class="string">'\u2070'</span>..<span class="string">'\u218F'</span> 
+            |   <span class="string">'\u2C00'</span>..<span class="string">'\u2FEF'</span> 
+            |   <span class="string">'\u3001'</span>..<span class="string">'\uD7FF'</span> 
+            |   <span class="string">'\uF900'</span>..<span class="string">'\uFDCF'</span> 
+            |   <span class="string">'\uFDF0'</span>..<span class="string">'\uFFFD'</span>
+            ;
+
+<span class="comment">// ----------------- Handle &lt;? ... ?&gt; ---------------------</span>
+mode PROC_INSTR;
+PI          :   <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?...?&gt;</span>
+IGNORE      :   .                       -&gt; more ;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci82svyvk003tp8gov8ifappq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/09/03/antlr4-semantic-predicate/" class="article-date">
+  <time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/09/03/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
+      <a class="article-title" href="/2014/09/03/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/09/01/antlr4-use-problem/" class="archive-article-date">
-  <time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">Sep 1</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
+<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
+<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci82swqop0000q0gohz2m6rg7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/09/01/antlr4-use-problem/" class="article-date">
+  <time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/09/01/antlr4-use-problem/">antlr4-使用小结(续)</a>
+      <a class="article-title" href="/2014/09/01/antlr4-use-problem/">antlr4-使用小结(续)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/09/01/antlr4-exception/" class="archive-article-date">
-  <time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">Sep 1</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>本文主要记录在使用antlr4中中遇到的一些问题。</p>
+<p>一，标明了fragment的词法是不会被parser识别的，它只会在当前词法中可用。</p>
+<p>二，当未标明fragment的词法似乎是有包含关系的。当前面的词法包含了后面的词法时，后面的词法将不被parser解析出来。（可以看第9小节关系词法包含关系）。</p>
+<p>三，antlr的ieda插件只支持4.4以上的版本，所以如果需要生成4.4一下的版本的话，可以使用maven插件，或者手工生成。</p>
+<p>四，当一个词法中出现了2个同名的tokens名称时，另一个需要命名一个别名，不然会引起冲突。</p>
+<pre><code><span class="comment">//tokens1</span>
+term4  returns [Exp <span class="built_in">exp</span>]
+: term3 {
+    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
+}
+|   NOT  term4 {
+    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4.<span class="built_in">exp</span>}); <span class="comment">//$term4.exp取的是第一行的term4的内容</span>
+}
+;
+
+
+<span class="comment">//tokens2</span>
+term4  returns [Exp <span class="built_in">exp</span>]
+: term3 {
+    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
+}
+|   NOT  term4alias = term4 {
+    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
+}
+;
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci82svyvg003qp8goxhlwbcae" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/09/01/antlr4-exception/" class="article-date">
+  <time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/09/01/antlr4-exception/">antlr4-异常处理（八）</a>
+      <a class="article-title" href="/2014/09/01/antlr4-exception/">antlr4-异常处理（八）</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/30/antlr4-embedd-action/" class="archive-article-date">
-  <time datetime="2014-08-30T09:54:59.000Z" itemprop="datePublished">Aug 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>antlr4的异常处理机制很简单，下面我们来具体看看</p>
+<h2 id="修改和重定向错误">修改和重定向错误</h2><p>默认情况下， antlr发送所有的错误到标准错误中，但是我们可以提供ANTERErrorListener接口的实现来改变错误的内容和目的地。<br>这个接口有一个syntaxError方法适用于词法和解析器。方法接收所有已排序的本地错误和消息错误。它也可以接收一个parser的引用，所以我们能够查询状态的识别。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> class UnderlineListener extends BaseErrorListener {
+<span class="keyword">public</span> <span class="keyword">void</span> syntaxError(Recognizer&lt;?, ?&gt; recognizer,
+            <span class="keyword">Object</span> offendingSymbol,
+            <span class="built_in">int</span> <span class="built_in">line</span>, <span class="built_in">int</span> charPositionInLine,
+            <span class="keyword">String</span> msg,
+            RecognitionException e)
+{
+    System.err.<span class="built_in">println</span>(<span class="string">"line "</span>+<span class="built_in">line</span>+<span class="string">":"</span>+charPositionInLine+<span class="string">" "</span>+msg);
+    underlineError(recognizer,(Token)offendingSymbol,
+                   <span class="built_in">line</span>, charPositionInLine);
+}
+
+<span class="keyword">protected</span> <span class="keyword">void</span> underlineError(Recognizer recognizer,
+                              Token offendingToken, <span class="built_in">int</span> <span class="built_in">line</span>,
+                              <span class="built_in">int</span> charPositionInLine) {
+    CommonTokenStream tokens =
+        (CommonTokenStream)recognizer.getInputStream();
+    <span class="keyword">String</span> input = tokens.getTokenSource().getInputStream().toString();
+    <span class="keyword">String</span>[] lines = input.<span class="built_in">split</span>(<span class="string">"\n"</span>);
+    <span class="keyword">String</span> errorLine = lines[<span class="built_in">line</span> - <span class="number">1</span>];
+    System.err.<span class="built_in">println</span>(errorLine);
+    <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;charPositionInLine; i++) System.err.<span class="built_in">print</span>(<span class="string">" "</span>);
+    <span class="built_in">int</span> start = offendingToken.getStartIndex();
+    <span class="built_in">int</span> stop = offendingToken.getStopIndex();
+    <span class="keyword">if</span> ( start&gt;=<span class="number">0</span> &amp;&amp; stop&gt;=<span class="number">0</span> ) {
+        <span class="keyword">for</span> (<span class="built_in">int</span> i=start; i&lt;=stop; i++) System.err.<span class="built_in">print</span>(<span class="string">"^"</span>);
+        }
+    System.err.<span class="built_in">println</span>();
+    }
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception {
+    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(System.in);
+    SimpleLexer lexer = <span class="keyword">new</span> SimpleLexer(input);
+    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+    SimpleParser parser = <span class="keyword">new</span> SimpleParser(tokens);
+    parser.removeErrorListeners(); <span class="comment">// remove ConsoleErrorListener</span>
+    parser.addErrorListener(<span class="keyword">new</span> UnderlineListener());
+    parser.prog();
+}
+</code></pre><h2 id="自动错误恢复">自动错误恢复</h2><p>错误恢复就是运行解析器在发现了一个词法错误后可以继续执行。原则上，最佳的错误恢复应该是我们手写的递归下沿的解析器。解析器执行单个token插入和单个token删除直到不符合的token错误被修正。如果没有，解析器吞掉tokens知道他发现一个token能够可理解的跟着当前的规则然后返回，继续直到所有的解析完。</p>
+<h3 id="捕获失败的语义预测">捕获失败的语义预测</h3><p>so easy!  当预测失败时，你可以使用这样的函数{…}?<fail={failed()}>来执行某些动作。</fail={failed()}></p>
+<pre><code><span class="attribute">vec4</span>: <span class="string">  '[' ints[4] ']' ;</span>
+
+<span class="mel">ints[<span class="keyword">int</span> <span class="keyword">max</span>]
+locals [<span class="keyword">int</span> i=<span class="number">1</span>]
+:   INT ( <span class="string">','</span> {<span class="variable">$i</span>++;} {<span class="variable">$i</span>&lt;=<span class="variable">$max</span>}?&lt;fail={<span class="string">"exceeded max "</span>+<span class="variable">$max</span>}&gt; INT )*
+;
+
+INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
+WS  :   [ \t\r\n]+ -&gt; skip ;</span>
+</code></pre><h2 id="错误的替代选择">错误的替代选择</h2><p>同样不解释了.</p>
+<pre><code>fcall
+:   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span>
+|   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span> <span class="string">')'</span> {notifyErrorListeners(<span class="string">"Too many parentheses"</span>);}
+|   ID <span class="string">'('</span> <span class="keyword">expr</span>         {notifyErrorListeners(<span class="string">"Missing closing ')'"</span>);}
+;
+</code></pre><h2 id="另一个可选的错误策略">另一个可选的错误策略</h2><p>有时候我们不想用默认的错误处理策略。第一，在运行期的时候，我们可能想要禁用一些内部的错误处理。第二，我们可能想要提示最开始的语法错误。<br>要查看错误处理策略，我们可以看一下ANTLRErrorStrategy接口的默认具体实现DefaultErrorStrategy。这个类处理了antlr4所有的错误处理行为。<br>从antlr生成的代码中我们也可以看到：</p>
+<pre><code>_errHandler.reportError(<span class="keyword">this</span>, re);
+_errHandler.recover(<span class="keyword">this</span>, re);
+</code></pre><p>另一种错误处理就是BailErrorStrategy处理策略，即遇到异常后自动抛出。我们只需要告诉parser使用这种策略即可。当然，我们也可以用我们自己的错误处理方式，只需要继承DefaultErrorStrategy即可。</p>
+<blockquote>
+<p>parser.setErrorHandler( new BailErrorStrategy());</p>
+</blockquote>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">BailErrorStrategy</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">DefaultErrorStrategy</span> {</span>
+<span class="comment">/** Instead of recovering from exception {@code e}, re-throw it wrapped
+ *  in a {@link ParseCancellationException} so it is not caught by the
+ *  rule function catches.  Use {@link Exception#getCause()} to get the
+ *  original {@link RecognitionException}.
+ */</span>
+<span class="annotation">@Override</span>
+public void recover(<span class="type">Parser</span> recognizer, <span class="type">RecognitionException</span> e) {
+    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
+        context.exception = e;
+    }
+
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
+}
+
+<span class="comment">/** Make sure we don't attempt to recover inline; if the parser
+ *  successfully recovers, it won't throw an exception.
+ */</span>
+<span class="annotation">@Override</span>
+public <span class="type">Token</span> recoverInline(<span class="type">Parser</span> recognizer)
+    <span class="keyword">throws</span> <span class="type">RecognitionException</span>
+{
+    <span class="type">InputMismatchException</span> e = <span class="keyword">new</span> <span class="type">InputMismatchException</span>(recognizer);
+    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
+        context.exception = e;
+    }
+
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
+}
+
+<span class="comment">/** Make sure we don't attempt to recover from problems in subrules. */</span>
+<span class="annotation">@Override</span>
+public void sync(<span class="type">Parser</span> recognizer) { }
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-exception/" data-id="ci82svyw00048p8goyrfyt5y7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-embedd-action" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/antlr4-embedd-action/" class="article-date">
+  <time datetime="2014-08-30T09:54:59.000Z" itemprop="datePublished">8月 30 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/30/antlr4-embedd-action/">antlr4-添加嵌入式的行为(七)</a>
+      <a class="article-title" href="/2014/08/30/antlr4-embedd-action/">antlr4-添加嵌入式的行为(七)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/30/antlr4-share-context/" class="archive-article-date">
-  <time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">Aug 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>一般情况下我们最好不要这么做，这会使应用代码与语法代码混淆。但是在某些情况下也有她的好处：</p>
+<ul>
+<li>简易的：有时候仅仅是简答的几个动作，避免创建监听器或访问器。</li>
+<li>有效的：在特定的资源应用中，我们不想浪费时间和内存去构建一个解析树。</li>
+<li>判断解析：在很少的情况下，我么需要依靠之前的输入流来判断解析属性。一些语法需要构建符号表来意识到将来的不同情况的输入，依赖与标识符是否是类型或者方法。</li>
+</ul>
+<h2 id="演示">演示</h2><pre><code>grammar Rows;
+
+<span class="variable">@parser</span>::members { <span class="comment">// add members to generated RowsParser</span>
+    <span class="keyword">int</span> col;
+    public RowsParser(TokenStream input, <span class="keyword">int</span> col) { <span class="comment">// custom constructor</span>
+        this(input);
+        this.col = col;
+    }
+}
+
+<span class="keyword">file</span>: (row NL)+ ;
+
+row
+locals [<span class="keyword">int</span> i=<span class="number">0</span>]   <span class="comment">//locals 本地变量表</span>
+    : (   STUFF
+          { <span class="comment">//行为 ，通过$来取出本地变量 ,col是全局变量</span>
+          <span class="variable">$i</span>++;
+          <span class="keyword">if</span> ( <span class="variable">$i</span> == col ) System.out.println(<span class="variable">$STUFF</span>.<span class="keyword">text</span>);
+          }
+      )+
+    ;
+
+TAB  :  <span class="string">'\t'</span> -&gt; skip ;   <span class="comment">// match but don't pass to the parser</span>
+NL   :  <span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// match and pass to the parser</span>
+STUFF:  ~[\t\r\n]+ ;     <span class="comment">// match any chars except tab, newline</span>
+</code></pre><h2 id="利用语法规则的外部行为">利用语法规则的外部行为</h2><pre><code>&lt;header&gt;
+public <span class="class"><span class="keyword">class</span> <span class="title">&lt;grammarName&gt;</span> <span class="title">Parser</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Parser</span> {</span>
+&lt;members&gt;
+...
+}
+</code></pre><p>package/import  statements is header and<br>class members like fields and methods is members<br>如果要指定header行为，我们用@header,如果要注入字段和方法，我们用@memers。<br>在一个合并的parser/lexer语法中，他们命名的行为应用在parser和lexer中。如果要限制生成的行为在parser或lexer中，我们可以用 @parser::name 或者 @lexer::name.</p>
+<p>通常情况下，$x.y表示y属性的x元素，x可以是token的引用或者rule引用。</p>
+<h3 id="expr例子">expr例子</h3><pre><code><span class="comment">/** Grammar from tour chapter augmented with actions */</span>
+grammar Expr;
+
+<span class="variable">@header</span> {
+<span class="comment">/**package tools;*/</span>
+import java.util.<span class="variable">*;</span>
+}
+
+<span class="variable">@parser</span>::members {
+    <span class="comment">/** "memory" for our calculator; variable/value pairs go here */</span>
+    Map&lt;String, Integer&gt; <span class="keyword">memory</span> = new HashMap&lt;String, Integer&gt;();
+
+    <span class="keyword">int</span> <span class="keyword">eval</span>(<span class="keyword">int</span> left, <span class="keyword">int</span> op, <span class="keyword">int</span> right) {
+        <span class="keyword">switch</span> ( op ) {
+            <span class="keyword">case</span> MUL : <span class="keyword">return</span> left * right;
+            <span class="keyword">case</span> DIV : <span class="keyword">return</span> left / right;
+            <span class="keyword">case</span> ADD : <span class="keyword">return</span> left + right;
+            <span class="keyword">case</span> SUB : <span class="keyword">return</span> left - right;
+        }
+        <span class="keyword">return</span> <span class="number">0</span>;
+    }
+}
+
+stat:   e NEWLINE           {System.out.println(<span class="variable">$e</span>.v);}
+    |   ID <span class="string">'='</span> e NEWLINE    {<span class="keyword">memory</span>.put(<span class="variable">$ID</span>.<span class="keyword">text</span>, <span class="variable">$e</span>.v);}
+    |   NEWLINE                   
+    ;
+
+e returns [<span class="keyword">int</span> v]
+    : a=e op=(<span class="string">'*'</span>|<span class="string">'/'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}
+    | a=e op=(<span class="string">'+'</span>|<span class="string">'-'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}  
+    | INT                   {<span class="variable">$v</span> = <span class="variable">$INT</span>.<span class="keyword">int</span>;}    
+    | ID
+      {
+      String id = <span class="variable">$ID</span>.<span class="keyword">text</span>;
+      <span class="variable">$v</span> = <span class="keyword">memory</span>.containsKey(id) ? <span class="keyword">memory</span>.get(id) : <span class="number">0</span>;
+      }
+    | <span class="string">'('</span> e <span class="string">')'</span>             {<span class="variable">$v</span> = <span class="variable">$e</span>.v;}       
+    ; 
+
+MUL : <span class="string">'*'</span> ;
+DIV : <span class="string">'/'</span> ;
+ADD : <span class="string">'+'</span> ;
+SUB : <span class="string">'-'</span> ;
+
+ID  :   [a-zA-Z]+ ;      <span class="comment">// match identifiers</span>
+INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;         <span class="comment">// match integers</span>
+NEWLINE:<span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// return newlines to parser (is end-statement signal)</span>
+WS  :   [ \t]+ -&gt; skip ; <span class="comment">// toss out whitespace                </span>
+</code></pre><h3 id="keyword例子">keyword例子</h3><pre><code>grammar Keywords;
+@lexer::header {    // place this header <span class="keyword">action</span> <span class="keyword">only</span> <span class="type">in</span> lexer, not the parser
+    <span class="keyword">import</span> java.util.*;
+}
+
+// explicitly define keyword token types to avoid <span class="type">implicit</span> def warnings
+tokens { BEGIN, <span class="keyword">END</span>, <span class="keyword">IF</span>, <span class="keyword">THEN</span>, <span class="keyword">WHILE</span> }
+
+@lexer::members {   // place this <span class="keyword">class</span> member <span class="keyword">only</span> <span class="type">in</span> lexer
+    Map&lt;String,<span class="type">Integer</span>&gt; keywords = new HashMap&lt;String,<span class="type">Integer</span>&gt;() &lt;<span class="comment">!--￼0--&gt;;</span>
+}
+
+
+stat:   BEGIN stat* <span class="keyword">END</span> 
+    |   <span class="keyword">IF</span> expr <span class="keyword">THEN</span> stat
+    |   <span class="keyword">WHILE</span> expr stat
+    |   ID <span class="string">'='</span> expr <span class="string">';'</span>
+    ;
+
+expr:   <span class="built_in">INT</span> | <span class="built_in">CHAR</span> ;
+
+ID  :   [a-zA-Z]+
+        {//嵌入式代码
+        <span class="keyword">if</span> ( keywords.containsKey(getText()) ) {
+            setType(keywords.get(getText())); // reset token <span class="keyword">type</span>
+        }
+        }
+    ;
+
+/** Convert <span class="number">3</span>-<span class="built_in">char</span> <span class="string">'x'</span> input <span class="keyword">sequence</span> to string x */
+<span class="built_in">CHAR</span>:   <span class="string">'\''</span> . <span class="string">'\''</span> {setText( String.valueOf(getText().charAt(<span class="number">1</span>)) );} ;
+
+<span class="built_in">INT</span> :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
+
+WS  :   [ \t\n\r]+ -&gt; skip ;
+</code></pre><h3 id="csvexample">csvexample</h3><pre><code>grammar CSV;
+
+@header {
+import java.util.*;
+}
+
+<span class="comment">/** Derived from rule "file : hdr row+ ;" */</span>
+<span class="keyword">file</span>
+locals [int i=0]
+     : hdr ( rows+=row[<span class="label">$hdr</span>.text.<span class="keyword">split</span>(<span class="string">","</span>)] {<span class="label">$i</span>++;} )+
+       {
+       System.<span class="keyword">out</span>.println(<span class="label">$i</span>+<span class="string">" rows"</span>);
+       <span class="keyword">for</span> (RowContext r : <span class="label">$rows</span>) {
+           System.<span class="keyword">out</span>.println(<span class="string">"row token interval: "</span>+r.getSourceInterval());
+       }
+       }
+     ;
+
+hdr : row[null] {System.<span class="keyword">out</span>.println(<span class="string">"header: '"</span>+<span class="label">$text</span>.<span class="literal">trim</span>()+<span class="string">"'"</span>);} ;
+
+<span class="comment">/** Derived from rule "row : field (',' field)* '\r'? '\n' ;" */</span>
+<span class="comment">//参数 columns ，返回值values</span>
+row[String[] columns] returns [Map&lt;String,String&gt; values]
+locals [int col=0]
+@init {
+    <span class="label">$values</span> = new HashMap&lt;String,String&gt;();
+}
+@after {
+    <span class="keyword">if</span> (<span class="label">$values</span>!=null &amp;&amp; <span class="label">$values</span>.size()&gt;0) {
+        System.<span class="keyword">out</span>.println(<span class="string">"values = "</span>+<span class="label">$values</span>);
+    }
+}
+<span class="comment">// rule row cont'd...</span>
+    :   field
+        {
+        <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
+            <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
+        }
+        }
+        (   ',' field
+            {
+            <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
+                <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
+            }
+            }
+        )* '\r'? '\<span class="keyword">n</span>'
+    ;
+
+field
+    :   TEXT
+    |   <span class="literal">STRING</span>
+    |
+    ;
+
+TEXT : ~[,\<span class="keyword">n</span>\r"]+ ;
+STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')* '"' ; <span class="comment">// quote-quote is an escaped quote</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-embedd-action/" data-id="ci82svyw3004bp8goysbvi77x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/antlr4-share-context/" class="article-date">
+  <time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">8月 30 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/30/antlr4-share-context/">antlr4-共享上下文(六)</a>
+      <a class="article-title" href="/2014/08/30/antlr4-share-context/">antlr4-共享上下文(六)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/30/antlr4-label-rule/" class="archive-article-date">
-  <time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">Aug 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
+<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
+<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
+<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
+    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
+        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
+    }
+}
+</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
+<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
+</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
+<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
+    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push( left * right );
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push(left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
+    }
+}
+</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/QQ图片20140830171636.jpg" alt=""></p>
+<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
+    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
+}
+</code></pre><p>所以，我们用一个map来保存所有的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
+    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
+    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
+
+    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
+        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left * right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
+        setValue(ctx, Integer.valueOf(intText));
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
+    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
+}
+
+<span class="comment">//保存树的节点和值的map</span>
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
+    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
+
+    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+}
+</code></pre><h2 id="对比">对比</h2><ul>
+<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
+<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
+<li>注解：map字段映射了节点和值的关系。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-share-context/" data-id="ci82svyvp003zp8got41w3apl" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-label-rule" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/antlr4-label-rule/" class="article-date">
+  <time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">8月 30 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/30/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
+      <a class="article-title" href="/2014/08/30/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/30/antlr4-iterator-example/" class="archive-article-date">
-  <time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">Aug 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <h2 id="粒度问题">粒度问题</h2><p>由于以前生成的方法仅仅能够在规则上产生，当我们想要更小的粒度时，针对每个规则进行更小的粒度控制时，我们就显得力不从心了。</p>
+<p>这样，就产生了lable…</p>
+<h2 id="无标签情况下">无标签情况下</h2><p>下面是一个计算器。</p>
+<pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;
+<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
+<span class="rule"><span class="attribute">e </span>:<span class="value"> e op=MULT e    // MULT is <span class="string">'*'</span>
+  | e op=ADD e     // ADD is <span class="string">'+'</span>
+  | INT
+  </span></span>;
+
+<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
+<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
+<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
+</code></pre><p><img src="/img/QQ图片20140830162901.jpg" alt=""></p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends ExprBaseListener {
+    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitE</span><span class="params">(ExprParser.EContext ctx)</span> </span>{
+        <span class="keyword">if</span> ( ctx.getChildCount()==<span class="number">3</span> ) { <span class="comment">// operations have 3 children</span>
+            <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+            <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+            <span class="keyword">if</span> ( ctx.op.getType()==ExprParser.MULT ) {
+                <span class="built_in">stack</span>.push( left * right );
+            }
+            <span class="keyword">else</span> {
+                <span class="built_in">stack</span>.push( left + right ); <span class="comment">// must be add</span>
+            }
+        }
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTerminal</span><span class="params">(TerminalNode node)</span> </span>{
+        Token symbol = node.getSymbol();
+        <span class="keyword">if</span> ( symbol.getType()==ExprParser.INT ) {
+            <span class="built_in">stack</span>.push( Integer.valueOf(symbol.getText()) );
+        }
+    }
+}
+</code></pre><p>从上面看出，原始的方式下，我们不得不对所有的操作符进行判断，即op=MULT和op=Add。</p>
+<h2 id="有标签情况下">有标签情况下</h2><pre><code><span class="tag">grammar</span> <span class="tag">LExpr</span>;
+
+<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
+
+<span class="rule"><span class="attribute">e </span>:<span class="value"> e MULT e         # Mult
+  | e ADD e         # Add
+  | INT                # Int
+  </span></span>;
+
+<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
+<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
+<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
+</code></pre><p>注意不同点，我们使用#号来表示标签。这样，antlr就会对每个标签生成一个方法和特定的上下文对象。</p>
+<p><img src="/img/QQ图片20140830164801.jpg" alt=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-label-rule/" data-id="ci82svyvw0042p8goe5psx67o" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/antlr4-iterator-example/" class="article-date">
+  <time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/30/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
+      <a class="article-title" href="/2014/08/30/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/30/antlr4_iterator/" class="archive-article-date">
-  <time datetime="2014-08-30T06:36:50.000Z" itemprop="datePublished">Aug 30</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
+<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
+<pre><code><span class="comment">//语法</span>
+grammar PropertyFile;
+file : prop+ ;
+prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
+ID   : [a-z]+ ;
+<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
+
+<span class="comment">//文件</span>
+user=<span class="string">"parrt"</span>
+machine=<span class="string">"maniac"</span>
+</code></pre><p><img src="/img/QQ图片20140830154441.jpg" alt="解析树"></p>
+<p><img src="/img/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
+<p><img src="/img/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
+<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
+    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
+    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
+        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
+        <span class="built_in">String</span> value = ctx.STRING().getText();
+        props.put(id, value);
+    }
+}
+</code></pre><p>下面的类的依赖图，我就不解释了：</p>
+<p><img src="/img/QQ图片20140830155248.jpg" alt=""></p>
+<p>最后直接看结果吧，so easy:</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
+    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
+    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
+    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
+    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
+    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
+    ParseTree tree = parser.file();
+
+    <span class="comment">// create a standard ANTLR parse tree walker</span>
+    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
+    <span class="comment">// create listener then feed to walker</span>
+    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
+    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
+    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
+    <span class="comment">//print {machine="maniac", user="parrt"}</span>
+}
+</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
+<p><img src="/img/QQ图片20140830160030.jpg" alt=""></p>
+<p><img src="/img/QQ图片20140830160122.jpg" alt=""></p>
+<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
+</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
+{
+    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
+    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
+        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
+        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
+        props.put(id, value);
+        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
+    }
+}
+</code></pre><p><img src="/img/QQ图片20140830160343.jpg" alt=""></p>
+<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-iterator-example/" data-id="ci82svyvy0045p8go9ljo0ar0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4_iterator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/antlr4_iterator/" class="article-date">
+  <time datetime="2014-08-30T06:36:50.000Z" itemprop="datePublished">8月 30 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/30/antlr4_iterator/">antlr4-遍历机制概念(三)</a>
+      <a class="article-title" href="/2014/08/30/antlr4_iterator/">antlr4-遍历机制概念(三)</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/08/24/antlr4-core-notation/" class="archive-article-date">
-  <time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">Aug 24</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
+        <h2 id="antlr4如何遍历树?">antlr4如何遍历树?</h2><p>antlr4提供了2种树遍历方式。在默认情况下，antlr生成了一个解析树监听接口，它用内置的树遍历器响应事件触发。这个监听器正如SAX文档处理xml解析对象一样。SAX监听器接收通知事件，例如startDocument()和endDocumnet()。他们在监听器中仅仅被回调。</p>
+<h2 id="解析树监听器(Parse-Tree_Listeners)">解析树监听器(Parse-Tree Listeners)</h2><p>为了在遍历树的时候触发对监听器的调用，antlr的运行时包提供类ParseTreeWalker。</p>
+<p>antlr生成了一个ParerTreeListener的子类，这个类会对每个语法规则指定一个enter和exit方法。当遍历器遇到节点规则assign时，会触发enterAssign()方法然后传递给他解析树节点的AssignConext。在遍历器访问了assign的所有子节点后，会触发exitAssign()方法。下面的树状图显示了ParseTreeWalker执行了深度优先的遍历:</p>
+<p><img src="/img/QQ图片20140830150257.jpg" alt=""></p>
+<p>接下来的图片显示了一个更完整的ParseTreeWalker调用：<br><img src="/img/QQ图片20140830150508.jpg" alt=""></p>
+<h2 id="解析树访问器(Parse-Tree_Visitors)">解析树访问器(Parse-Tree Visitors)</h2><p>有这样一种情形，就是我们想自己控制遍历方式，明确的调用方法去访问子节点。可选的 -visitor 命令让ANTLR生产了一个访问器接口，这个接口的每个规则都对应一个visit方法。下图是的访问器模式：<br><img src="/img/QQ图片20140830151050.jpg" alt=""></p>
+<p>为了实例化一个遍历树，应用代码需要创建vistor的实现类并且调用visit()方法。</p>
+<pre><code><span class="type">ParseTree</span> tree = ...;//tree <span class="keyword">is</span> <span class="literal">result</span> <span class="keyword">of</span> parsing
+<span class="type">MyVisitor</span> v = new <span class="type">MyVisitor</span>();
+v.visit(tree);
+</code></pre><p>antlr访问器支持编码调用visitStat()方法当遇到根节点的时候。visitStat（）方法的时候将带着子节点参数调用visit()方法以便继续遍历。或者,visitMethod()也可以明确的调用visitAssian（）方法，等等。</p>
+<h2 id="比较">比较</h2><p>监听器和遍历器的最大不同在于，监听方法并不为明确的嗲用方法区遍历他们的子节点负责。在另一方面，访问器必须明确的触发访问子节点，以便保持遍历的继续运行。</p>
+<p>访问器控制了遍历的顺序，由于明确的调用了子节点，也控制的树是否会被 遍历。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4_iterator/" data-id="ci82svyv9003mp8got87c4m3d" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/24/antlr4-core-notation/" class="article-date">
+  <time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/08/24/antlr4-core-notation/">antlr4-核心符号（二）</a>
+      <a class="article-title" href="/2014/08/24/antlr4-core-notation/">antlr4-核心符号（二）</a>
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/QQ截图20140824182207.png" alt=""></p>
+<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
+<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
+<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
+</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
+<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
+(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
+</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
+<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
+stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
+</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
+<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
+<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
+<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
+<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
+</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
+<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
+ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
+<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
+<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
+</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
+<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
+classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/24/antlr4-core-notation/" data-id="ci82svyw5004dp8gozgm90hku" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
   </div>
+  
 </article>
+
+
   
   
-    </div></section>
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/tags/antlr4/page/2/">2</a><a class="extend next" rel="next" href="/tags/antlr4/page/2/">Next &raquo;</a>
+    </nav>
   
 </section>
         
@@ -271,7 +1197,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/antlr4/">antlr4</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/database/">database</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/exception/">exception</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hadoop/">hadoop</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/impala/">impala</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/jdk源码/">jdk源码</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/self/">self</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/框架/">框架</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -280,7 +1206,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DriverManager/">DriverManager</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/int/">int</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -289,7 +1215,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DriverManager/" style="font-size: 10px;">DriverManager</a><a href="/tags/android/" style="font-size: 15px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 10px;">exception</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/int/" style="font-size: 10px;">int</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 12.5px;">linux</a><a href="/tags/mondrian/" style="font-size: 17.5px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tx/" style="font-size: 12.5px;">tx</a><a href="/tags/源码/" style="font-size: 10px;">源码</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 11.67px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 13.33px;">linux</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tx/" style="font-size: 13.33px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 11.67px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -298,7 +1224,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -308,10 +1234,6 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
-        
-          <li>
-            <a href="/2015/04/03/hello-world/">Hello World</a>
-          </li>
         
           <li>
             <a href="/2015/03/31/oracle-group-by/">&#39;Oracle rollup、cube、grouping sets&#39;</a>
@@ -329,6 +1251,10 @@
             <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
           </li>
         
+          <li>
+            <a href="/2014/10/26/mondrian-source-code-10/">mondrian source code 10</a>
+          </li>
+        
       </ul>
     </div>
   </div>
@@ -341,7 +1267,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2015 John Doe<br>
+      &copy; 2015 sqtds<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
