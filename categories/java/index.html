@@ -97,12 +97,12 @@
 <ul>
 <li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
 <li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
-<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/mondrain_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/mondrain_agg2.png" alt=""></li>
+<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/mondrian_agg2.png" alt=""></li>
 <li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
 <li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
 </ul>
-<h2 id="segment详解">segment详解</h2><p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/mondrain_agg3.png" alt=""><br><img src="/img/mondrain_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/mondrain_agg5.png" alt=""></p>
-<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/mondrain_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/mondrain_agg7.png" alt=""></p>
+<h2 id="segment详解">segment详解</h2><p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/mondrian_agg3.png" alt=""><br><img src="/img/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/mondrian_agg5.png" alt=""></p>
+<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/mondrian_agg7.png" alt=""></p>
 <p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
 <pre><code><span class="type">Query</span> query = connection.parseQuery(
     <span class="string">"SELECT"</span> +
@@ -138,7 +138,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci833f3bu00121ggockd8ejtd" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci833ouuc00124cgobv7kaq5g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -229,7 +229,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci833f3by00161ggooqjkzb87" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci833ouuh00164cgok09xwdns" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -303,7 +303,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci833f3cn001u1ggoancktbb5" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci833ouv6001u4cgoedzq248n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -444,7 +444,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci833f3c000191ggogpwlfaw3" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci833ouuj00194cgo22gbri0m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -524,7 +524,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci833f3c6001c1ggokyhalqii" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci833ouup001c4cgorxbqsg66" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -574,7 +574,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci833f3c8001f1ggosrdugk78" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci833ouur001f4cgontqze1ok" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -640,7 +640,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci833f3cb001i1ggosf43io0q" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci833ouuu001i4cgouckdxtfn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -689,7 +689,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci833f3cd001l1ggoazae2oa8" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci833ouux001l4cgoolef9kj9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -738,7 +738,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci833f3cg001o1ggo2a5j71d4" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci833ouv0001o4cgol65022fx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -787,7 +787,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci833f3cj001r1ggown1t7u1k" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci833ouv3001r4cgo2cqaunmn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
