@@ -65,6 +65,113 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/05/mongodb-biji/" class="article-date">
+  <time datetime="2015-04-05T04:06:03.000Z" itemprop="datePublished">4月 5 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="特点">特点</h2><p>MongoDB是它是一个面向集合的,模式自由的文档型数据库。那么什么是文档性数据库呢？它与其他的数据库的差别在哪里？</p>
+<ol>
+<li><p>面向集合的存储（ Collenction-Orented）：适合存储对象及JSON形式的数据。</p>
+<p> 意思是数据被分组存储在数据集中， 被称为一个集合（ Collenction)。每个集合在数据库中都有一个唯一的标识名 ，并且可以包含无限数目的文档 。集合的概念类似关系型数据库（ RDBMS）里的表（ table）， 不同的是它不需要定义任何模式（ schema)。</p>
+</li>
+<li><p>模式自由（（ schema-free)</p>
+<p> 意味着对于存储在 MongoDB 数据库中的文件，我们不需要知道它的任何结构定义。提了这么多次”无模式”或”模式自由 “，它到是个什么概念呢？例如，下面两个记录可以存在于同一个集合里面：<br> {“welcome” : “Beijing”}<br> {“age” : 25}</p>
+</li>
+<li><p>文档型</p>
+<p> 意思是我们存储的数据是键-值对的集合,键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档 . 我们把这个数据格式称作 “ BSON ” 即 “ Binary Serialized dOcument Notation.”</p>
+</li>
+</ol>
+<h2 id="适用场景">适用场景</h2><p><strong>网站数据</strong>： MongoDB 非常适合实时的插入，更新与查询，并具备网站实时数据存储所需的复制及高度伸缩性</p>
+<p><strong>缓存</strong>：由于性能很高， MongoDB 也适合作为信息基础设施的缓存层。在系统重启之后，由 MongoDB 搭建的持久化缓存层可以避免下层的数据源过载</p>
+<p><strong>大尺寸，低价值的数据</strong>：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储</p>
+<p><strong>高伸缩性的场景</strong>： MongoDB 非常适合由数十或数百台服务器组成的数据库。 MongoDB的路线图中已经包含对 MapReduce 引擎的内置支持</p>
+<p><strong>用于对象及 JSON 数据的存储</strong>： MongoDB 的 BSON 数据格式非常适合文档化格式的存储及查询</p>
+<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/mongodb_chengci.png" alt=""></p>
+<h2 id="性能篇">性能篇</h2><p>MongoDB 提供了多样性的索引支持，索引信息被保存在 system.indexes 中，且默认总是为_id<br>创建索引 ，它的索引使用基本和 MySQL 等关系型数据库一样。</p>
+<h3 id="基础索引">基础索引</h3><pre><code>在字段 <span class="tag">age</span> 上创建索引， 1(升序);<span class="tag">-1</span>(降序)
+<span class="tag">db</span><span class="class">.t3</span><span class="class">.ensureIndex</span>(<span class="rules">{<span class="rule"><span class="attribute">age</span>:<span class="value"><span class="number">1</span>})</span></span></span>
+</code></pre><h3 id="文档索引">文档索引</h3><pre><code>db.factories.insert( { name: <span class="string">"wwl"</span>, addr: { city: <span class="string">"Beijing"</span>, <span class="keyword">state</span>: <span class="string">"BJ"</span> } } );
+db.factories.ensureIndex( { addr : <span class="number">1</span> } );
+//下面这个查询将会用到我们刚刚建立的索引
+db.factories.find( { addr: { city: <span class="string">"Beijing"</span>, <span class="keyword">state</span>: <span class="string">"BJ"</span> } } );
+//但是下面这个查询将不会用到索引，因为查询的顺序跟索引建立的顺序不一样
+db.factories.find( { addr: { <span class="keyword">state</span>: <span class="string">"BJ"</span> , city: <span class="string">"Beijing"</span>} } );
+</code></pre><h3 id="组合索引">组合索引</h3><pre><code><span class="keyword">db</span>.factories.ensureIndex( { <span class="string">"addr.city"</span> : 1, <span class="string">"addr.state"</span> : 1 } );
+<span class="comment">// 下面的查询都用到了这个索引</span>
+<span class="keyword">db</span>.factories.find( { <span class="string">"addr.city"</span> : <span class="string">"Beijing"</span>, <span class="string">"addr.state"</span> : <span class="string">"BJ"</span> } );
+<span class="keyword">db</span>.factories.find( { <span class="string">"addr.city"</span> : <span class="string">"Beijing"</span> } );
+<span class="keyword">db</span>.factories.find().<span class="keyword">sort</span>( { <span class="string">"addr.city"</span> : 1, <span class="string">"addr.state"</span> : 1 } );
+<span class="keyword">db</span>.factories.find().<span class="keyword">sort</span>( { <span class="string">"addr.city"</span> : 1 } )
+</code></pre><h2 id="架构篇">架构篇</h2><p>MongoDB 支持在多个机器中通过异步复制达到故障转移和实现冗余。多机器中同一时刻只有一台是用于写操作。正是由于这个情况，为 MongoDB 提供了数据一致性的保障。担当Primary 角色的机器能把读操作分发给 slave。</p>
+<h3 id="复制集">复制集</h3><p>MongoDB 高可用可用分两种:</p>
+<ul>
+<li><p>Master-Slave 主从复制：</p>
+<p>  只需要在某一个服务启动时加上–master 参数，而另一个服务加上–slave 与–source 参数，即可实现同步。 MongoDB 的最新版本已不再推荐此方案。</p>
+</li>
+<li><p>Replica Sets 复制集：</p>
+<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/mongodb_replica.png" alt=""></p>
+</li>
+</ul>
+<h3 id="Sharding_分片">Sharding 分片</h3><p>这是一种将海量的数据水平扩展的数据库集群系统，数据分表存储在 sharding 的各个节点上，使用者通过简单的配置就可以很方便地构建一个分布式 MongoDB 集群。</p>
+<p>要构建一个 MongoDB Sharding Cluster，需要三种角色：</p>
+<ul>
+<li><p>Shard Server</p>
+<p>  即存储实际数据的分片，每个 Shard 可以是一个 mongod 实例，也可以是一组 mongod 实例构成的 Replica Set。为了实现每个 Shard 内部的 auto-failover， MongoDB 官方建议每个 Shard为一组 Replica Set。</p>
+</li>
+<li><p>Config Server</p>
+<p>  为了将一个特定的 collection 存储在多个 shard 中，需要为该 collection 指定一个shard key，例如{age: 1} ，shard key 可以决定该条记录属于哪个 chunk。 Config Servers 就是用来存储：所有 shard 节点的配置信息、每个 chunk 的 shard key 范围、 chunk 在各 shard 的分布情况、该集群中所有 DB 和 collection 的 sharding 配置信息。</p>
+</li>
+<li><p>Route Process</p>
+<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/mongodb_shard.png" alt=""></p>
+</li>
+</ul>
+<h3 id="Replica_Sets_+_Sharding">Replica Sets + Sharding</h3><p>MongoDB Auto-Sharding 解决了海量存储和动态扩容的问题，但离实际生产环境所需的高可<br>靠、高可用还有些距离，所以有了 ” Replica Sets + Sharding”的解决方案:</p>
+<ul>
+<li><p>Shard:</p>
+<p>  使用 Replica Sets，确保每个数据节点都具有备份、自动容错转移、自动恢复能力。</p>
+</li>
+<li><p>Config:</p>
+<p>  使用 3 个配置服务器，确保元数据完整性</p>
+</li>
+<li><p>Route:</p>
+<p>  使用 3 个路由进程，实现负载平衡，提高客户端接入性能</p>
+</li>
+</ul>
+<p><img src="/img/mongodb_replica_shard.png" alt=""></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci83xwq2w0012hkgob41emz2s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/04/04/mondrian-source-code-9/" class="article-date">
@@ -108,8 +215,8 @@
 <span class="keyword">public</span> <span class="keyword">final</span> StarColumnPredicate[] predicates; <span class="comment">//Segment存在哪些断言</span>
 </code></pre><p>从这里我们可以看出，Segment就是对某个Cube的断面做的定义。那它的单元值是存在哪里呢？<br>就是我们在上面讲的到SegmentDataSet，由它来存储单元值。那么如何关联Segment与SegmentDataSet呢？这里我们有要讲到SegmentWithData。我们看他的定义：</p>
 <pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">SegmentWithData</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Segment</span>{</span>
-    <span class="keyword">final</span> <span class="type">SegmentAxis</span>[] axes;
-    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">SegmentDataset</span> data;
+    <span class="keyword">final</span> <span class="type">SegmentAxis</span>[] axes;<span class="comment">//一组维度的约束</span>
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">SegmentDataset</span> data;<span class="comment">//数据存储</span>
 ...
     <span class="comment">//此方法判断SegmentWithData中是否存在以keys为维度的单元值</span>
     public <span class="type">Object</span> getCellValue(<span class="type">Object</span>[] keys) {
@@ -142,6 +249,7 @@
             <span class="comment">// or more of its keys does have any values</span>
             <span class="keyword">return</span> <span class="type">FunUtil</span>.nullValue;
         } <span class="keyword">else</span> {
+            <span class="comment">//cellkey是对一组维度的值得定义</span>
             <span class="type">Object</span> o = data.getObject(cellKey);
             <span class="keyword">if</span> (o == <span class="literal">null</span>) {
                 o = <span class="type">FunUtil</span>.nullValue;
@@ -188,7 +296,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci835m12m0012vogoyee7kiru" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci83xwq300017hkgoewi5ri6w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -279,7 +387,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci835m12r0016vogoruetw9j2" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci83xwq33001bhkgoa3rrv1zk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -387,7 +495,7 @@ order by 4, 5, 6;</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci835m12i000vvogo0auyiwf5" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci83xwq2r000vhkgotcerx89j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupby/">groupby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oralce/">oralce</a></li></ul>
@@ -461,7 +569,7 @@ order by 4, 5, 6;</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci835m13g001uvogosiq5myb7" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci83xwq3t001zhkgofwl1m358" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -602,7 +710,7 @@ order by 4, 5, 6;</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci835m12t0019vogobtyeki2m" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci83xwq38001ehkgojpqco32r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -682,7 +790,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci835m12z001cvogo5aootm4j" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci83xwq3b001hhkgoy12b1onl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -732,7 +840,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci835m131001fvogoi5s2j2sq" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci83xwq3f001khkgodh1qql1l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -798,7 +906,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci835m134001ivogoxlb51d4y" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci83xwq3h001nhkgowg9keife" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -847,56 +955,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci835m137001lvogomfubxvmw" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-2/" class="article-date">
-  <time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="什么是MDX？">什么是MDX？</h2><p>MDX为MultiDimensional Expressions的缩写，多维表达式，是标准的OLAP查询语言。在多数OLAPServer都提供MDX支持，如Microsoft SQL Server OLAP Services,SAS,Hyperion Essbase等。</p>
-<p>支持多维对象与数据的定义和操作。MDX 在很多方面与结构化查询语言 (SQL) 语法相似，但它不是 SQL 语言的扩展；事实上，MDX 所提供的一些功能也可由 SQL 提供，尽管不是那么有效或直观。<br>如同 SQL 查询一样，每个 MDX 查询都要求有数据请求（SELECT 子句）、起始点（FROM 子句）和筛选（WHERE 子句）。这些关键字以及其它关键字提供了各种工具，用来从多维数据集析取数据的特定部分。</p>
-<p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
-        
-          <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-2/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci835m13a001ovogomniv7soo" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci83xwq3l001qhkgo30vp3k27" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -930,7 +989,7 @@ Table对象..星型模型
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -939,7 +998,7 @@ Table对象..星型模型
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/nosql/" style="font-size: 10px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -948,7 +1007,7 @@ Table对象..星型模型
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -958,6 +1017,10 @@ Table对象..星型模型
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
+          </li>
         
           <li>
             <a href="/2015/04/04/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
@@ -973,10 +1036,6 @@ Table对象..星型模型
         
           <li>
             <a href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
-          </li>
-        
-          <li>
-            <a href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
           </li>
         
       </ul>
