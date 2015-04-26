@@ -147,12 +147,20 @@
 <li>对于IO密集型的范围查询会比随机从磁盘读取每一行数据的IO要小的多。</li>
 <li>可内存缓存索引，避免系统调用</li>
 </ul>
+<h3 id="使用索引进行排序">使用索引进行排序</h3><p>当索引的列序列和order by子句的顺序完全一致，并且所有列的排序方向（倒序或正序）都一样时，MySql才能够使用索引来对结果进行排序。如果查询关联多个表时，则只有当ORDER BY子句引用的字段全部为第一个表时，才能使用索引进行排序。ORDER BY 子句和查找型查询的限制是一样的：需要全部满足索引的最左前缀的要求；否则，MySql都需要执行排序操纵，而无法利用索引进行排序。</p>
+<p>有一种情况下ORDER BY子句可以不满足索引的最左前缀要求，就是前导列为常量的时候。如果WHERE子句或者JOIN子句中对这些列指定了常量，就可以“弥补”索引的不足。</p>
+<h3 id="索引和锁">索引和锁</h3><p>索引可以让查询锁定更少的行。如果你的查询不需要访问那些不需要的行，那么就会锁定更少的行。</p>
+<h2 id="设计原则">设计原则</h2><h3 id="选择性特别低，并且经常用到的的作为索引前列">选择性特别低，并且经常用到的的作为索引前列</h3><p>例如性别只有2种选择，但是我们经常会用到。如果没有用到性别查询，我们也可以使用 sex in（‘m’，‘f’）来让mysql选择该索引。</p>
+<p>有一点需要注意的是，使用in的方式覆盖不在where条件中查询的列，不能过度使用。因为每增加一个in条件，优化器都需要以指数的形式增加，a<em>b</em>c。</p>
+<h3 id="对于经常性范围查询，应放到索引后列">对于经常性范围查询，应放到索引后列</h3><p>对于范围查询，MySql无法再使用范围列后面的其他索引了，但是对于多个“等值条件查询”则没有这个限制。<br>例如年龄查询，可能是查询某个范围的，我们就要放到后面。</p>
+<h3 id="避免多个范围查询">避免多个范围查询</h3><p>使用in来代替多范围查询</p>
+<h3 id="优化排序">优化排序</h3><p>对于选择性非常低的列，可以添加一些特殊的索引进行排序。<br>例如sex进行排序时，可以使用(sex,rating)索引进行排序。<br>select <cols> from table where sex=’M’ order by rating ;</cols></p>
 <p>PS:本文总结来自《mysql高性能》一书</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci8wue17w001ah8go8ue8c4dy" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci8yal4ga001azcgojr2f85tp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/index/">index</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -215,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci8wue17t0016h8govazwfr3m" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci8yal4g50016zcgo53ze0gha" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -323,7 +331,7 @@ order by 4, 5, 6;</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci8wue17o000zh8gow48dihyy" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci8yal4fv000zzcgo75ah3b50" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupby/">groupby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oralce/">oralce</a></li></ul>
