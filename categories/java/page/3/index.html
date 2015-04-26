@@ -65,6 +65,73 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/24/antlr4-core-notation/" class="article-date">
+  <time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/antlr4-core-notation/">antlr4-核心符号（二）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/QQ截图20140824182207.png" alt=""></p>
+<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
+<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
+<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
+</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
+<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
+(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
+</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
+<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
+stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
+</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
+<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
+<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
+<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
+<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
+</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
+<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
+ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
+<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
+<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
+</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
+<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
+classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/24/antlr4-core-notation/" data-id="ci8yaocsw0050jwgoucqjd5h0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/08/24/antlr4-start/" class="article-date">
@@ -124,7 +191,7 @@ $ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/24/antlr4-start/" data-id="ci8yal4k9004gzcgoo7s5w7e4" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/08/24/antlr4-start/" data-id="ci8yaocs5004gjwgojx4ji654" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -172,7 +239,7 @@ $ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/10/jdbc/" data-id="ci8yal4ic002xzcgo3svlia4p" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/08/10/jdbc/" data-id="ci8yaocpl002xjwgoz0njwbsh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jdbc/">jdbc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
@@ -397,7 +464,7 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/09/int/" data-id="ci8yal4iu0038zcgo81bvx9t5" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/08/09/int/" data-id="ci8yaocqt0038jwgonxixottm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jdk/">jdk</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
@@ -484,10 +551,120 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx1/" data-id="ci8yal4fm000qzcgo2jukcx56" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx1/" data-id="ci8yaocmm000qjwgo1ku19jbu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/09/spring-tx2/" class="article-date">
+  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/spring-tx2/">spring事务原理2-隔离级别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>spring提供了5种事务的隔离级别：</p>
+<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
+<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
+<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
+<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
+<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx2/" data-id="ci8yaocmh000mjwgob5jaxaq5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/09/spring-aop1/" class="article-date">
+  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/spring-aop1/">spring aop</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
+<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
+<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
+
+}
+
+public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
+    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+
+}
+
+public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
+    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+}
+</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
+<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
+        
+          <p class="article-more-link">
+            <a href="/2014/06/09/spring-aop1/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-aop1/" data-id="ci8yaocmt000ujwgo5i8iatx1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aop/">aop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
 
     </footer>
   </div>
@@ -557,120 +734,10 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx3/" data-id="ci8yal4f9000gzcgoluwd8ti9" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx3/" data-id="ci8yaocmc000gjwgo5cnc04ws" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/06/09/spring-tx2/" class="article-date">
-  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/spring-tx2/">spring事务原理2-隔离级别</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>spring提供了5种事务的隔离级别：</p>
-<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
-<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
-<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
-<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
-<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx2/" data-id="ci8yal4fi000mzcgoebzwhqwz" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/06/09/spring-aop1/" class="article-date">
-  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/spring-aop1/">spring aop</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
-<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
-<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
-
-}
-
-public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
-    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-
-}
-
-public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
-    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-}
-</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
-<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
-        
-          <p class="article-more-link">
-            <a href="/2014/06/09/spring-aop1/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-aop1/" data-id="ci8yal4fq000uzcgocn7bef1n" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aop/">aop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
 
     </footer>
   </div>
@@ -763,7 +830,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/08/mondrian-ext-Cal/" data-id="ci8yal4hv002fzcgoo3r61iec" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/08/mondrian-ext-Cal/" data-id="ci8yaocow002fjwgo2qcmek5f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -808,7 +875,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/21/exception-idea/" data-id="ci8yal4ji003szcgocopfazsl" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/21/exception-idea/" data-id="ci8yaocrh003sjwgoem47vxhk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li></ul>
@@ -833,7 +900,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">29</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">30</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -842,7 +909,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -851,7 +918,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 10px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -860,7 +927,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -870,6 +937,10 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/04/26/java-string/">String字符串小结</a>
+          </li>
         
           <li>
             <a href="/2015/04/25/collection-total/">collection total</a>
@@ -885,10 +956,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
         
           <li>
             <a href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
           </li>
         
       </ul>

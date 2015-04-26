@@ -65,6 +65,147 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/02/mondrian-source-code-7/" class="article-date">
+  <time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在前面几节中我们了解了cube的创建和query的创建。有了这2样东西后，我们就可以开始执行mdx语句了。在第二小节中，我们了解了mdx的执行顺序。</p>
+<ol>
+<li>先执行from，即表示从哪个cube中获取结果。</li>
+<li>再执行where，with和axis，即获取member阶段。</li>
+<li>有了所有依赖的成员后，最后执行Cell的值。</li>
+</ol>
+<p>cube的创建已经在前一节中讲过了，接着是member获取阶段，由于这一阶段分为3部分，内容比较多。所以下面我们先将member是如何读取的，后几节再介绍它的执行过程。</p>
+<h2 id="MemberSource">MemberSource</h2><p>所有对成员的读取操作都是通过MemberSource来完成的。<br>MemberSource基本功能就是是读取层次的成员操作。<br>我们看下它的基本接口：</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MemberSource</span> </span>{
+
+    <span class="function">RolapHierarchy <span class="title">getHierarchy</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">setCache</span><span class="params">(MemberCache cache)</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembers</span><span class="params">()</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getRootMembers</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        RolapMember parentMember,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getMemberCount</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">lookupMember</span><span class="params">(
+        List&lt;Id.Segment&gt; uniqueNameParts,
+        <span class="keyword">boolean</span> failIfNotFound)</span></span>;
+}    
+</code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
+<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
+<pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
+
+    <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
+
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level)</span></span>;
+
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberRange</span><span class="params">(
+        RolapLevel level,
+        RolapMember startMember,
+        RolapMember endMember,
+        List&lt;RolapMember&gt; list)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(
+        RolapMember m1,
+        RolapMember m2,
+        <span class="keyword">boolean</span> siblingsAreEqual)</span></span>;
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        RolapMember member,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level,
+        TupleConstraint constraint)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getLevelMemberCount</span><span class="params">(RolapLevel level)</span></span>;
+
+    <span class="function">MemberBuilder <span class="title">getMemberBuilder</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getDefaultMember</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberParent</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">substitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">desubstitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberByKey</span><span class="params">(
+        RolapLevel level,
+        List&lt;Comparable&gt; keyValues)</span></span>;
+}
+</code></pre><p>从上面大家发现没，MemberReader更细化功能，它可以获取到Level上的成员，也可以获取成员的父成员或者成员的子成员，并且在获取成员的时候可以添加约束条件。有了这些功能，我们就可以任意的获取成员了，所以MemberReader是成员获取的主接口。</p>
+<h2 id="具体实现">具体实现</h2><h3 id="SmartMemberReader">SmartMemberReader</h3><p>SmartMemberReader实现了MemberReader接口，它实现了维度成员及其子成员的缓存，如果有一个成员位于缓存中，则还会有一个其子成员的列表。它同时缓存了level下的成员们。该类主要的成员有：</p>
+<ul>
+<li>source：MemberReader，用于实际从数据库中读取维度成员值。</li>
+<li>mapMemberToChildren：map，实现成员及其子成员的映射， key为RolapMember，value为List<rolapmember>。</rolapmember></li>
+<li>mapKeyToMember： map ，实现所有成员的缓存，其中的key为MmberKey</li>
+<li>mapLevelToMembers: map，实现级别及其所有成员的映射， key为RolapLevel，value为List<rolapmember>。</rolapmember></li>
+</ul>
+<h3 id="SqlMemberSource">SqlMemberSource</h3><p>SqlMemberSource是最终更数据库打交道的类，它会针对要查询对Level生成一个sql，该sql最终通过数据库执行，将查询结果返回后拼装成member。需要注意的一点是，如果该member有parentmember，必须要生成其对应的parentmember。生成过程即先递归的在level中查找其上一级level的member是否缓存，如果没有缓存，则将其加入查询列表中，直到上一级为空或缓存了member。找到所有要查询的level后，最后一次性生成sql向数据库查询数据。</p>
+<p>SmartMemberReader的source其实为mondrian.rolap.SqlMemberSource类，该类中反过来又存储了SmartMemberReader对象，作为其cache成员属性。成员读取过程：</p>
+<ol>
+<li>smartMemberReader.getMemberChildren(parentMembers,children,constrain);</li>
+<li>最终通过source.getMemberChildren()…，其中反过来会把找到的children赋予mapKeyToMember。</li>
+<li>最终除了将结果返回在children输出参数中，同时也对mapMemberToChildren赋值了。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci8yaocnq001rjwgofq48i5bg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/26/mondrian-source-code-6/" class="article-date">
@@ -133,7 +274,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci8yal4h3001uzcgohx4m90jr" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci8yaocnt001ujwgo91qpvtrr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -183,7 +324,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci8yal4h6001xzcgogudnd5dm" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci8yaocnw001xjwgo76jyg4ex" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -249,7 +390,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci8yal4h90020zcgowebmuqxh" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci8yaocnz0020jwgona4c3itn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -298,7 +439,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci8yal4hc0023zcgobtxkwxfn" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci8yaoco50023jwgoftfr9sqy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -347,7 +488,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci8yal4hk0026zcgoq0wvdyha" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci8yaocod0026jwgowzgtr2ck" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -396,7 +537,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci8yal4hp0029zcgoaondnhtz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci8yaocok0029jwgorohr0tln" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -593,7 +734,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci8yal4k7004dzcgo63zl62z6" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci8yaocs3004djwgohtsub6ux" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -638,7 +779,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci8yal4kh004mzcgo225by1rm" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci8yaocsa004mjwgorazn0hy8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -705,148 +846,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci8yal4k4004azcgoy4td3jwk" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/09/01/antlr4-exception/" class="article-date">
-  <time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/antlr4-exception/">antlr4-异常处理（八）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>antlr4的异常处理机制很简单，下面我们来具体看看</p>
-<h2 id="修改和重定向错误">修改和重定向错误</h2><p>默认情况下， antlr发送所有的错误到标准错误中，但是我们可以提供ANTERErrorListener接口的实现来改变错误的内容和目的地。<br>这个接口有一个syntaxError方法适用于词法和解析器。方法接收所有已排序的本地错误和消息错误。它也可以接收一个parser的引用，所以我们能够查询状态的识别。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> class UnderlineListener extends BaseErrorListener {
-<span class="keyword">public</span> <span class="keyword">void</span> syntaxError(Recognizer&lt;?, ?&gt; recognizer,
-            <span class="keyword">Object</span> offendingSymbol,
-            <span class="built_in">int</span> <span class="built_in">line</span>, <span class="built_in">int</span> charPositionInLine,
-            <span class="keyword">String</span> msg,
-            RecognitionException e)
-{
-    System.err.<span class="built_in">println</span>(<span class="string">"line "</span>+<span class="built_in">line</span>+<span class="string">":"</span>+charPositionInLine+<span class="string">" "</span>+msg);
-    underlineError(recognizer,(Token)offendingSymbol,
-                   <span class="built_in">line</span>, charPositionInLine);
-}
-
-<span class="keyword">protected</span> <span class="keyword">void</span> underlineError(Recognizer recognizer,
-                              Token offendingToken, <span class="built_in">int</span> <span class="built_in">line</span>,
-                              <span class="built_in">int</span> charPositionInLine) {
-    CommonTokenStream tokens =
-        (CommonTokenStream)recognizer.getInputStream();
-    <span class="keyword">String</span> input = tokens.getTokenSource().getInputStream().toString();
-    <span class="keyword">String</span>[] lines = input.<span class="built_in">split</span>(<span class="string">"\n"</span>);
-    <span class="keyword">String</span> errorLine = lines[<span class="built_in">line</span> - <span class="number">1</span>];
-    System.err.<span class="built_in">println</span>(errorLine);
-    <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;charPositionInLine; i++) System.err.<span class="built_in">print</span>(<span class="string">" "</span>);
-    <span class="built_in">int</span> start = offendingToken.getStartIndex();
-    <span class="built_in">int</span> stop = offendingToken.getStopIndex();
-    <span class="keyword">if</span> ( start&gt;=<span class="number">0</span> &amp;&amp; stop&gt;=<span class="number">0</span> ) {
-        <span class="keyword">for</span> (<span class="built_in">int</span> i=start; i&lt;=stop; i++) System.err.<span class="built_in">print</span>(<span class="string">"^"</span>);
-        }
-    System.err.<span class="built_in">println</span>();
-    }
-}
-
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception {
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(System.in);
-    SimpleLexer lexer = <span class="keyword">new</span> SimpleLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    SimpleParser parser = <span class="keyword">new</span> SimpleParser(tokens);
-    parser.removeErrorListeners(); <span class="comment">// remove ConsoleErrorListener</span>
-    parser.addErrorListener(<span class="keyword">new</span> UnderlineListener());
-    parser.prog();
-}
-</code></pre><h2 id="自动错误恢复">自动错误恢复</h2><p>错误恢复就是运行解析器在发现了一个词法错误后可以继续执行。原则上，最佳的错误恢复应该是我们手写的递归下沿的解析器。解析器执行单个token插入和单个token删除直到不符合的token错误被修正。如果没有，解析器吞掉tokens知道他发现一个token能够可理解的跟着当前的规则然后返回，继续直到所有的解析完。</p>
-<h3 id="捕获失败的语义预测">捕获失败的语义预测</h3><p>so easy!  当预测失败时，你可以使用这样的函数{…}?<fail={failed()}>来执行某些动作。</fail={failed()}></p>
-<pre><code><span class="attribute">vec4</span>: <span class="string">  '[' ints[4] ']' ;</span>
-
-<span class="mel">ints[<span class="keyword">int</span> <span class="keyword">max</span>]
-locals [<span class="keyword">int</span> i=<span class="number">1</span>]
-:   INT ( <span class="string">','</span> {<span class="variable">$i</span>++;} {<span class="variable">$i</span>&lt;=<span class="variable">$max</span>}?&lt;fail={<span class="string">"exceeded max "</span>+<span class="variable">$max</span>}&gt; INT )*
-;
-
-INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
-WS  :   [ \t\r\n]+ -&gt; skip ;</span>
-</code></pre><h2 id="错误的替代选择">错误的替代选择</h2><p>同样不解释了.</p>
-<pre><code>fcall
-:   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span>
-|   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span> <span class="string">')'</span> {notifyErrorListeners(<span class="string">"Too many parentheses"</span>);}
-|   ID <span class="string">'('</span> <span class="keyword">expr</span>         {notifyErrorListeners(<span class="string">"Missing closing ')'"</span>);}
-;
-</code></pre><h2 id="另一个可选的错误策略">另一个可选的错误策略</h2><p>有时候我们不想用默认的错误处理策略。第一，在运行期的时候，我们可能想要禁用一些内部的错误处理。第二，我们可能想要提示最开始的语法错误。<br>要查看错误处理策略，我们可以看一下ANTLRErrorStrategy接口的默认具体实现DefaultErrorStrategy。这个类处理了antlr4所有的错误处理行为。<br>从antlr生成的代码中我们也可以看到：</p>
-<pre><code>_errHandler.reportError(<span class="keyword">this</span>, re);
-_errHandler.recover(<span class="keyword">this</span>, re);
-</code></pre><p>另一种错误处理就是BailErrorStrategy处理策略，即遇到异常后自动抛出。我们只需要告诉parser使用这种策略即可。当然，我们也可以用我们自己的错误处理方式，只需要继承DefaultErrorStrategy即可。</p>
-<blockquote>
-<p>parser.setErrorHandler( new BailErrorStrategy());</p>
-</blockquote>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">BailErrorStrategy</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">DefaultErrorStrategy</span> {</span>
-<span class="comment">/** Instead of recovering from exception {@code e}, re-throw it wrapped
- *  in a {@link ParseCancellationException} so it is not caught by the
- *  rule function catches.  Use {@link Exception#getCause()} to get the
- *  original {@link RecognitionException}.
- */</span>
-<span class="annotation">@Override</span>
-public void recover(<span class="type">Parser</span> recognizer, <span class="type">RecognitionException</span> e) {
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover inline; if the parser
- *  successfully recovers, it won't throw an exception.
- */</span>
-<span class="annotation">@Override</span>
-public <span class="type">Token</span> recoverInline(<span class="type">Parser</span> recognizer)
-    <span class="keyword">throws</span> <span class="type">RecognitionException</span>
-{
-    <span class="type">InputMismatchException</span> e = <span class="keyword">new</span> <span class="type">InputMismatchException</span>(recognizer);
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover from problems in subrules. */</span>
-<span class="annotation">@Override</span>
-public void sync(<span class="type">Parser</span> recognizer) { }
-</code></pre>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-exception/" data-id="ci8yal4kq004vzcgo82f4sp8k" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci8yaocs0004ajwgo2o9eecql" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -860,7 +860,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 </section>
@@ -871,7 +871,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">29</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">30</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -880,7 +880,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -889,7 +889,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 10px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -898,7 +898,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -908,6 +908,10 @@ public void sync(<span class="type">Parser</span> recognizer) { }
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/04/26/java-string/">String字符串小结</a>
+          </li>
         
           <li>
             <a href="/2015/04/25/collection-total/">collection total</a>
@@ -923,10 +927,6 @@ public void sync(<span class="type">Parser</span> recognizer) { }
         
           <li>
             <a href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
           </li>
         
       </ul>

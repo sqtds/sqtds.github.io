@@ -65,6 +65,231 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-int" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/09/int/" class="article-date">
+  <time datetime="2014-08-09T07:30:12.000Z" itemprop="datePublished">8月 9 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/09/int/">int源码赏析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概要">概要</h3><p>今天突发好奇，想不明白string是如何转换为int的，于是翻开jdk的源码，收货挺大的。</p>
+<h3 id="parseInt(String_s)">parseInt(String s)</h3><p>首先我们看parseInt这个方法，看下图，它又调用了parseInt(String s, int radix)，这个方法才是String转换成int的主要过程。这个方法比较有趣，我们来一一分析它的实现机制。</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s) throws <span class="type">NumberFormatException</span> {
+        //此处表示s默认为<span class="number">10</span>进制
+        <span class="keyword">return</span> parseInt(s,<span class="number">10</span>);
+}
+
+//radix为s的进制格式，不能大于<span class="number">36</span>也不能小于<span class="number">2</span>，即最小为<span class="number">2</span>进制，最大为<span class="number">36</span>进制，<span class="number">36</span>进制的得来是<span class="number">10</span>个数字加<span class="number">26</span>个字母
+//例如，parseInt(<span class="string">"Kona"</span>, <span class="number">27</span>) returns <span class="number">411787</span>
+public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s, <span class="type">int</span> radix)
+            throws <span class="type">NumberFormatException</span>
+{
+    /*
+     * <span class="type">WARNING</span>: <span class="type">This</span> <span class="keyword">method</span> may be invoked early during <span class="type">VM</span> initialization
+     * before <span class="type">IntegerCache</span> <span class="keyword">is</span> initialized. <span class="type">Care</span> must be taken to <span class="keyword">not</span> use
+     * the valueOf <span class="keyword">method</span>.
+     */
+
+    <span class="keyword">if</span> (s == null) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"null"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &lt; <span class="type">Character</span>.<span class="type">MIN_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" less than Character.MIN_RADIX"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &gt; <span class="type">Character</span>.<span class="type">MAX_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" greater than Character.MAX_RADIX"</span>);
+    }
+
+    <span class="type">int</span> <span class="literal">result</span> = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">int</span> i = <span class="number">0</span>, len = s.length();
+    //统一转成负号进行处理，不会出现溢出现象
+    <span class="type">int</span> limit = -<span class="type">Integer</span>.<span class="type">MAX_VALUE</span>;
+    <span class="type">int</span> multmin;
+    <span class="type">int</span> digit;
+
+    <span class="keyword">if</span> (len &gt; <span class="number">0</span>) {
+        <span class="type">char</span> firstChar = s.charAt(<span class="number">0</span>);
+        <span class="keyword">if</span> (firstChar &lt; '<span class="number">0</span>') { // <span class="type">Possible</span> leading <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+            <span class="keyword">if</span> (firstChar == '-') {
+                negative = <span class="literal">true</span>;
+                limit = <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>;
+            } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar != '+')
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+
+            <span class="keyword">if</span> (len == <span class="number">1</span>) // <span class="type">Cannot</span> have lone <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            i++;
+        }
+        multmin = limit / radix;
+        <span class="keyword">while</span> (i &lt; len) {
+            // <span class="type">Accumulating</span> negatively avoids surprises near <span class="type">MAX_VALUE</span>
+            //拿到第i个数字并且格式化成<span class="number">10</span>进制
+            digit = <span class="type">Character</span>.digit(s.charAt(i++),radix);
+            <span class="keyword">if</span> (digit &lt; <span class="number">0</span>) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; multmin) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="literal">result</span> *= radix;
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; limit + digit) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            //使用负号进行计算 , -<span class="number">20</span>-<span class="number">3</span>=-<span class="number">23</span>
+            <span class="literal">result</span> -= digit;
+        }
+    } <span class="keyword">else</span> {
+        throw <span class="type">NumberFormatException</span>.forInputString(s);
+    }
+    <span class="keyword">return</span> negative ? <span class="literal">result</span> : -<span class="literal">result</span>;
+}
+</code></pre><hr>
+<h3 id="Integer_decode(String_nm)">Integer decode(String nm)</h3><p>转换8进制，16进制，10进制到10进制</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">Integer</span> decode(<span class="type">String</span> nm) throws <span class="type">NumberFormatException</span> {
+    <span class="type">int</span> radix = <span class="number">10</span>;
+    <span class="type">int</span> index = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">Integer</span> <span class="literal">result</span>;
+
+    <span class="keyword">if</span> (nm.length() == <span class="number">0</span>)
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Zero length string"</span>);
+    <span class="type">char</span> firstChar = nm.charAt(<span class="number">0</span>);
+    // <span class="type">Handle</span> sign, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (firstChar == '-') {
+        negative = <span class="literal">true</span>;
+        index++;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar == '+')
+        index++;
+
+    // <span class="type">Handle</span> radix specifier, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"0x"</span>, index) || nm.startsWith(<span class="string">"0X"</span>, index)) {
+        index += <span class="number">2</span>;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"#"</span>, index)) {
+        index ++;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"0"</span>, index) &amp;&amp; nm.length() &gt; <span class="number">1</span> + index) {
+        index ++;
+        radix = <span class="number">8</span>;
+    }
+
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"-"</span>, index) || nm.startsWith(<span class="string">"+"</span>, index))
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Sign character in wrong position"</span>);
+
+    <span class="keyword">try</span> {
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(nm.substring(index), radix);
+        <span class="literal">result</span> = negative ? <span class="type">Integer</span>.valueOf(-<span class="literal">result</span>.intValue()) : <span class="literal">result</span>;
+    } catch (<span class="type">NumberFormatException</span> e) {
+        // <span class="type">If</span> number <span class="keyword">is</span> <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>, we'll <span class="keyword">end</span> up here. <span class="type">The</span> next line
+        // handles this <span class="keyword">case</span>, <span class="keyword">and</span> causes <span class="type">any</span> genuine format error to be
+        // rethrown.
+        <span class="type">String</span> constant = negative ? (<span class="string">"-"</span> + nm.substring(index))
+                                   : nm.substring(index);
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(constant, radix);
+    }
+    <span class="keyword">return</span> <span class="literal">result</span>;
+}
+</code></pre><h3 id="String_toString(int_i,_int_radix)">String toString(int i, int radix)</h3><pre><code><span class="keyword">public</span> static String toString(<span class="built_in">int</span> i, <span class="built_in">int</span> <span class="built_in">radix</span>) {
+
+    <span class="keyword">if</span> (<span class="built_in">radix</span> &lt; <span class="type">Character</span>.MIN_RADIX || <span class="built_in">radix</span> &gt; <span class="type">Character</span>.MAX_RADIX)
+        <span class="built_in">radix</span> = <span class="number">10</span>;
+
+    /* <span class="keyword">Use</span> the faster version */
+    <span class="keyword">if</span> (<span class="built_in">radix</span> == <span class="number">10</span>) {
+        <span class="keyword">return</span> toString(i);
+    }
+
+    <span class="built_in">char</span> buf[] = new <span class="built_in">char</span>[<span class="number">33</span>];
+    boolean negative = (i &lt; <span class="number">0</span>);
+    <span class="built_in">int</span> charPos = <span class="number">32</span>;
+
+    //如果非负数，转成负数
+    <span class="keyword">if</span> (<span class="comment">!negative) {</span>
+        i = -i;
+    }
+
+    /**  <span class="number">12</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">6</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">3</span>|<span class="number">2</span> ..<span class="number">.1</span>
+    *     <span class="number">1</span>|<span class="number">2</span> ..<span class="number">.1</span>      
+    *    类似这种除法...
+     **/
+    <span class="keyword">while</span> (i &lt;= -<span class="built_in">radix</span>) {
+        buf[charPos--] = <span class="built_in">digits</span>[-(i % <span class="built_in">radix</span>)];
+        i = i / <span class="built_in">radix</span>;
+    }
+    buf[charPos] = <span class="built_in">digits</span>[-i];
+
+    <span class="keyword">if</span> (negative) {
+        buf[--charPos] = <span class="string">'-'</span>;
+    }
+
+    <span class="keyword">return</span> new String(buf, charPos, (<span class="number">33</span> - charPos));
+}
+</code></pre><hr>
+<h3 id="Integer_valueOf(String_s)">Integer valueOf(String s)</h3><p>valueOf有点特殊，他缓存了-128到127的值，所以数字在此范围内都是取的同一个对象。<br>与其类似的还有</p>
+<ul>
+<li>Boolean：(全部缓存)</li>
+<li>Byte：(全部缓存)</li>
+<li>Character(&lt;= 127缓存)</li>
+<li>Short(-128 — 127缓存)</li>
+<li>Integer(-128 — 127缓存)</li>
+<li>Long(-128 — 127缓存)</li>
+<li>Float(没有缓存)</li>
+<li>Doulbe(没有缓存)</li>
+</ul>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException </span>{
+    <span class="keyword">return</span> Integer.valueOf(parseInt(s, <span class="number">10</span>));
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>{
+    <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;
+    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
+        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];
+    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);
+}
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/08/09/int/" data-id="ci8yaocqt0038jwgonxixottm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jdk/">jdk</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-linuxcommand" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/06/14/linuxcommand/" class="article-date">
@@ -105,7 +330,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/14/linuxcommand/" data-id="ci8yal4i3002pzcgoj457ir19" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/14/linuxcommand/" data-id="ci8yaocp9002pjwgo7w3os2ve" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -117,9 +342,9 @@
 
 
   
-    <article id="post-spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/06/09/spring-aop1/" class="article-date">
+    <a href="/2014/06/09/spring-tx3/" class="article-date">
   <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
 </a>
     
@@ -135,7 +360,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/spring-aop1/">spring aop</a>
+      <a class="article-title" href="/2014/06/09/spring-tx3/">spring事务原理3-事务的传播行为</a>
     </h1>
   
 
@@ -143,34 +368,93 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
-<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
-<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
 
-}
-
-public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
-    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-
-}
-
-public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
-    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-}
-</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
-<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
-        
-          <p class="article-more-link">
-            <a href="/2014/06/09/spring-aop1/#more">Read More</a>
-          </p>
-        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-aop1/" data-id="ci8yal4fq000uzcgocn7bef1n" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx3/" data-id="ci8yaocmc000gjwgo5cnc04ws" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aop/">aop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/09/spring-tx2/" class="article-date">
+  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/spring-tx2/">spring事务原理2-隔离级别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>spring提供了5种事务的隔离级别：</p>
+<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
+<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
+<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
+<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
+<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx2/" data-id="ci8yaocmh000mjwgob5jaxaq5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
 
     </footer>
   </div>
@@ -254,7 +538,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx1/" data-id="ci8yal4fm000qzcgo2jukcx56" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx1/" data-id="ci8yaocmm000qjwgo1ku19jbu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
@@ -266,9 +550,9 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 
 
   
-    <article id="post-spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/06/09/spring-tx2/" class="article-date">
+    <a href="/2014/06/09/spring-aop1/" class="article-date">
   <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
 </a>
     
@@ -284,7 +568,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/spring-tx2/">spring事务原理2-隔离级别</a>
+      <a class="article-title" href="/2014/06/09/spring-aop1/">spring aop</a>
     </h1>
   
 
@@ -292,20 +576,34 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>spring提供了5种事务的隔离级别：</p>
-<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
-<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
-<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
-<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
-<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
+        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
+<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
+<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
 
+}
+
+public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
+    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+
+}
+
+public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
+    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+}
+</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
+<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
+        
+          <p class="article-more-link">
+            <a href="/2014/06/09/spring-aop1/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx2/" data-id="ci8yal4fi000mzcgoebzwhqwz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/09/spring-aop1/" data-id="ci8yaocmt000ujwgo5i8iatx1" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aop/">aop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
 
     </footer>
   </div>
@@ -314,14 +612,14 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 
 
   
-    <article id="post-spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014plan" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/06/09/spring-tx3/" class="article-date">
-  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+    <a href="/2014/06/08/2014plan/" class="article-date">
+  <time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
+    <a class="article-category-link" href="/categories/其他/">其他</a>
   </div>
 
   </div>
@@ -332,7 +630,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/spring-tx3/">spring事务原理3-事务的传播行为</a>
+      <a class="article-title" href="/2014/06/08/2014plan/">2014年下半年计划</a>
     </h1>
   
 
@@ -340,45 +638,57 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
-<ul>
-<li>PROPAGATION_REQUIRED</li>
+        <p>2014年已经过去一半了,感觉什么事也没做。<br>上半年买的书都还有大半没看完，进度太慢了。发现再这样下去还是不行的，必须要给自己一点压力，让自己成长起来。so,so,so制定下下半年的计划，不能再这样继续荒废时间了：</p>
+<h3 id="plan1：_读书">plan1： 读书</h3><ul>
+<li><p>《java性能优化》</p>
+<p> 根据书上的性能优化措施,看完了至少能将公司的项目提升一个层次。</p>
+</li>
+<li><p>《android4高级编程》</p>
+<p>希望能上架自己的1,2个小应用，暂时还没想好做什么。</p>
+</li>
+<li><p>《数据挖掘》《深入浅出数据分析》《大数据》《大规模分布式存储系统》</p>
+<p>想办法做好公司的BI系统吧。</p>
+</li>
+<li><p>《大型网站系统与java中间件架构实践》《大型网站技术架构》《软件架构设计》</p>
+<p>要多练练架构才好，不过这些书讲的太过空泛了。</p>
+</li>
+<li><p>《深入理解计算机系统》《计算机程序的构造和解释》《代码大全》</p>
+<p>底层也要多了解了解才好。</p>
+</li>
 </ul>
-<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/QQ图片20140609223017.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_SUPPORTS</li>
+<h3 id="plan2：_分析开源框架">plan2： 分析开源框架</h3><ul>
+<li>spring</li>
 </ul>
-<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<p>感觉对spring的理解还是比较欠缺，下半年努力把spring的方方面面都理解清楚吧。</p>
 <ul>
-<li>PROPAGATION_MANDATORY </li>
+<li>网络，并发</li>
 </ul>
-<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<p>netty，concurrent包，这两部分也是需要继续研究的。</p>
 <ul>
-<li>PROPAGATION_REQUIRES_NEW</li>
+<li>大数据</li>
 </ul>
-<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/QQ图片20140609223105.jpg" alt=""></p>
+<p>如果还有精力的话，就研究hadoop的代码吧。</p>
+<h3 id="plan3：_锻炼">plan3： 锻炼</h3><ul>
+<li><p>每周必须要跑一次步</p>
+</li>
+<li><p>计划一次爬山</p>
+</li>
+<li><p>每天至少3分钟平板支撑</p>
+</li>
+</ul>
+<h3 id="plan4：_赚钱">plan4： 赚钱</h3><p>没钱的屌丝，要想办法赚钱呀。</p>
 <ul>
-<li>PROPAGATION_NOT_SUPPORTED</li>
+<li>炒股</li>
 </ul>
-<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
-<ul>
-<li>PROPAGATION_NEVER</li>
-</ul>
-<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
-<ul>
-<li>PROPAGATION_NESTED</li>
-</ul>
-<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/QQ图片20140609223801.jpg" alt=""></p>
-<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
-<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
+<p>炒股就是博弈，人生要敢于冒风险。希望自己的资产能够在过年的时候上涨10%。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/spring-tx3/" data-id="ci8yal4f9000gzcgoluwd8ti9" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/08/2014plan/" data-id="ci8yaocki0000jwgovpq10woo" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/plan/">plan</a></li></ul>
 
     </footer>
   </div>
@@ -471,95 +781,10 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/08/mondrian-ext-Cal/" data-id="ci8yal4hv002fzcgoo3r61iec" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/08/mondrian-ext-Cal/" data-id="ci8yaocow002fjwgo2qcmek5f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-2014plan" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/06/08/2014plan/" class="article-date">
-  <time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/其他/">其他</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/08/2014plan/">2014年下半年计划</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2014年已经过去一半了,感觉什么事也没做。<br>上半年买的书都还有大半没看完，进度太慢了。发现再这样下去还是不行的，必须要给自己一点压力，让自己成长起来。so,so,so制定下下半年的计划，不能再这样继续荒废时间了：</p>
-<h3 id="plan1：_读书">plan1： 读书</h3><ul>
-<li><p>《java性能优化》</p>
-<p> 根据书上的性能优化措施,看完了至少能将公司的项目提升一个层次。</p>
-</li>
-<li><p>《android4高级编程》</p>
-<p>希望能上架自己的1,2个小应用，暂时还没想好做什么。</p>
-</li>
-<li><p>《数据挖掘》《深入浅出数据分析》《大数据》《大规模分布式存储系统》</p>
-<p>想办法做好公司的BI系统吧。</p>
-</li>
-<li><p>《大型网站系统与java中间件架构实践》《大型网站技术架构》《软件架构设计》</p>
-<p>要多练练架构才好，不过这些书讲的太过空泛了。</p>
-</li>
-<li><p>《深入理解计算机系统》《计算机程序的构造和解释》《代码大全》</p>
-<p>底层也要多了解了解才好。</p>
-</li>
-</ul>
-<h3 id="plan2：_分析开源框架">plan2： 分析开源框架</h3><ul>
-<li>spring</li>
-</ul>
-<p>感觉对spring的理解还是比较欠缺，下半年努力把spring的方方面面都理解清楚吧。</p>
-<ul>
-<li>网络，并发</li>
-</ul>
-<p>netty，concurrent包，这两部分也是需要继续研究的。</p>
-<ul>
-<li>大数据</li>
-</ul>
-<p>如果还有精力的话，就研究hadoop的代码吧。</p>
-<h3 id="plan3：_锻炼">plan3： 锻炼</h3><ul>
-<li><p>每周必须要跑一次步</p>
-</li>
-<li><p>计划一次爬山</p>
-</li>
-<li><p>每天至少3分钟平板支撑</p>
-</li>
-</ul>
-<h3 id="plan4：_赚钱">plan4： 赚钱</h3><p>没钱的屌丝，要想办法赚钱呀。</p>
-<ul>
-<li>炒股</li>
-</ul>
-<p>炒股就是博弈，人生要敢于冒风险。希望自己的资产能够在过年的时候上涨10%。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/08/2014plan/" data-id="ci8yal4e00000zcgo9ykj2o7u" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/plan/">plan</a></li></ul>
 
     </footer>
   </div>
@@ -606,7 +831,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/02/linux环境变量加载顺序/" data-id="ci8yal4hy002izcgoo546c698" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/06/02/linux环境变量加载顺序/" data-id="ci8yaocp0002ijwgoco9afw48" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/环境变量/">环境变量</a></li></ul>
@@ -680,72 +905,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/25/Activity生命周期/" data-id="ci8yal4la0059zcgos8pqsh4a" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-intent" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/05/25/intent/" class="article-date">
-  <time datetime="2014-05-25T10:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/android/">android</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/25/intent/">Intent和Broadcast Receiver</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Intent简介">Intent简介</h2><p>Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：</p>
-<ul>
-<li>使用类名显示启动一个特定的Service或Activity</li>
-<li>启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。</li>
-<li>广播某个事件的发生。</li>
-</ul>
-<h3 id="使用Intent来启动Activity">使用Intent来启动Activity</h3><p>显示：</p>
-<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Intent</span> <span class="type">intent</span> = new <span class="type">Intent</span>(MyActivity.this, MyOtherActivity.<span class="keyword">class</span>);</span><br><span class="line">startActivity(<span class="type">intent</span>);</span><br></pre></td></tr></table></figure>
-<p>隐式：<br>隐式的Intent提供了一种机制，可以让匿名的应用程序组件响应动作请求。这意味着可以要求系统启动一个可执行给定动作的Activity，而不必知道需要启动哪个应用程序或Activity。</p>
-<p>例如：如果希望用户从应用程序中打电话，可以实现一个新的拨号程序，也可以使用一个隐式的Intent来请求一个在电话号码（表示为一个URI）上执行动作（拨号）。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(somethingWeird&amp;&amp;itDontLookGood)&#123;</span><br><span class="line">	<span class="type">Intent</span> <span class="type">intent</span> = </span><br><span class="line">      new <span class="type">Intent</span> (<span class="type">Intent</span>.Action_DLL,Uri.parse(<span class="string">"tel:555-2368"</span>));</span><br><span class="line">	startActivity(<span class="type">intent</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Android就会解析这个Intent，并启动一个新的Activity，该Activity会提供对这个电话号码进行拨号的动作—-在这种情况下，通常是Phone Dialer.</p>
-<h2 id="Linfify简介">Linfify简介</h2><p>Linkify是一个辅助类，它会自动地在TextView类（或者TextView的派生类）中通过RegEx模型匹配来创建超链接。</p>
-<p>那些匹配一个指定的RegEx模式的文本都将会被转换为一个可以单击的超链接，这些超链接可以隐式使用匹配的文本作为目标URI来触发startActivity（new Intent(Intent.ACTION_VIEW，uri)）。</p>
-<h3 id="原生Linkify链接类型">原生Linkify链接类型</h3><p>Linkify类有一些预设值可以检测到Web URL，电子邮件地址和电话号码，并把他们转换为链接。要应用一个预设值，需要使用静态的Linkify.addLinks方法，并传入要建立的链接的视图，以及以下的一个活更多个自描述的Linkify类常量的位掩码:WEB_URLS，EMAIL_ADDRESS,PHONE_NUMBERS和ALL。</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextView textView = (TextView)findViewById(R.id.myTextView);</span><br><span class="line">Linkify.addLinks(textView,Linkify.WEB_URLS<span class="string">|Linkify.EMAIL_ADDRESSES);</span></span><br></pre></td></tr></table></figure>
-<p>也可以使用Android:autoLink属性来在一个布局内部链接视图。<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	android:<span class="variable">layout_width =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">layout_height =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">text =</span> <span class="string">"@string/linkify_name"</span></span><br><span class="line">	android:<span class="variable">autoLink =</span> <span class="string">"phone|email"</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
-<h3 id="创建定制的链接字符串">创建定制的链接字符串</h3><h3 id="使用Match_Filter">使用Match Filter</h3><h3 id="使用Transform_Filter">使用Transform Filter</h3><p>Transform Filter 允许修改匹配的链接文本生成的隐式URI。把链接文本和目标URI分离开，你能够更自由的决定如何把数据字符串显示给用户。</p>
-<h2 id="使用Intent广播事件">使用Intent广播事件</h2><p>作为一个系统级的消息传递机制，Intent可以在进程之间发送结构化的消息。因此，可以通过实现Broadcast Receiver来监听和响应应用程序内的这些Broadcast Intent。</p>
-<p>Broadcast Intent 用于向监听器通知系统的应用程序或应用事件，从而可以扩展应用程序间的事件驱动的编程模型。</p>
-<p>Broadcast Intent 可以是应用程序更加开发：通过使用Intent来广播一个事件，可以在不用修改原始应用程序的情况下，让你和第三方开发人员对事件做出反应。在应用程序中，可以通过监听Broadcast Intent来对设备状态变化和第三方应用程序事件做出反应。</p>
-<h3 id="使用_Intent广播事件">使用 Intent广播事件</h3><p>在应用程序组件中，可以构建希望广播的Intent，然后使用sendBroadcast方法来发送它。</p>
-<p>可以对Intent的动作，数据和分类进行设置，从而使Broadcast Receiver能够精确的确定他们的需求。</p>
-<h3 id="使用Broadcast_Receiver来监听广播">使用Broadcast Receiver来监听广播</h3><p>Broadcast Receiver可以用来监听Broadcast Intent。要使Broadcast Receiver 能够接受广播，就需要对其进行注册，即可以使用代码，也可以在应用程序的manifest文件中注册。无论怎么注册，都要使用一个Intent Filter来指定它要监听哪些Intent和数据。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/25/intent/" data-id="ci8yal4in0033zcgoelhqycdo" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/25/Activity生命周期/" data-id="ci8yaocta0059jwgoafd3dgdj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -759,7 +919,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 </section>
@@ -770,7 +930,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">29</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">30</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -779,7 +939,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -788,7 +948,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 10px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -797,7 +957,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -807,6 +967,10 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/04/26/java-string/">String字符串小结</a>
+          </li>
         
           <li>
             <a href="/2015/04/25/collection-total/">collection total</a>
@@ -822,10 +986,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
         
           <li>
             <a href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
           </li>
         
       </ul>
