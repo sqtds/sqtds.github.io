@@ -65,6 +65,188 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-oracle-group-by" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/31/oracle-group-by/" class="article-date">
+  <time datetime="2015-03-31T09:45:27.000Z" itemprop="datePublished">3月 31 2015</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/31/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
+<h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用group by rollup(A,B,C)，首先会对(A、B、C)进行GROUP BY，然后对(A、B)进行GROUP BY，然后是(A)进行GROUP BY，最后对全表进行GROUP BY操作。roll up的意思是“卷起”，这也可以帮助我们理解group by rollup就是对选择的列从右到左以一次少一列的方式进行grouping直到所有列都去掉后的grouping(也就是全表grouping)，对于n个参数的rollup，有n+1次的grouping。以下2个sql的结果集是一样的：</p>
+<p><code>Select A,B,C,sum(E) from test group by rollup(A,B,C)</code><br>与</p>
+<p><code>Select A,B,C,sum(E) from test group by A,B,C
+union all
+Select A,B,null,sum(E) from test group by A,B
+union all
+Select A,null,null,sum(E) from test group by A
+union all
+Select null,null,null,sum(E) from test</code></p>
+<h2 id="2_cube">2 cube</h2><p>cube的意思是立方，对cube的每个参数，都可以理解为取值为参与grouping和不参与grouping两个值的一个维度，然后所有维度取值组合的集合就是grouping的集合，对于n个参数的cube，有2^n次的grouping。如果使用group by cube(A,B,C),，则首先会对(A、B、C)进行GROUP BY，然后依次是(A、B)，(A、C)，(A)，(B、C)，(B)，(C)，最后对全表进行GROUP BY操作，一共是2^3=8次grouping。同rollup一样，也可以用基本的group by加上结果集的union all写出一个与group by cube结果集相同的sql：<br><code>Select A,B,C,sum(E) from test group by cube(A,B,C);</code><br>与<br><code>Select A,B,C,sum(E) from test group by A,B,C
+union all
+Select A,B,null,sum(E) from test group by A,B
+union all
+Select A,null,C,sum(E) from test group by A,C
+union all
+Select A,null,null,sum(E) from test group by A
+union all
+Select null,B,C,sum(E) from test group by B,C
+union all
+Select null,B,null,sum(E) from test group by B
+union all
+Select null,null,C,sum(E) from test group by C
+union all
+Select null,null,null,sum(E) from test;</code></p>
+<h2 id="3_grouping_sets">3 grouping sets</h2><p>grouping sets就是对参数中的每个参数做grouping，也就是有几个参数做几次grouping,例如使用<code>group by grouping sets(A,B,C)</code>，则对(A),(B),(C)进行group by，如果使用<code>group by grouping sets((A,B),C)</code>,则对(A,B),(C)进行group by。甚至<code>grouping by grouping set(A,A)</code>都是语法允许的，也就是对(A)进行2次group by,grouping sets的参数允许重复</p>
+<h2 id="4_总结">4 总结</h2><ul>
+<li>rollup        (N+1个分组方案)</li>
+<li>cube         (2^N个分组方案)</li>
+<li>grouping sets (自定义罗列出分组方案)</li>
+</ul>
+<hr>
+<h2 id="5_注意点">5 注意点</h2><h3 id="5-1_机制不同">5.1 机制不同</h3><p>在rollup和cube的说明中分别给出了用基本group by加结果集union all给出了结果集相同的sql，但这只是为了理解的方便而给出的sql，并不说明rollup和cube与基本group by加结果集union all等价。实际上两者的内部机制是安全不一样的，前者除了写法简洁以外，运行时不需多次扫描表，效率远比后者高。</p>
+<h3 id="5-2_集合可运算">5.2 集合可运算</h3><p>3种扩展用法的参数可以是源表中的某一个具体的列，也可以是若干列经过计算而形成的一个新列（比如说A+B，A||B），也可以是这两种列的一个集合（例如（A+B，C）），对于grouping set更是特殊，可以是空集合()，表示对全表进行group by。</p>
+<h3 id="5-3_group_by_与_rollup,_cube组合使用">5.3 group by 与 rollup, cube组合使用</h3><p>Group by的基本用法以及这3种扩展用法可以组合使用，也就是说可以出现group by A,rollup(A,B)这样的用法，oracle将对出现在group by中的每种用法的grouping列集合做笛卡尔积然后对其中的每一个元素做group by。这话说起来挺绕口，举例说明吧，group by A, rollup(A,B)，基本用法的grouping集合是(A),rollup(A,B)的grouping集合是((A,B),(A),()),两个集合的笛卡尔积集合是((A,A,B),(A,A),(A))，所以会首先对(A,A,B)做group by，然后对(A,A)做group by，最后对(A)做group by。实际上对(A,A,B)做group by和对(A,B)做group by两者是完全等价的(group by A,A,B结果和group by A,B完全一样)，同理对(A,A)做group by和对(A)做group by也是等价的。简化后的结果就是首先对(A,B)做group by，然后对(A)做group by，最后再对(A)做group by。下面给出两个等价的sql以便理解：<br><code>Select A,B,sum(E) from test1 group by A, rollup(A,B);</code><br>与<br><code>Select A,B,sum(E) from test1 group by A,B
+Union all
+Select A,null,sum(E) from test1 group by A
+Union all
+Select A,null,sum(E) from test1 group by A;</code></p>
+<h2 id="6_grouping()、grouping_id()、group_id()">6 grouping()、grouping_id()、group_id()</h2><h3 id="6-1_grouping()">6.1 grouping()</h3><p>参数只有一个，而且必须为group by中出现的某一列，表示结果集的一行是否对该列做了grouping。对于对该列做了grouping的行而言，grouping()=0，反之为1；</p>
+<h3 id="6-2_grouping_id()">6.2 grouping_id()</h3><p>参数可以是多个，但必须为group by中出现的列。Grouping_id()的返回值其实就是参数中的每列的grouping()值的二进制向量，例如如果grouping(A)=1，grouping(B)=0，则grouping_id(A,B)的返回值就是二进制的10，转成10进制就是2。</p>
+<h3 id="6-3_group_id()">6.3 group_id()</h3><p>无参数。见上面的说明3），group by对某些列的集合会进行重复的grouping，而实际上绝大多数情况下对结果集中的这些重复行是不需要的，那就必须有办法剔出这些重复grouping的行。当结果集中有n条重复grouping而形成的行时，每行的group_id()分别是0,1,…,n，这样我们在条件中加入一个group_id()&lt;1就可以剔出这些重复grouping的行了。</p>
+<h2 id="7_示例">7 示例</h2><h3 id="7-1_建表与数据">7.1 建表与数据</h3><p>SQL&gt; <code>create table test(department_id number, a varchar2(20), b varchar2(20));</code></p>
+<p>Table created</p>
+<p>SQL&gt; <code>insert into test values(10, &#39;A&#39;, &#39;B&#39;);</code></p>
+<p>1 row inserted</p>
+<p>SQL&gt; <code>commit;</code></p>
+<p>Commit complete</p>
+<h3 id="7-2_查询语句">7.2 查询语句</h3><p><code>select department_id,
+       a,
+       b,
+       grouping(department_id),
+       grouping(a),
+       grouping(b)
+  from test
+ group by rollup(department_id, a, b)
+order by 4, 5, 6;
+select department_id,
+       a,
+       b,
+       grouping(department_id),
+       grouping(a),
+       grouping(b)
+  from test
+ group by cube(department_id, a, b)
+order by 4, 5, 6;</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci98armf10014oogo73xyxyuw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupby/">groupby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oralce/">oralce</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/13/mondrian-ext-function执行机制/" class="article-date">
+  <time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
+<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
+<ul>
+<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
+<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
+</li>
+<li><p>第二，轴上的计算器(Calc)的创建。</p>
+<p>  主要是针对各个轴如何创建计算器。</p>
+</li>
+</ul>
+<p>下面是的resolve()方法解释：</p>
+<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
+    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
+    resolve(validator); <span class="comment">// resolve self and children ,2</span>
+    <span class="comment">// Create a dummy result so we can use its evaluator</span>
+    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
+    ExpCompiler compiler =
+            createCompiler(
+                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
+    compile(compiler);  <span class="comment">//5</span>
+}
+</code></pre><ol>
+<li>第1行创建校验器(Validator)。</li>
+<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
+<li>第3行针对当前Query创建求值器(Evaluator)。</li>
+<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
+<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/2014/11/13/mondrian-ext-function执行机制/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci98armg7002hoogo55sgevj0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/11/02/mondrian-source-code-7/" class="article-date">
@@ -194,7 +376,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci8yaocnq001rjwgofq48i5bg" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci98armfo001woogof3xcg9qa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -274,7 +456,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci8yaocnt001ujwgo91qpvtrr" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci98armfq001zoogoweyyw9zu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -324,7 +506,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci8yaocnw001xjwgo76jyg4ex" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci98armft0022oogo5p98rvha" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -390,7 +572,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci8yaocnz0020jwgona4c3itn" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci98armfw0025oogo21j027zh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -439,7 +621,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci8yaoco50023jwgoftfr9sqy" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci98armfy0028oogoer1j5j72" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -488,7 +670,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci8yaocod0026jwgowzgtr2ck" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci98armg2002boogoih1gqtcw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -537,7 +719,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci8yaocok0029jwgorohr0tln" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci98armg4002eoogodi3h97mz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -734,119 +916,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci8yaocs3004djwgohtsub6ux" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/09/03/antlr4-semantic-predicate/" class="article-date">
-  <time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
-<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
-<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci8yaocsa004mjwgorazn0hy8" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/09/01/antlr4-use-problem/" class="article-date">
-  <time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/antlr4-use-problem/">antlr4-使用小结(续)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要记录在使用antlr4中中遇到的一些问题。</p>
-<p>一，标明了fragment的词法是不会被parser识别的，它只会在当前词法中可用。</p>
-<p>二，当未标明fragment的词法似乎是有包含关系的。当前面的词法包含了后面的词法时，后面的词法将不被parser解析出来。（可以看第9小节关系词法包含关系）。</p>
-<p>三，antlr的ieda插件只支持4.4以上的版本，所以如果需要生成4.4一下的版本的话，可以使用maven插件，或者手工生成。</p>
-<p>四，当一个词法中出现了2个同名的tokens名称时，另一个需要命名一个别名，不然会引起冲突。</p>
-<pre><code><span class="comment">//tokens1</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4.<span class="built_in">exp</span>}); <span class="comment">//$term4.exp取的是第一行的term4的内容</span>
-}
-;
-
-
-<span class="comment">//tokens2</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4alias = term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
-}
-;
-</code></pre>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci8yaocs0004ajwgo2o9eecql" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci98armhy004toogokuk3t1fg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -871,7 +941,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">30</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">31</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能/">性能</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -880,7 +950,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collection/">collection</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能/">性能</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -889,7 +959,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 10px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 12px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -898,7 +968,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -910,23 +980,23 @@ term4  returns [Exp <span class="built_in">exp</span>]
       <ul>
         
           <li>
+            <a href="/2015/04/29/linux-command/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+          </li>
+        
+          <li>
             <a href="/2015/04/26/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">collection total</a>
+            <a href="/2015/04/25/collection-total/">java集合小结</a>
           </li>
         
           <li>
             <a href="/2015/04/25/mysql-index/">mysql索引总结</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/06/tomcat-artic/">tomcat架构</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
           </li>
         
       </ul>

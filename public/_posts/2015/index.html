@@ -65,6 +65,93 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-linux-command" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/29/linux-command/" class="article-date">
+  <time datetime="2015-04-29T08:35:07.000Z" itemprop="datePublished">4月 29 2015</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/04/29/linux-command/" data-id="ci98armgm0032oogo1te4xgpb" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/27/性能调优总结/" class="article-date">
+  <time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/性能/">性能</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/27/性能调优总结/">性能调优总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/性能调优.png" alt="性能调优"></p>
+<h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
+<p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
+<p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
+<ol>
+<li>挂起一个进程，将这个进程在 CPU 中的状态（上下文）存储于内存中的某处，</li>
+<li>在内存中检索下一个进程的上下文并 将其在 CPU 的寄存器中恢复，</li>
+<li>跳转到程序计数器所指向的位置（即跳转到进程被中断时的代码行），以恢复该进程。</li>
+</ol>
+<p>上下文切换的消耗</p>
+<p>上下文切换通常是计算密集型的。也就是说，它需要相当可观的处理器时间，在每秒几十上百次的切换中，每次切换都需要纳秒量级的时间。所以，上下文切换对系统来说意味着消耗大量的 CPU 时间，事实上，可能是操作系统中时间消耗最大的操作。<br>Linux 号称的相比于其他的操作系统（包括其他类 Unix 系统）的很多优点中，有一项就是，其上下文切换和模式切换的时间消耗非常少。</p>
+<h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
+<h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
+<h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
+<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
+<h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
+<h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
+<p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/04/27/性能调优总结/" data-id="ci98armee0006oogoiibeonom" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-java-string" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/04/26/java-string/" class="article-date">
@@ -288,7 +375,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/26/java-string/" data-id="ci8yatasv0000s8go9zp10mit" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/26/java-string/" data-id="ci98armgs0039oogoargcez7q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/string/">string</a></li></ul>
@@ -306,6 +393,10 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
   <time datetime="2015-04-25T08:37:30.000Z" itemprop="datePublished">4月 25 2015</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -314,7 +405,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/25/collection-total/">collection total</a>
+      <a class="article-title" href="/2015/04/25/collection-total/">java集合小结</a>
     </h1>
   
 
@@ -322,13 +413,34 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>用了这么久的集合，感觉要说说什么，但自己的能力有限，那就随便谈谈吧。</p>
+<h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
+<p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
+<p>了解了Collection后，我们发现JDK中还有个Collections，它是什么鬼东西？查看源码，我们发现它是包含了对Collection的基本静态方法，例如排序，创建，复制等。同理，Arrays是对数组的操作，Executors是对Executor的操作。有没有一种感觉写jdk的人喜欢用名称加s来代表一个utils。</p>
+<h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/collection-set.png" alt="set"></p>
+<h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/collection-list.png" alt="list"></p>
+<h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/collection-queue.png" alt="queue"></p>
+<h2 id="其他">其他</h2><h3 id="算法">算法</h3><ol>
+<li>Colletions.sort(list) 与 Arrays.sort(T[]) </li>
+</ol>
+<p>Colletions.sort()实际会将list转为数组，然后调用Arrays.sort()，排完了再转回List。<br>PS. JDK8里，List有自己的sort()方法了，像ArrayList就直接用自己内部的数组来排，而LinkedList, CopyOnWriteArrayList还是要复制出一份数组。<br>而Arrays.sort()，对原始类型(int[],double[],char[],byte[])，JDK6里用的是快速排序，对于对象类型(Object[])，JDK6则使用归并排序。为什么要用不同的算法呢？</p>
+<ol>
+<li>JDK7的进步</li>
+</ol>
+<p>到了JDK7，快速排序升级为双基准快排(双基准快排 vs 三路快排)；归并排序升级为归并排序的改进版TimSort，一个JDK的自我进化。</p>
+<ol>
+<li>JDK8的进步</li>
+</ol>
+<p>再到了JDK8， 对大集合增加了Arrays.parallelSort()函数，使用fork-Join框架，充分利用多核，对大的集合进行切分然后再归并排序，而在小的连续片段里，依然使用TimSort与DualPivotQuickSort。</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/collection-total/" data-id="ci8yaocrp0040jwgo6e98stsu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/collection-total/" data-id="ci98armhm004coogo1j66xur6" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/collection/">collection</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
+
     </footer>
   </div>
   
@@ -431,7 +543,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci8yaocn7001ajwgo5uugyg9l" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci98armfa001foogoyiz8jde7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/index/">index</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -474,7 +586,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/06/tomcat-artic/" data-id="ci8yaocm3000bjwgop612573b" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/06/tomcat-artic/" data-id="ci98armek000googowlhswhqz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
@@ -537,7 +649,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci8yaocn30016jwgoj3mcteky" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci98armf5001boogono63r4l7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -644,7 +756,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci8yaocnf001gjwgobwsmh1lm" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci98armfd001loogolhwbg27y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -780,7 +892,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci8yaocni001kjwgo36zcloe8" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci98armfg001poogox641rxmu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -871,7 +983,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci8yaocnn001ojwgopv4h60iy" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci98armfk001toogoui89ril4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -883,114 +995,10 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-oracle-group-by" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/03/31/oracle-group-by/" class="article-date">
-  <time datetime="2015-03-31T09:45:27.000Z" itemprop="datePublished">3月 31 2015</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/31/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
-<h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用group by rollup(A,B,C)，首先会对(A、B、C)进行GROUP BY，然后对(A、B)进行GROUP BY，然后是(A)进行GROUP BY，最后对全表进行GROUP BY操作。roll up的意思是“卷起”，这也可以帮助我们理解group by rollup就是对选择的列从右到左以一次少一列的方式进行grouping直到所有列都去掉后的grouping(也就是全表grouping)，对于n个参数的rollup，有n+1次的grouping。以下2个sql的结果集是一样的：</p>
-<p><code>Select A,B,C,sum(E) from test group by rollup(A,B,C)</code><br>与</p>
-<p><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,null,null,sum(E) from test</code></p>
-<h2 id="2_cube">2 cube</h2><p>cube的意思是立方，对cube的每个参数，都可以理解为取值为参与grouping和不参与grouping两个值的一个维度，然后所有维度取值组合的集合就是grouping的集合，对于n个参数的cube，有2^n次的grouping。如果使用group by cube(A,B,C),，则首先会对(A、B、C)进行GROUP BY，然后依次是(A、B)，(A、C)，(A)，(B、C)，(B)，(C)，最后对全表进行GROUP BY操作，一共是2^3=8次grouping。同rollup一样，也可以用基本的group by加上结果集的union all写出一个与group by cube结果集相同的sql：<br><code>Select A,B,C,sum(E) from test group by cube(A,B,C);</code><br>与<br><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,C,sum(E) from test group by A,C
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,B,C,sum(E) from test group by B,C
-union all
-Select null,B,null,sum(E) from test group by B
-union all
-Select null,null,C,sum(E) from test group by C
-union all
-Select null,null,null,sum(E) from test;</code></p>
-<h2 id="3_grouping_sets">3 grouping sets</h2><p>grouping sets就是对参数中的每个参数做grouping，也就是有几个参数做几次grouping,例如使用<code>group by grouping sets(A,B,C)</code>，则对(A),(B),(C)进行group by，如果使用<code>group by grouping sets((A,B),C)</code>,则对(A,B),(C)进行group by。甚至<code>grouping by grouping set(A,A)</code>都是语法允许的，也就是对(A)进行2次group by,grouping sets的参数允许重复</p>
-<h2 id="4_总结">4 总结</h2><ul>
-<li>rollup        (N+1个分组方案)</li>
-<li>cube         (2^N个分组方案)</li>
-<li>grouping sets (自定义罗列出分组方案)</li>
-</ul>
-<hr>
-<h2 id="5_注意点">5 注意点</h2><h3 id="5-1_机制不同">5.1 机制不同</h3><p>在rollup和cube的说明中分别给出了用基本group by加结果集union all给出了结果集相同的sql，但这只是为了理解的方便而给出的sql，并不说明rollup和cube与基本group by加结果集union all等价。实际上两者的内部机制是安全不一样的，前者除了写法简洁以外，运行时不需多次扫描表，效率远比后者高。</p>
-<h3 id="5-2_集合可运算">5.2 集合可运算</h3><p>3种扩展用法的参数可以是源表中的某一个具体的列，也可以是若干列经过计算而形成的一个新列（比如说A+B，A||B），也可以是这两种列的一个集合（例如（A+B，C）），对于grouping set更是特殊，可以是空集合()，表示对全表进行group by。</p>
-<h3 id="5-3_group_by_与_rollup,_cube组合使用">5.3 group by 与 rollup, cube组合使用</h3><p>Group by的基本用法以及这3种扩展用法可以组合使用，也就是说可以出现group by A,rollup(A,B)这样的用法，oracle将对出现在group by中的每种用法的grouping列集合做笛卡尔积然后对其中的每一个元素做group by。这话说起来挺绕口，举例说明吧，group by A, rollup(A,B)，基本用法的grouping集合是(A),rollup(A,B)的grouping集合是((A,B),(A),()),两个集合的笛卡尔积集合是((A,A,B),(A,A),(A))，所以会首先对(A,A,B)做group by，然后对(A,A)做group by，最后对(A)做group by。实际上对(A,A,B)做group by和对(A,B)做group by两者是完全等价的(group by A,A,B结果和group by A,B完全一样)，同理对(A,A)做group by和对(A)做group by也是等价的。简化后的结果就是首先对(A,B)做group by，然后对(A)做group by，最后再对(A)做group by。下面给出两个等价的sql以便理解：<br><code>Select A,B,sum(E) from test1 group by A, rollup(A,B);</code><br>与<br><code>Select A,B,sum(E) from test1 group by A,B
-Union all
-Select A,null,sum(E) from test1 group by A
-Union all
-Select A,null,sum(E) from test1 group by A;</code></p>
-<h2 id="6_grouping()、grouping_id()、group_id()">6 grouping()、grouping_id()、group_id()</h2><h3 id="6-1_grouping()">6.1 grouping()</h3><p>参数只有一个，而且必须为group by中出现的某一列，表示结果集的一行是否对该列做了grouping。对于对该列做了grouping的行而言，grouping()=0，反之为1；</p>
-<h3 id="6-2_grouping_id()">6.2 grouping_id()</h3><p>参数可以是多个，但必须为group by中出现的列。Grouping_id()的返回值其实就是参数中的每列的grouping()值的二进制向量，例如如果grouping(A)=1，grouping(B)=0，则grouping_id(A,B)的返回值就是二进制的10，转成10进制就是2。</p>
-<h3 id="6-3_group_id()">6.3 group_id()</h3><p>无参数。见上面的说明3），group by对某些列的集合会进行重复的grouping，而实际上绝大多数情况下对结果集中的这些重复行是不需要的，那就必须有办法剔出这些重复grouping的行。当结果集中有n条重复grouping而形成的行时，每行的group_id()分别是0,1,…,n，这样我们在条件中加入一个group_id()&lt;1就可以剔出这些重复grouping的行了。</p>
-<h2 id="7_示例">7 示例</h2><h3 id="7-1_建表与数据">7.1 建表与数据</h3><p>SQL&gt; <code>create table test(department_id number, a varchar2(20), b varchar2(20));</code></p>
-<p>Table created</p>
-<p>SQL&gt; <code>insert into test values(10, &#39;A&#39;, &#39;B&#39;);</code></p>
-<p>1 row inserted</p>
-<p>SQL&gt; <code>commit;</code></p>
-<p>Commit complete</p>
-<h3 id="7-2_查询语句">7.2 查询语句</h3><p><code>select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by rollup(department_id, a, b)
-order by 4, 5, 6;
-select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by cube(department_id, a, b)
-order by 4, 5, 6;</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/03/31/oracle-group-by/" data-id="ci8yaocmz000zjwgo7pkhmjiq" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupby/">groupby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oralce/">oralce</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/public/_posts/2015/page/2/">2</a><a class="extend next" rel="next" href="/public/_posts/2015/page/2/">Next &raquo;</a>
+    </nav>
   
 </section>
         
@@ -1000,7 +1008,7 @@ order by 4, 5, 6;</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">30</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">31</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能/">性能</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1009,7 +1017,7 @@ order by 4, 5, 6;</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collection/">collection</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能/">性能</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1018,7 +1026,7 @@ order by 4, 5, 6;</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 10px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 12px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
@@ -1027,7 +1035,7 @@ order by 4, 5, 6;</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
     </div>
   </div>
 
@@ -1039,23 +1047,23 @@ order by 4, 5, 6;</code></p>
       <ul>
         
           <li>
+            <a href="/2015/04/29/linux-command/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+          </li>
+        
+          <li>
             <a href="/2015/04/26/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">collection total</a>
+            <a href="/2015/04/25/collection-total/">java集合小结</a>
           </li>
         
           <li>
             <a href="/2015/04/25/mysql-index/">mysql索引总结</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/06/tomcat-artic/">tomcat架构</a>
-          </li>
-        
-          <li>
-            <a href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
           </li>
         
       </ul>
