@@ -82,7 +82,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/29/linux-command/" data-id="ci98armgm0032oogo1te4xgpb" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/29/linux-command/" data-id="ci98da0zo0032nggog89l6vhv" class="article-share-link">Share</a>
       
       
     </footer>
@@ -140,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/27/性能调优总结/" data-id="ci98armee0006oogoiibeonom" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/27/性能调优总结/" data-id="ci98da0xi0006nggo35co6oua" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
@@ -375,7 +375,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/26/java-string/" data-id="ci98armgs0039oogoargcez7q" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/26/java-string/" data-id="ci98da0zo0039nggojjfpa5pb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/string/">string</a></li></ul>
@@ -413,14 +413,27 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>用了这么久的集合，感觉要说说什么，但自己的能力有限，那就随便谈谈吧。</p>
+        <p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
 <h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
 <p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
 <p>了解了Collection后，我们发现JDK中还有个Collections，它是什么鬼东西？查看源码，我们发现它是包含了对Collection的基本静态方法，例如排序，创建，复制等。同理，Arrays是对数组的操作，Executors是对Executor的操作。有没有一种感觉写jdk的人喜欢用名称加s来代表一个utils。</p>
 <h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/collection-set.png" alt="set"></p>
 <h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/collection-list.png" alt="list"></p>
 <h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/collection-queue.png" alt="queue"></p>
-<h2 id="其他">其他</h2><h3 id="算法">算法</h3><ol>
+<h2 id="二，功能特性">二，功能特性</h2><h3 id="1，添加元素">1，添加元素</h3><p>在添加元素上，ArrayList，Vector的性能相对较差，原因是ArrayList在容量不够时需要扩充。</p>
+<h3 id="1，查找元素">1，查找元素</h3><p>在查找元素上，ArrayList，linkedList，Vector，Stack的性能略差一点点，这是由于他们在查找时需要遍历整个集合。而Set，Map类型的都是通过hash后再在链表上查找，因此速度比较快。</p>
+<h3 id="2，删除元素">2，删除元素</h3><p>在删除元素上，除了TreeMap和TreeSet外，其他集合类型的性能基本无差异，TreeSet基于TreeMap实现，TreeMap之所以性能相对较差的原因是它在删除时需要排序。<br>List适用于允许重复元素的单个对象集合场景，Set适用于不允许重复元素的单个对象集合场景，Map适合key-value结构的集合场景。</p>
+<h2 id="三，并发结构">三，并发结构</h2><h3 id="1，ConcurrentHashMap">1，ConcurrentHashMap</h3><p>线程安全的haspmap，默认采用16个Segment存储对象。每个Segment一把锁，可允许16个线程同时并发的操作集合对象。</p>
+<h3 id="2，CopyOnWriteArrayList">2，CopyOnWriteArrayList</h3><p>CopyOnWriteArrayList是一个线程安全的，并且在读操作时无需加锁的ArrayList。</p>
+<h3 id="3，ArrayBlockingQueue">3，ArrayBlockingQueue</h3><p>ArrayBlockingQueue是一个基于数组，先进先出的，线程安全的集合类，其特色为指定时间的阻塞读写，并且容量是可限制的。</p>
+<blockquote>
+<p>offer(E,long,TimeUnit) 插入元素到数组的尾部，如果数组已满，则等待。<br>poll(E,long,TimeUnit)获取数组中的第一个元素，如果数组中没有元素，则等待。</p>
+</blockquote>
+<h3 id="4,LinkedBlockingQueue">4,LinkedBlockingQueue</h3><p>LinkedBlockingQueue采用链表的方式存储对象。</p>
+<blockquote>
+<p>对于读操作take和poll，采用一把锁，对于写操作put和poll，采用另一把锁。因此在高并发读写操作多的情况下，性能好于ArrayBlockingQueue。<br>但在遍历和删除元素时，需要2把锁同时锁住。</p>
+</blockquote>
+<h2 id="四，其他特性">四，其他特性</h2><h3 id="算法">算法</h3><ol>
 <li>Colletions.sort(list) 与 Arrays.sort(T[]) </li>
 </ol>
 <p>Colletions.sort()实际会将list转为数组，然后调用Arrays.sort()，排完了再转回List。<br>PS. JDK8里，List有自己的sort()方法了，像ArrayList就直接用自己内部的数组来排，而LinkedList, CopyOnWriteArrayList还是要复制出一份数组。<br>而Arrays.sort()，对原始类型(int[],double[],char[],byte[])，JDK6里用的是快速排序，对于对象类型(Object[])，JDK6则使用归并排序。为什么要用不同的算法呢？</p>
@@ -432,11 +445,16 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <li>JDK8的进步</li>
 </ol>
 <p>再到了JDK8， 对大集合增加了Arrays.parallelSort()函数，使用fork-Join框架，充分利用多核，对大的集合进行切分然后再归并排序，而在小的连续片段里，依然使用TimSort与DualPivotQuickSort。</p>
+<h3 id="五，参考资料">五，参考资料</h3><ol>
+<li>《分布式JAVA应用 基础与实践》—-林昊</li>
+<li><a href="http://calvin1978.blogcn.com/articles/jdk.html" title="JDK78数则" target="_blank" rel="external">http://calvin1978.blogcn.com/articles/jdk.html</a></li>
+<li><img src="Java 容器 &amp; 泛型（1）：认识容器" alt="http://www.bysocket.com/?p=162"></li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/collection-total/" data-id="ci98armhm004coogo1j66xur6" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/collection-total/" data-id="ci98da10j004cnggo6gk834w4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/collection/">collection</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
@@ -543,7 +561,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci98armfa001foogoyiz8jde7" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci98da0yd001fnggo7dxji3t1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/index/">index</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -586,7 +604,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/06/tomcat-artic/" data-id="ci98armek000googowlhswhqz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/06/tomcat-artic/" data-id="ci98da0xy000gnggoglh90e3t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
@@ -649,7 +667,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci98armf5001boogono63r4l7" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci98da0yd001bnggoj2rm4sk7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -756,7 +774,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci98armfd001loogolhwbg27y" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci98da0yd001lnggo9sjex9tl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -892,7 +910,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci98armfg001poogox641rxmu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci98da0yt001pnggoqpawv5mx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -983,7 +1001,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci98armfk001toogoui89ril4" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci98da0yt001tnggomt6ekrcz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
