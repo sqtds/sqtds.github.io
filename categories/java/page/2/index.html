@@ -65,6 +65,72 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/26/mondrian-source-code-4/" class="article-date">
+  <time datetime="2014-10-26T05:27:33.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前面几节我们介绍了一下mondrian最基础的东西，只有在了解了这些后，我们才能继续往下看。</p>
+<p>首先，mondrian需要将mdx语句解析成java对象，我们先看看他是如何解析的。</p>
+<h2 id="Query创建过程">Query创建过程</h2><p>我们从ConnectionBase的parser开始，在parseStatement中，有一句很重要的话语句。</p>
+<pre><code>public <span class="keyword">Query</span> parseQuery(String <span class="keyword">query</span>) {
+    <span class="keyword">return</span> (<span class="keyword">Query</span>) parseStatement(<span class="keyword">query</span>);
+}
+
+<span class="keyword">Query</span> parseStatement(...){
+...
+<span class="keyword">return</span> parser.parseInternal(
+                statement, <span class="keyword">query</span>, debug, funTable, strictValidation);
+...
+}
+</code></pre><h3 id="一，创建解析器">一，创建解析器</h3><p>首先，我们需要一个parser。在ConnectionBase类中，我们看到了parser的创建过程：</p>
+<pre><code><span class="keyword">protected</span> <span class="function">MdxParserValidator <span class="title">createParser</span><span class="params">()</span> </span>{
+    <span class="keyword">return</span> <span class="keyword">true</span>
+        ? <span class="keyword">new</span> JavaccParserValidatorImpl()
+        : <span class="keyword">new</span> MdxParserValidatorImpl();
+}
+</code></pre><p>实际上，由于这里永远是true，所以返回的是JavaccParserValidatorImpl。这个类也是实现了MdxParserValidator。它与原生的javaccparser生成的MdxParserValidatorImpl的主要不同在于factory的创建方式和异常的处理方式，这里就不做过多解读了，具体请看源代码。
+        
+          <p class="article-more-link">
+            <a href="/2014/10/26/mondrian-source-code-4/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci9b8x73n0025p8goyw6bjo0w" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/26/mondrian-source-code-3/" class="article-date">
@@ -102,7 +168,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci9b8go320028kkgo6q53miwu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci9b8x73q0028p8goqysd0fe1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -151,7 +217,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci9b8go34002bkkgo53z4adpq" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci9b8x73t002bp8godsh2cz70" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -200,7 +266,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci9b8go37002ekkgop1br9z7v" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci9b8x73w002ep8golepslfxr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -397,7 +463,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci9b8go5g0050kkgo67vhk3x8" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci9b8x760004yp8gopw0lstcu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -442,7 +508,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci9b8go5o0059kkgoq2v9ukzj" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci9b8x76a0057p8goenmdjc1m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -509,7 +575,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci9b8go5d004xkkgot1qpgqtb" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci9b8x75y004vp8gomvwe2oki" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -650,7 +716,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-exception/" data-id="ci9b8go5w005ikkgoub7heqx4" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-exception/" data-id="ci9b8x76i005gp8go6so30lgi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -785,7 +851,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-share-context/" data-id="ci9b8go5l0056kkgojheujkwx" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-share-context/" data-id="ci9b8x7660054p8gowcpar6f0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -880,108 +946,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-label-rule/" data-id="ci9b8go5r005ckkgoa0ji4glf" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/08/30/antlr4-iterator-example/" class="article-date">
-  <time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
-<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
-<pre><code><span class="comment">//语法</span>
-grammar PropertyFile;
-file : prop+ ;
-prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
-ID   : [a-z]+ ;
-<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
-
-<span class="comment">//文件</span>
-user=<span class="string">"parrt"</span>
-machine=<span class="string">"maniac"</span>
-</code></pre><p><img src="/img/QQ图片20140830154441.jpg" alt="解析树"></p>
-<p><img src="/img/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
-<p><img src="/img/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
-<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
-    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
-    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
-        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="built_in">String</span> value = ctx.STRING().getText();
-        props.put(id, value);
-    }
-}
-</code></pre><p>下面的类的依赖图，我就不解释了：</p>
-<p><img src="/img/QQ图片20140830155248.jpg" alt=""></p>
-<p>最后直接看结果吧，so easy:</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
-    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
-    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
-    ParseTree tree = parser.file();
-
-    <span class="comment">// create a standard ANTLR parse tree walker</span>
-    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-    <span class="comment">// create listener then feed to walker</span>
-    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
-    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
-    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
-    <span class="comment">//print {machine="maniac", user="parrt"}</span>
-}
-</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
-<p><img src="/img/QQ图片20140830160030.jpg" alt=""></p>
-<p><img src="/img/QQ图片20140830160122.jpg" alt=""></p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
-</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
-{
-    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
-    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
-        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
-        props.put(id, value);
-        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
-    }
-}
-</code></pre><p><img src="/img/QQ图片20140830160343.jpg" alt=""></p>
-<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-iterator-example/" data-id="ci9b8go5u005fkkgoe8crb952" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/08/30/antlr4-label-rule/" data-id="ci9b8x76d005ap8gopjjno32b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -1006,7 +971,7 @@ machine=<span class="string">"maniac"</span>
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/j2se/">j2se</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">31</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能/">性能</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">32</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能/">性能</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1015,7 +980,7 @@ machine=<span class="string">"maniac"</span>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collection/">collection</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collections/">collections</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能/">性能</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collection/">collection</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collections/">collections</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能/">性能</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1024,7 +989,7 @@ machine=<span class="string">"maniac"</span>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/collections/" style="font-size: 10px;">collections</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 12px;">j2se</a><a href="/tags/java/" style="font-size: 10px;">java</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/collections/" style="font-size: 10px;">collections</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 14px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
     </div>
   </div>
 
