@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-linux-command" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/linux-command" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/29/linux-command/" class="article-date">
+    <a href="/2015/04/29/2014/linux-command/" class="article-date">
   <time datetime="2015-04-29T08:35:07.000Z" itemprop="datePublished">4月 29 2015</time>
 </a>
     
@@ -82,7 +82,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/29/linux-command/" data-id="ci9b8x74i0032p8goi5wdlqy5" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/29/2014/linux-command/" data-id="ci9giocut003230goga9pcnvj" class="article-share-link">Share</a>
       
       
     </footer>
@@ -92,9 +92,9 @@
 
 
   
-    <article id="post-性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/27/性能调优总结/" class="article-date">
+    <a href="/2015/04/27/2014/性能调优总结/" class="article-date">
   <time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
 </a>
     
@@ -110,7 +110,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/27/性能调优总结/">性能调优总结</a>
+      <a class="article-title" href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
     </h1>
   
 
@@ -118,7 +118,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/性能调优.png" alt="性能调优"></p>
+        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
 <h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
 <p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
 <p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
@@ -132,7 +132,7 @@
 <h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
 <h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
 <h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
-<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
+<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/2014/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
 <h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
 <h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
 <p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
@@ -140,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/27/性能调优总结/" data-id="ci9b8x71w0006p8go9abq0ikz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/27/2014/性能调优总结/" data-id="ci9giocsq000630goqppf06op" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
@@ -152,9 +152,9 @@
 
 
   
-    <article id="post-java-string" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/java-string" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/26/java-string/" class="article-date">
+    <a href="/2015/04/26/2014/java-string/" class="article-date">
   <time datetime="2015-04-26T04:02:33.000Z" itemprop="datePublished">4月 26 2015</time>
 </a>
     
@@ -170,7 +170,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/26/java-string/">String字符串小结</a>
+      <a class="article-title" href="/2015/04/26/2014/java-string/">String字符串小结</a>
     </h1>
   
 
@@ -375,7 +375,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/26/java-string/" data-id="ci9b8x74q0039p8gorgqlwzdh" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/26/2014/java-string/" data-id="ci9giocv0003930goczhvj2lb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/string/">string</a></li></ul>
@@ -387,9 +387,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 
 
   
-    <article id="post-collection-total" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/collection-total" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/25/collection-total/" class="article-date">
+    <a href="/2015/04/25/2014/collection-total/" class="article-date">
   <time datetime="2015-04-25T08:37:30.000Z" itemprop="datePublished">4月 25 2015</time>
 </a>
     
@@ -405,7 +405,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/25/collection-total/">java集合小结</a>
+      <a class="article-title" href="/2015/04/25/2014/collection-total/">java集合小结</a>
     </h1>
   
 
@@ -414,12 +414,12 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     <div class="article-entry" itemprop="articleBody">
       
         <p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
-<h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
+<h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
 <p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
 <p>了解了Collection后，我们发现JDK中还有个Collections，它是什么鬼东西？查看源码，我们发现它是包含了对Collection的基本静态方法，例如排序，创建，复制等。同理，Arrays是对数组的操作，Executors是对Executor的操作。有没有一种感觉写jdk的人喜欢用名称加s来代表一个utils。</p>
-<h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/collection-set.png" alt="set"></p>
-<h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/collection-list.png" alt="list"></p>
-<h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/collection-queue.png" alt="queue"></p>
+<h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/2014/collection-set.png" alt="set"></p>
+<h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/2014/collection-list.png" alt="list"></p>
+<h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/2014/collection-queue.png" alt="queue"></p>
 <h2 id="二，功能特性">二，功能特性</h2><p>以下比较基于ArrayList，linkedList，Vector，Stack,HashSet,TreeSet,HashMap,TreeMap</p>
 <h3 id="1，添加元素">1，添加元素</h3><p>在添加元素上，ArrayList，Vector的性能相对较差，原因是ArrayList在容量不够时需要扩充。</p>
 <h3 id="2，查找元素">2，查找元素</h3><p>在查找元素上，ArrayList，linkedList，Vector，Stack的性能略差一点点，这是由于他们在查找时需要遍历整个集合。而Set，Map类型的都是通过hash后再在链表上查找，因此速度比较快。</p>
@@ -435,7 +435,11 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <p>对于读操作take和poll，采用一把锁，对于写操作put和poll，采用另一把锁。因此在高并发读写操作多的情况下，性能好于ArrayBlockingQueue。但在遍历和删除元素时，需要2把锁同时锁住。</p>
 </blockquote>
 <h3 id="5,IndentityHashMap">5,IndentityHashMap</h3><p>简单说IdentityHashMap与常用的HashMap的区别是：前者比较key时是“引用相等”而后者是“对象相等”，即对于k1和k2，当k1==k2时，IdentityHashMap认为两个key相等，而HashMap只有在k1.equals(k2) == true 时才会认为两个key相等。</p>
-<h3 id="6,ConCurrentSkipListMap">6,ConCurrentSkipListMap</h3><p>SkipList是红黑树的一种简化替代方案，是个流行的有序集合算法。</p>
+<h3 id="6,ConcurrentSkipListMap">6,ConcurrentSkipListMap</h3><p>SkipList是红黑树的一种简化替代方案，是个流行的有序集合算法。在4线程1.6万数据的条件下，ConcurrentHashMap 存取速度是ConcurrentSkipListMap 的4倍左右。<br>但ConcurrentSkipListMap有几个ConcurrentHashMap 不能比拟的优点：</p>
+<ol>
+<li>ConcurrentSkipListMap 的key是有序的。</li>
+<li>ConcurrentSkipListMap 支持更高的并发。ConcurrentSkipListMap 的存取时间是log（N），和线程数几乎无关。也就是说在数据量一定的情况下，并发的线程越多，ConcurrentSkipListMap越能体现出他的优势。 </li>
+</ol>
 <h2 id="四，其他特性">四，其他特性</h2><h3 id="算法">算法</h3><ol>
 <li>Colletions.sort(list) 与 Arrays.sort(T[]) </li>
 </ol>
@@ -457,7 +461,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/collection-total/" data-id="ci9b8x75p004hp8gozwbneabz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/2014/collection-total/" data-id="ci9giocvx004h30gocmvv7okl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/collection/">collection</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
@@ -469,9 +473,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 
 
   
-    <article id="post-mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/25/mysql-index/" class="article-date">
+    <a href="/2015/04/25/2014/mysql-index/" class="article-date">
   <time datetime="2015-04-25T08:26:28.000Z" itemprop="datePublished">4月 25 2015</time>
 </a>
     
@@ -487,7 +491,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/25/mysql-index/">mysql索引总结</a>
+      <a class="article-title" href="/2015/04/25/2014/mysql-index/">mysql索引总结</a>
     </h1>
   
 
@@ -564,7 +568,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/25/mysql-index/" data-id="ci9b8x72y001fp8goueezvytc" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/25/2014/mysql-index/" data-id="ci9gioctm001f30go7w12os8l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/index/">index</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
@@ -576,9 +580,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 
 
   
-    <article id="post-tomcat-artic" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/tomcat-artic" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/06/tomcat-artic/" class="article-date">
+    <a href="/2015/04/06/2014/tomcat-artic/" class="article-date">
   <time datetime="2015-04-06T04:35:21.000Z" itemprop="datePublished">4月 6 2015</time>
 </a>
     
@@ -594,7 +598,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/06/tomcat-artic/">tomcat架构</a>
+      <a class="article-title" href="/2015/04/06/2014/tomcat-artic/">tomcat架构</a>
     </h1>
   
 
@@ -607,7 +611,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/06/tomcat-artic/" data-id="ci9b8x724000gp8goq9jbhobx" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/06/2014/tomcat-artic/" data-id="ci9giocsw000g30god6b56fgz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
@@ -619,9 +623,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 
 
   
-    <article id="post-nosql-distilled" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/nosql-distilled" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/05/nosql-distilled/" class="article-date">
+    <a href="/2015/04/05/2014/nosql-distilled/" class="article-date">
   <time datetime="2015-04-05T07:43:14.000Z" itemprop="datePublished">4月 5 2015</time>
 </a>
     
@@ -637,7 +641,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
+      <a class="article-title" href="/2015/04/05/2014/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
     </h1>
   
 
@@ -651,14 +655,14 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <h3 id="聚合">聚合</h3><p><strong>关系模型把待存储的信息分隔成元组（ 行）。</strong> 元组是种受限的数据结构 ： 它只能包含一系列的值， 因此不能在元组中嵌套另一个元组， 也不能包含由值或元组所组成的列表。 这种简单的数据结构支撑着关系模型 ： 所有操作都必须以元组为目标， 而且其返回值也必须是元组。</p>
 <p>面向聚合所用的方式与之不同， 我们通常操作数据时所用的单元， 其结构都比元组集合复杂得多。 如果能够以这种复杂的结构来存放列表或嵌套其他记录结构就好了。大家在后面的章节中将会看到，“键值数据库”、“ 文档数据库”、“ 列族数据库” 都使用这种更为复杂的记录。 然而， 没有公认的术语来称呼这种复杂的记录， 在本书中， 把它叫做“聚合”（ aggregate）。</p>
 <p>聚合是“ 领域驱动设计”［ Evans］ 中的术语。 <strong>在领域驱动设计中， 我们想把一组相互关联的对象视为一个整体单元来操作， 而这个单元就叫聚合。</strong> 在涉及数据操作与一致性管理时， 更是如此。 一般情况下， 我们通过原子操作（ atomic operation） 更新聚合的值， 并且在与数据存储通信时， 也以聚合为单位。 这个定义也非常符合“ 键值数据库”、“ 文档数据库” 和“ 列族数据库” 的工作方式。 因为用聚合为单位来复制和分片显得比较自然， 所以在集群中操作数据库时， 还是使用聚合比较简单一些。 此外，由于程序员经常通过聚合结构来操作数据， 故而采用聚合也能让其工作更为轻松。</p>
-<h4 id="关系模型与聚合模型示例">关系模型与聚合模型示例</h4><p><img src="/img/QQ图片20150405155439.png" alt=""><br><img src="/img/QQ图片20150405155535.png" alt=""><br>现在我们再来看看， 如果用面向聚合的思路来做， 那么数据模型会是什么样子<br><img src="/img/QQ图片20150405155628.png" alt=""><br>这次也要用一些范例数据， 我们使用 JSON 格式来表示， 因为它是 NoSQL 领域中常用的数据格式。<br><img src="/img/QQ图片20150405155833.png" alt=""></p>
+<h4 id="关系模型与聚合模型示例">关系模型与聚合模型示例</h4><p><img src="/img/2014/QQ图片20150405155439.png" alt=""><br><img src="/img/2014/QQ图片20150405155535.png" alt=""><br>现在我们再来看看， 如果用面向聚合的思路来做， 那么数据模型会是什么样子<br><img src="/img/2014/QQ图片20150405155628.png" alt=""><br>这次也要用一些范例数据， 我们使用 JSON 格式来表示， 因为它是 NoSQL 领域中常用的数据格式。<br><img src="/img/2014/QQ图片20150405155833.png" alt=""></p>
 <h4 id="面向聚合的影响">面向聚合的影响</h4><p>关系型数据库的数据模型中， 没有“ 聚合” 这一概念， 因此我们称之为“ 聚合无知”（ aggregate-ignorant）。 NoSQL 领域中的“ 图数据库” 也是聚合无知的。 这一特征并不是坏事。 聚合的边界一般都很难正确划分出来， 当不同场景要使用同一份数据时，更是如此。 </p>
 <p>选用面向聚合模型的决定性因素， 就在于它非常适合在集群上运行。 大家应该还记得， 这正是 NoSQL 崛起的杀手锏。在集群上运行时， 我们需要把采集数据时所需的节点数降至最小。如果在数据库中明确包含聚合结构， 那么它就可以根据这一重要信息， 知道哪些数据需要一起操作了， 而且这些数据应该放在同一个节点中。</p>
 <p>聚合对于事务处理有一个重要影响。 通常情况下， 面向聚合的数据库确实不支持跨越多个聚合的ACID 事务。 取而代之的是， 它每次只能在一个聚合结构上执行原子操作。 也就是说，如果我们想以原子方式操作多个聚合， 那么就必须自己组织应用程序的代码。</p>
 <h3 id="键值数据模型与文档数据模型">键值数据模型与文档数据模型</h3><p>键值数据库的聚合不透明 ， 只包含一些没有太多意义的大块信息 ； 与此相反， 在文档数据库的聚合中， 可以看到其结构。 不透明的优势在于， 聚合中可以存储任意数据。文档数据库则要限制其中存放的内容， 它定义了其允许的结构与数据类型， 而这样做的好处是， 能够更加灵活地访问数据。</p>
 <p>在键值数据库中， 要访问聚合内容， 只能通过键来查找。 而使用文档数据库时，则可以用聚合中的字段查询。 我们可以只获取一部分聚合， 而不用获取全部内容， 此外， 数据库还可以按照聚合内容创建索引 。</p>
 <h3 id="列族存储">列族存储</h3><p>理解列族模型的最好方式也许就是将其视为两级聚合结构（ two-level aggregate<br>structure）。 与“ 键值存储” 相同，第一个键通常代表行标识符， 可以用它来获取想要的聚合。 列族结构与“ 键值存储” 的区别在于， 其“ 行聚合”（ row aggregate） 本身又是一个映射， 其中包含一些更为详细的值。 这些“ 二级值”（ second-level value）就叫做“ 列”。 与整体访问某行数据一样， 我们也可以操作特定的列。</p>
-<p>列族数据库将列组织为列族。 每一列都必须是某个列族的一部分， 而且访问数据的单元也得是列。 这样设计的前提是， 某个列族中的数据经常需要一起访问。<br><img src="/img/QQ图片20150405161008.png" alt=""><br>于是， 我们也得出了两种数据组织方式。</p>
+<p>列族数据库将列组织为列族。 每一列都必须是某个列族的一部分， 而且访问数据的单元也得是列。 这样设计的前提是， 某个列族中的数据经常需要一起访问。<br><img src="/img/2014/QQ图片20150405161008.png" alt=""><br>于是， 我们也得出了两种数据组织方式。</p>
 <ul>
 <li>面向行（ row-oriented）： 每一行都是一个聚合（ 例如 ID 为 1234 的顾客就是一个聚合）， 该聚合内部存有一些包含有用数据块（ 客户信息、 订单记录） 的列族。</li>
 <li>面向列（ column-oriented）： 每个列族都定义了一种记录类型（ 例如客户信息），其中每行都表示一条记录 。 你可以将数据库中的大“ 行” 理解为列族中每一个短行记录的串接。</li>
@@ -670,7 +674,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci9b8x72t001bp8gogyiq1lwj" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/2014/nosql-distilled/" data-id="ci9giocth001b30goxn5hmw07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -682,9 +686,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 
 
   
-    <article id="post-mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/05/mongodb-biji/" class="article-date">
+    <a href="/2015/04/05/2014/mongodb-biji/" class="article-date">
   <time datetime="2015-04-05T04:06:03.000Z" itemprop="datePublished">4月 5 2015</time>
 </a>
     
@@ -696,7 +700,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
+      <a class="article-title" href="/2015/04/05/2014/mongodb-biji/">MongoDB权威指南笔记</a>
     </h1>
   
 
@@ -721,7 +725,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <p><strong>大尺寸，低价值的数据</strong>：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储</p>
 <p><strong>高伸缩性的场景</strong>： MongoDB 非常适合由数十或数百台服务器组成的数据库。 MongoDB的路线图中已经包含对 MapReduce 引擎的内置支持</p>
 <p><strong>用于对象及 JSON 数据的存储</strong>： MongoDB 的 BSON 数据格式非常适合文档化格式的存储及查询</p>
-<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/mongodb_chengci.png" alt=""></p>
+<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/2014/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/2014/mongodb_chengci.png" alt=""></p>
 <h2 id="性能篇">性能篇</h2><p>MongoDB 提供了多样性的索引支持，索引信息被保存在 system.indexes 中，且默认总是为_id<br>创建索引 ，它的索引使用基本和 MySQL 等关系型数据库一样。</p>
 <h3 id="基础索引">基础索引</h3><pre><code>在字段 <span class="tag">age</span> 上创建索引， 1(升序);<span class="tag">-1</span>(降序)
 <span class="tag">db</span><span class="class">.t3</span><span class="class">.ensureIndex</span>(<span class="rules">{<span class="rule"><span class="attribute">age</span>:<span class="value"><span class="number">1</span>})</span></span></span>
@@ -744,7 +748,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  只需要在某一个服务启动时加上–master 参数，而另一个服务加上–slave 与–source 参数，即可实现同步。 MongoDB 的最新版本已不再推荐此方案。</p>
 </li>
 <li><p>Replica Sets 复制集：</p>
-<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/mongodb_replica.png" alt=""></p>
+<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/2014/mongodb_replica.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Sharding_分片">Sharding 分片</h3><p>这是一种将海量的数据水平扩展的数据库集群系统，数据分表存储在 sharding 的各个节点上，使用者通过简单的配置就可以很方便地构建一个分布式 MongoDB 集群。</p>
@@ -757,7 +761,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  为了将一个特定的 collection 存储在多个 shard 中，需要为该 collection 指定一个shard key，例如{age: 1} ，shard key 可以决定该条记录属于哪个 chunk。 Config Servers 就是用来存储：所有 shard 节点的配置信息、每个 chunk 的 shard key 范围、 chunk 在各 shard 的分布情况、该集群中所有 DB 和 collection 的 sharding 配置信息。</p>
 </li>
 <li><p>Route Process</p>
-<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/mongodb_shard.png" alt=""></p>
+<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/2014/mongodb_shard.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Replica_Sets_+_Sharding">Replica Sets + Sharding</h3><p>MongoDB Auto-Sharding 解决了海量存储和动态扩容的问题，但离实际生产环境所需的高可<br>靠、高可用还有些距离，所以有了 ” Replica Sets + Sharding”的解决方案:</p>
@@ -772,12 +776,12 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  使用 3 个路由进程，实现负载平衡，提高客户端接入性能</p>
 </li>
 </ul>
-<p><img src="/img/mongodb_replica_shard.png" alt=""></p>
+<p><img src="/img/2014/mongodb_replica_shard.png" alt=""></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci9b8x731001lp8go0xtg3jcv" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/2014/mongodb-biji/" data-id="ci9gioctp001l30goncju7wgj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -789,9 +793,9 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 
 
   
-    <article id="post-mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/04/mondrian-source-code-9/" class="article-date">
+    <a href="/2015/04/04/2014/mondrian-source-code-9/" class="article-date">
   <time datetime="2015-04-04T10:41:49.000Z" itemprop="datePublished">4月 4 2015</time>
 </a>
     
@@ -807,7 +811,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/04/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
+      <a class="article-title" href="/2015/04/04/2014/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
     </h1>
   
 
@@ -821,7 +825,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <ul>
 <li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
 <li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
-<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/mondrian_agg2.png" alt=""></li>
+<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/2014/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/2014/mondrian_agg2.png" alt=""></li>
 <li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储（如果是稠密的，就用数组存储，如果是稀疏的，则用Map存储）；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
 <li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
 </ul>
@@ -876,8 +880,8 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
     }
 }    
 </code></pre><p>在这里，SegmentWithData包装了Segment与它单元值之间的关系，通过SegmentAxis来判断当前比较的值是否相同。</p>
-<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/mondrian_agg3.png" alt=""><br><img src="/img/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/mondrian_agg5.png" alt=""></p>
-<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/mondrian_agg7.png" alt=""></p>
+<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/2014/mondrian_agg3.png" alt=""><br><img src="/img/2014/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/2014/mondrian_agg5.png" alt=""></p>
+<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/2014/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/2014/mondrian_agg7.png" alt=""></p>
 <p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
 <pre><code><span class="type">Query</span> query = connection.parseQuery(
     <span class="string">"SELECT"</span> +
@@ -913,7 +917,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci9b8x735001pp8gon92e57i8" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-9/" data-id="ci9giocts001p30gof94iremj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -925,9 +929,9 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-mondrian-source-code-8" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-8" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/04/mondrian-source-code-8/" class="article-date">
+    <a href="/2015/04/04/2014/mondrian-source-code-8/" class="article-date">
   <time datetime="2015-04-04T10:07:17.000Z" itemprop="datePublished">4月 4 2015</time>
 </a>
     
@@ -943,7 +947,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/04/mondrian-source-code-8/">mondrian 源码解读（八）-计算结果</a>
+      <a class="article-title" href="/2015/04/04/2014/mondrian-source-code-8/">mondrian 源码解读（八）-计算结果</a>
     </h1>
   
 
@@ -954,7 +958,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         <p>上一节我们了解了member的查询过程。下面，我们将进入mdx的执行过程。</p>
 <p>首先，我们需要了解3个重要的类，结果集RolapResult，求值上下文RolapEvaluator与单元格读取CellReader。这3个类的关系是首先由在RolapResult初始化构造函数中传入一个Query，由Query生成一个RolapEvaluator，然后由Query中的Calc根据RolapEvaluator来获取轴上的成员。获取到所有的成员之后，RolapEvaluator根据成员调用CellReader获取到当前值。</p>
 <h2 id="RolapResult">RolapResult</h2><p>RolapResult是一个运行中的请求的结果集。</p>
-<p>Mondiran的执行结果由RolapResult类表单，由于mdx查询语句本身就包含on rows(行轴上)、on columns（列轴上）和where部分（切片轴上），结果集中相对应的为ROlapAxis对象，这其中有个sliceAxis对象。因此结果集是由若干ROlapAxis对象和一个RolapCell组构成的。每个axis对象又由若干Position对象组成，每个Position对象又可能由若干member组成（注意一个postion会横跨多个维度的成员）。注意ROlapAxis是抽象类，实际的对象类可能随着不同的轴是不同的。如图：<br><img src="/img/mondrian_result.png" alt=""></p>
+<p>Mondiran的执行结果由RolapResult类表单，由于mdx查询语句本身就包含on rows(行轴上)、on columns（列轴上）和where部分（切片轴上），结果集中相对应的为ROlapAxis对象，这其中有个sliceAxis对象。因此结果集是由若干ROlapAxis对象和一个RolapCell组构成的。每个axis对象又由若干Position对象组成，每个Position对象又可能由若干member组成（注意一个postion会横跨多个维度的成员）。注意ROlapAxis是抽象类，实际的对象类可能随着不同的轴是不同的。如图：<br><img src="/img/2014/mondrian_result.png" alt=""></p>
 <p>图中，column轴上两个position(每个position含有一个成员)，分别是:</p>
 <pre><code> [[Measures].[YJD]]
 [[Measures].[GCLC]]
@@ -971,7 +975,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 <h2 id="RolapEvaluator">RolapEvaluator</h2><p>RolapEvaluator即在多维环境中计算表达式。<br>该类中维护一个很重要的对象，即currentMembers,该上下文对象针对每个维度都包含了一个成员；通过setContext方法用来设置当前维度，以开始计算当前维度组合下的表达式值。</p>
 <p>该类有一个方法：<br><code>public final Object evaluateCurrent()</code><br>该方法就是对单元格的求值，在该方法中，规定了solver order的求解顺序。</p>
 <h2 id="CellReader">CellReader</h2><p>CellReader即单元格读取。</p>
-<p>Cells会被求值多次。第一次时, Evaluator使用FastBatchingCellReader来求值。当一个单元被求值时，evaluateCurrent()被调用。此时FastBatchingCellReader并没有被调用，而是为那个cell记录了一个 CellRequest并且return (not throw) an exception。在所有的cells都有了对应的CellRequests之后， Aggregation会生成 SQL，以一个单独的sql请求来载入所有的cells。然后由AggregatingCellReader 重新计算cells，从缓存中返回cells值。<br><img src="/img/CellReader.gif" alt=""></p>
+<p>Cells会被求值多次。第一次时, Evaluator使用FastBatchingCellReader来求值。当一个单元被求值时，evaluateCurrent()被调用。此时FastBatchingCellReader并没有被调用，而是为那个cell记录了一个 CellRequest并且return (not throw) an exception。在所有的cells都有了对应的CellRequests之后， Aggregation会生成 SQL，以一个单独的sql请求来载入所有的cells。然后由AggregatingCellReader 重新计算cells，从缓存中返回cells值。<br><img src="/img/2014/CellReader.gif" alt=""></p>
 <h3 id="FastBatchingCellReader">FastBatchingCellReader</h3><p>主要方法，Object get(Evaluator  evaluator)</p>
 <ol>
 <li>首先根据当前的上下文环境（即一组members）创建cellRequest，cellRequest中包含了所有必要的从star中取值的信息。该组members的交集便是要求值的单元格，其中切片轴上的成员和其他轴上的成员完全同等对待；其中度量轴上的成员要求上StoredMeasure（非计算成员CaculatedMember）；度量值上的成员位于第一个。通过调用request的addConstrainedColumn()方法把各member对应的column和value（属StarColumnPredicate）值加至到request中.</li>
@@ -984,7 +988,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 <li>RolapStar.Column[]，这个指明了基于哪些列(也即基于哪些维度，包括切片维度)进行读取；</li>
 <li>Set<starcolumnpredicate>[]，保存了每列的限定值，对于一列而言，限定值可能会有多个（毕竟是批处理，一次请求多个）；</starcolumnpredicate></li>
 <li>MeasureList，指明求取哪些度量值上的cell（度量值本质是度量维上的限定值）。</li>
-<li>BitKey，该batch的唯一索引。<br>如图所示的一个mdx查询结果界面：<br><img src="/img/fasterBatch.png" alt=""></li>
+<li>BitKey，该batch的唯一索引。<br>如图所示的一个mdx查询结果界面：<br><img src="/img/2014/fasterBatch.png" alt=""></li>
 </ol>
 <p>此时会产生两个batch，每个batch最终可能会产生若干segment，segment是cells的集合，</p>
 <ol>
@@ -1004,7 +1008,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci9b8x73a001tp8go8gbkptgh" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/" data-id="ci9gioctv001t30go0mo0j2th" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -1064,23 +1068,23 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-nosql-distilled" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/nosql-distilled" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/05/nosql-distilled/" class="article-date">
+    <a href="/2015/04/05/2014/nosql-distilled/" class="article-date">
   <time datetime="2015-04-05T07:43:14.000Z" itemprop="datePublished">4月 5 2015</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
+      <a class="article-title" href="/2015/04/05/2014/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
     </h1>
   
 
@@ -97,14 +97,14 @@
 <h3 id="聚合">聚合</h3><p><strong>关系模型把待存储的信息分隔成元组（ 行）。</strong> 元组是种受限的数据结构 ： 它只能包含一系列的值， 因此不能在元组中嵌套另一个元组， 也不能包含由值或元组所组成的列表。 这种简单的数据结构支撑着关系模型 ： 所有操作都必须以元组为目标， 而且其返回值也必须是元组。</p>
 <p>面向聚合所用的方式与之不同， 我们通常操作数据时所用的单元， 其结构都比元组集合复杂得多。 如果能够以这种复杂的结构来存放列表或嵌套其他记录结构就好了。大家在后面的章节中将会看到，“键值数据库”、“ 文档数据库”、“ 列族数据库” 都使用这种更为复杂的记录。 然而， 没有公认的术语来称呼这种复杂的记录， 在本书中， 把它叫做“聚合”（ aggregate）。</p>
 <p>聚合是“ 领域驱动设计”［ Evans］ 中的术语。 <strong>在领域驱动设计中， 我们想把一组相互关联的对象视为一个整体单元来操作， 而这个单元就叫聚合。</strong> 在涉及数据操作与一致性管理时， 更是如此。 一般情况下， 我们通过原子操作（ atomic operation） 更新聚合的值， 并且在与数据存储通信时， 也以聚合为单位。 这个定义也非常符合“ 键值数据库”、“ 文档数据库” 和“ 列族数据库” 的工作方式。 因为用聚合为单位来复制和分片显得比较自然， 所以在集群中操作数据库时， 还是使用聚合比较简单一些。 此外，由于程序员经常通过聚合结构来操作数据， 故而采用聚合也能让其工作更为轻松。</p>
-<h4 id="关系模型与聚合模型示例">关系模型与聚合模型示例</h4><p><img src="/img/QQ图片20150405155439.png" alt=""><br><img src="/img/QQ图片20150405155535.png" alt=""><br>现在我们再来看看， 如果用面向聚合的思路来做， 那么数据模型会是什么样子<br><img src="/img/QQ图片20150405155628.png" alt=""><br>这次也要用一些范例数据， 我们使用 JSON 格式来表示， 因为它是 NoSQL 领域中常用的数据格式。<br><img src="/img/QQ图片20150405155833.png" alt=""></p>
+<h4 id="关系模型与聚合模型示例">关系模型与聚合模型示例</h4><p><img src="/img/2014/QQ图片20150405155439.png" alt=""><br><img src="/img/2014/QQ图片20150405155535.png" alt=""><br>现在我们再来看看， 如果用面向聚合的思路来做， 那么数据模型会是什么样子<br><img src="/img/2014/QQ图片20150405155628.png" alt=""><br>这次也要用一些范例数据， 我们使用 JSON 格式来表示， 因为它是 NoSQL 领域中常用的数据格式。<br><img src="/img/2014/QQ图片20150405155833.png" alt=""></p>
 <h4 id="面向聚合的影响">面向聚合的影响</h4><p>关系型数据库的数据模型中， 没有“ 聚合” 这一概念， 因此我们称之为“ 聚合无知”（ aggregate-ignorant）。 NoSQL 领域中的“ 图数据库” 也是聚合无知的。 这一特征并不是坏事。 聚合的边界一般都很难正确划分出来， 当不同场景要使用同一份数据时，更是如此。 </p>
 <p>选用面向聚合模型的决定性因素， 就在于它非常适合在集群上运行。 大家应该还记得， 这正是 NoSQL 崛起的杀手锏。在集群上运行时， 我们需要把采集数据时所需的节点数降至最小。如果在数据库中明确包含聚合结构， 那么它就可以根据这一重要信息， 知道哪些数据需要一起操作了， 而且这些数据应该放在同一个节点中。</p>
 <p>聚合对于事务处理有一个重要影响。 通常情况下， 面向聚合的数据库确实不支持跨越多个聚合的ACID 事务。 取而代之的是， 它每次只能在一个聚合结构上执行原子操作。 也就是说，如果我们想以原子方式操作多个聚合， 那么就必须自己组织应用程序的代码。</p>
 <h3 id="键值数据模型与文档数据模型">键值数据模型与文档数据模型</h3><p>键值数据库的聚合不透明 ， 只包含一些没有太多意义的大块信息 ； 与此相反， 在文档数据库的聚合中， 可以看到其结构。 不透明的优势在于， 聚合中可以存储任意数据。文档数据库则要限制其中存放的内容， 它定义了其允许的结构与数据类型， 而这样做的好处是， 能够更加灵活地访问数据。</p>
 <p>在键值数据库中， 要访问聚合内容， 只能通过键来查找。 而使用文档数据库时，则可以用聚合中的字段查询。 我们可以只获取一部分聚合， 而不用获取全部内容， 此外， 数据库还可以按照聚合内容创建索引 。</p>
 <h3 id="列族存储">列族存储</h3><p>理解列族模型的最好方式也许就是将其视为两级聚合结构（ two-level aggregate<br>structure）。 与“ 键值存储” 相同，第一个键通常代表行标识符， 可以用它来获取想要的聚合。 列族结构与“ 键值存储” 的区别在于， 其“ 行聚合”（ row aggregate） 本身又是一个映射， 其中包含一些更为详细的值。 这些“ 二级值”（ second-level value）就叫做“ 列”。 与整体访问某行数据一样， 我们也可以操作特定的列。</p>
-<p>列族数据库将列组织为列族。 每一列都必须是某个列族的一部分， 而且访问数据的单元也得是列。 这样设计的前提是， 某个列族中的数据经常需要一起访问。<br><img src="/img/QQ图片20150405161008.png" alt=""><br>于是， 我们也得出了两种数据组织方式。</p>
+<p>列族数据库将列组织为列族。 每一列都必须是某个列族的一部分， 而且访问数据的单元也得是列。 这样设计的前提是， 某个列族中的数据经常需要一起访问。<br><img src="/img/2014/QQ图片20150405161008.png" alt=""><br>于是， 我们也得出了两种数据组织方式。</p>
 <ul>
 <li>面向行（ row-oriented）： 每一行都是一个聚合（ 例如 ID 为 1234 的顾客就是一个聚合）， 该聚合内部存有一些包含有用数据块（ 客户信息、 订单记录） 的列族。</li>
 <li>面向列（ column-oriented）： 每个列族都定义了一种记录类型（ 例如客户信息），其中每行都表示一条记录 。 你可以将数据库中的大“ 行” 理解为列族中每一个短行记录的串接。</li>
@@ -116,7 +116,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/nosql-distilled/" data-id="ci9b8x72t001bp8gogyiq1lwj" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/2014/nosql-distilled/" data-id="ci9giocth001b30goxn5hmw07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -128,9 +128,9 @@
 
 
   
-    <article id="post-mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/05/mongodb-biji/" class="article-date">
+    <a href="/2015/04/05/2014/mongodb-biji/" class="article-date">
   <time datetime="2015-04-05T04:06:03.000Z" itemprop="datePublished">4月 5 2015</time>
 </a>
     
@@ -142,7 +142,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
+      <a class="article-title" href="/2015/04/05/2014/mongodb-biji/">MongoDB权威指南笔记</a>
     </h1>
   
 
@@ -167,7 +167,7 @@
 <p><strong>大尺寸，低价值的数据</strong>：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储</p>
 <p><strong>高伸缩性的场景</strong>： MongoDB 非常适合由数十或数百台服务器组成的数据库。 MongoDB的路线图中已经包含对 MapReduce 引擎的内置支持</p>
 <p><strong>用于对象及 JSON 数据的存储</strong>： MongoDB 的 BSON 数据格式非常适合文档化格式的存储及查询</p>
-<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/mongodb_chengci.png" alt=""></p>
+<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/2014/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/2014/mongodb_chengci.png" alt=""></p>
 <h2 id="性能篇">性能篇</h2><p>MongoDB 提供了多样性的索引支持，索引信息被保存在 system.indexes 中，且默认总是为_id<br>创建索引 ，它的索引使用基本和 MySQL 等关系型数据库一样。</p>
 <h3 id="基础索引">基础索引</h3><pre><code>在字段 <span class="tag">age</span> 上创建索引， 1(升序);<span class="tag">-1</span>(降序)
 <span class="tag">db</span><span class="class">.t3</span><span class="class">.ensureIndex</span>(<span class="rules">{<span class="rule"><span class="attribute">age</span>:<span class="value"><span class="number">1</span>})</span></span></span>
@@ -190,7 +190,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  只需要在某一个服务启动时加上–master 参数，而另一个服务加上–slave 与–source 参数，即可实现同步。 MongoDB 的最新版本已不再推荐此方案。</p>
 </li>
 <li><p>Replica Sets 复制集：</p>
-<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/mongodb_replica.png" alt=""></p>
+<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/2014/mongodb_replica.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Sharding_分片">Sharding 分片</h3><p>这是一种将海量的数据水平扩展的数据库集群系统，数据分表存储在 sharding 的各个节点上，使用者通过简单的配置就可以很方便地构建一个分布式 MongoDB 集群。</p>
@@ -203,7 +203,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  为了将一个特定的 collection 存储在多个 shard 中，需要为该 collection 指定一个shard key，例如{age: 1} ，shard key 可以决定该条记录属于哪个 chunk。 Config Servers 就是用来存储：所有 shard 节点的配置信息、每个 chunk 的 shard key 范围、 chunk 在各 shard 的分布情况、该集群中所有 DB 和 collection 的 sharding 配置信息。</p>
 </li>
 <li><p>Route Process</p>
-<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/mongodb_shard.png" alt=""></p>
+<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/2014/mongodb_shard.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Replica_Sets_+_Sharding">Replica Sets + Sharding</h3><p>MongoDB Auto-Sharding 解决了海量存储和动态扩容的问题，但离实际生产环境所需的高可<br>靠、高可用还有些距离，所以有了 ” Replica Sets + Sharding”的解决方案:</p>
@@ -218,12 +218,12 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  使用 3 个路由进程，实现负载平衡，提高客户端接入性能</p>
 </li>
 </ul>
-<p><img src="/img/mongodb_replica_shard.png" alt=""></p>
+<p><img src="/img/2014/mongodb_replica_shard.png" alt=""></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci9b8x731001lp8go0xtg3jcv" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/2014/mongodb-biji/" data-id="ci9gioctp001l30goncju7wgj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -283,23 +283,23 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

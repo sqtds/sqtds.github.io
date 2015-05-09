@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/03/antlr4-tips/" class="article-date">
+    <a href="/2014/09/03/2014/antlr4-tips/" class="article-date">
   <time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/antlr4-tips/">antlr4-技巧（十）</a>
+      <a class="article-title" href="/2014/09/03/2014/antlr4-tips/">antlr4-技巧（十）</a>
     </h1>
   
 
@@ -93,7 +93,7 @@
       
         <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
 <h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
-<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/QQ图片20140903210304.jpg" alt=""></p>
+<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/2014/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/2014/QQ图片20140903210304.jpg" alt=""></p>
 <h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
 <pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
 <span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
@@ -250,7 +250,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci9b8x760004yp8gopw0lstcu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/2014/antlr4-tips/" data-id="ci9giocwf004y30gopyz6p7jp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -262,9 +262,9 @@ IGNORE      :   .                       -&gt; more ;
 
 
   
-    <article id="post-antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/03/antlr4-semantic-predicate/" class="article-date">
+    <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
   <time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
 </a>
     
@@ -280,7 +280,7 @@ IGNORE      :   .                       -&gt; more ;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
+      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
     </h1>
   
 
@@ -295,7 +295,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci9b8x76a0057p8goenmdjc1m" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/2014/antlr4-semantic-predicate/" data-id="ci9giocwl005730gou1norb51" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -307,9 +307,9 @@ IGNORE      :   .                       -&gt; more ;
 
 
   
-    <article id="post-antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/01/antlr4-use-problem/" class="article-date">
+    <a href="/2014/09/01/2014/antlr4-use-problem/" class="article-date">
   <time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
 </a>
     
@@ -325,7 +325,7 @@ IGNORE      :   .                       -&gt; more ;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/antlr4-use-problem/">antlr4-使用小结(续)</a>
+      <a class="article-title" href="/2014/09/01/2014/antlr4-use-problem/">antlr4-使用小结(续)</a>
     </h1>
   
 
@@ -362,7 +362,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-use-problem/" data-id="ci9b8x75y004vp8gomvwe2oki" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/01/2014/antlr4-use-problem/" data-id="ci9giocwb004v30goluatzfyb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -374,9 +374,9 @@ term4  returns [Exp <span class="built_in">exp</span>]
 
 
   
-    <article id="post-antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/01/antlr4-exception/" class="article-date">
+    <a href="/2014/09/01/2014/antlr4-exception/" class="article-date">
   <time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
 </a>
     
@@ -392,7 +392,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/antlr4-exception/">antlr4-异常处理（八）</a>
+      <a class="article-title" href="/2014/09/01/2014/antlr4-exception/">antlr4-异常处理（八）</a>
     </h1>
   
 
@@ -503,7 +503,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/01/antlr4-exception/" data-id="ci9b8x76i005gp8go6so30lgi" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/01/2014/antlr4-exception/" data-id="ci9giocwt005g30govs1fwg5m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -563,23 +563,23 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

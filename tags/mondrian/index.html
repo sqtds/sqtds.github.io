@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/04/mondrian-source-code-9/" class="article-date">
+    <a href="/2015/04/04/2014/mondrian-source-code-9/" class="article-date">
   <time datetime="2015-04-04T10:41:49.000Z" itemprop="datePublished">4月 4 2015</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/04/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
+      <a class="article-title" href="/2015/04/04/2014/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
     </h1>
   
 
@@ -97,7 +97,7 @@
 <ul>
 <li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
 <li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
-<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/mondrian_agg2.png" alt=""></li>
+<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/2014/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/2014/mondrian_agg2.png" alt=""></li>
 <li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储（如果是稠密的，就用数组存储，如果是稀疏的，则用Map存储）；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
 <li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
 </ul>
@@ -152,8 +152,8 @@
     }
 }    
 </code></pre><p>在这里，SegmentWithData包装了Segment与它单元值之间的关系，通过SegmentAxis来判断当前比较的值是否相同。</p>
-<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/mondrian_agg3.png" alt=""><br><img src="/img/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/mondrian_agg5.png" alt=""></p>
-<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/mondrian_agg7.png" alt=""></p>
+<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/2014/mondrian_agg3.png" alt=""><br><img src="/img/2014/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/2014/mondrian_agg5.png" alt=""></p>
+<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/2014/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/2014/mondrian_agg7.png" alt=""></p>
 <p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
 <pre><code><span class="type">Query</span> query = connection.parseQuery(
     <span class="string">"SELECT"</span> +
@@ -189,7 +189,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-9/" data-id="ci9b8x735001pp8gon92e57i8" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-9/" data-id="ci9giocts001p30gof94iremj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -201,9 +201,9 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-mondrian-source-code-8" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-8" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/04/mondrian-source-code-8/" class="article-date">
+    <a href="/2015/04/04/2014/mondrian-source-code-8/" class="article-date">
   <time datetime="2015-04-04T10:07:17.000Z" itemprop="datePublished">4月 4 2015</time>
 </a>
     
@@ -219,7 +219,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/04/mondrian-source-code-8/">mondrian 源码解读（八）-计算结果</a>
+      <a class="article-title" href="/2015/04/04/2014/mondrian-source-code-8/">mondrian 源码解读（八）-计算结果</a>
     </h1>
   
 
@@ -230,7 +230,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         <p>上一节我们了解了member的查询过程。下面，我们将进入mdx的执行过程。</p>
 <p>首先，我们需要了解3个重要的类，结果集RolapResult，求值上下文RolapEvaluator与单元格读取CellReader。这3个类的关系是首先由在RolapResult初始化构造函数中传入一个Query，由Query生成一个RolapEvaluator，然后由Query中的Calc根据RolapEvaluator来获取轴上的成员。获取到所有的成员之后，RolapEvaluator根据成员调用CellReader获取到当前值。</p>
 <h2 id="RolapResult">RolapResult</h2><p>RolapResult是一个运行中的请求的结果集。</p>
-<p>Mondiran的执行结果由RolapResult类表单，由于mdx查询语句本身就包含on rows(行轴上)、on columns（列轴上）和where部分（切片轴上），结果集中相对应的为ROlapAxis对象，这其中有个sliceAxis对象。因此结果集是由若干ROlapAxis对象和一个RolapCell组构成的。每个axis对象又由若干Position对象组成，每个Position对象又可能由若干member组成（注意一个postion会横跨多个维度的成员）。注意ROlapAxis是抽象类，实际的对象类可能随着不同的轴是不同的。如图：<br><img src="/img/mondrian_result.png" alt=""></p>
+<p>Mondiran的执行结果由RolapResult类表单，由于mdx查询语句本身就包含on rows(行轴上)、on columns（列轴上）和where部分（切片轴上），结果集中相对应的为ROlapAxis对象，这其中有个sliceAxis对象。因此结果集是由若干ROlapAxis对象和一个RolapCell组构成的。每个axis对象又由若干Position对象组成，每个Position对象又可能由若干member组成（注意一个postion会横跨多个维度的成员）。注意ROlapAxis是抽象类，实际的对象类可能随着不同的轴是不同的。如图：<br><img src="/img/2014/mondrian_result.png" alt=""></p>
 <p>图中，column轴上两个position(每个position含有一个成员)，分别是:</p>
 <pre><code> [[Measures].[YJD]]
 [[Measures].[GCLC]]
@@ -247,7 +247,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 <h2 id="RolapEvaluator">RolapEvaluator</h2><p>RolapEvaluator即在多维环境中计算表达式。<br>该类中维护一个很重要的对象，即currentMembers,该上下文对象针对每个维度都包含了一个成员；通过setContext方法用来设置当前维度，以开始计算当前维度组合下的表达式值。</p>
 <p>该类有一个方法：<br><code>public final Object evaluateCurrent()</code><br>该方法就是对单元格的求值，在该方法中，规定了solver order的求解顺序。</p>
 <h2 id="CellReader">CellReader</h2><p>CellReader即单元格读取。</p>
-<p>Cells会被求值多次。第一次时, Evaluator使用FastBatchingCellReader来求值。当一个单元被求值时，evaluateCurrent()被调用。此时FastBatchingCellReader并没有被调用，而是为那个cell记录了一个 CellRequest并且return (not throw) an exception。在所有的cells都有了对应的CellRequests之后， Aggregation会生成 SQL，以一个单独的sql请求来载入所有的cells。然后由AggregatingCellReader 重新计算cells，从缓存中返回cells值。<br><img src="/img/CellReader.gif" alt=""></p>
+<p>Cells会被求值多次。第一次时, Evaluator使用FastBatchingCellReader来求值。当一个单元被求值时，evaluateCurrent()被调用。此时FastBatchingCellReader并没有被调用，而是为那个cell记录了一个 CellRequest并且return (not throw) an exception。在所有的cells都有了对应的CellRequests之后， Aggregation会生成 SQL，以一个单独的sql请求来载入所有的cells。然后由AggregatingCellReader 重新计算cells，从缓存中返回cells值。<br><img src="/img/2014/CellReader.gif" alt=""></p>
 <h3 id="FastBatchingCellReader">FastBatchingCellReader</h3><p>主要方法，Object get(Evaluator  evaluator)</p>
 <ol>
 <li>首先根据当前的上下文环境（即一组members）创建cellRequest，cellRequest中包含了所有必要的从star中取值的信息。该组members的交集便是要求值的单元格，其中切片轴上的成员和其他轴上的成员完全同等对待；其中度量轴上的成员要求上StoredMeasure（非计算成员CaculatedMember）；度量值上的成员位于第一个。通过调用request的addConstrainedColumn()方法把各member对应的column和value（属StarColumnPredicate）值加至到request中.</li>
@@ -260,7 +260,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 <li>RolapStar.Column[]，这个指明了基于哪些列(也即基于哪些维度，包括切片维度)进行读取；</li>
 <li>Set<starcolumnpredicate>[]，保存了每列的限定值，对于一列而言，限定值可能会有多个（毕竟是批处理，一次请求多个）；</starcolumnpredicate></li>
 <li>MeasureList，指明求取哪些度量值上的cell（度量值本质是度量维上的限定值）。</li>
-<li>BitKey，该batch的唯一索引。<br>如图所示的一个mdx查询结果界面：<br><img src="/img/fasterBatch.png" alt=""></li>
+<li>BitKey，该batch的唯一索引。<br>如图所示的一个mdx查询结果界面：<br><img src="/img/2014/fasterBatch.png" alt=""></li>
 </ol>
 <p>此时会产生两个batch，每个batch最终可能会产生若干segment，segment是cells的集合，</p>
 <ol>
@@ -280,7 +280,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/04/mondrian-source-code-8/" data-id="ci9b8x73a001tp8go8gbkptgh" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/" data-id="ci9gioctv001t30go0mo0j2th" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -292,9 +292,9 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/11/13/mondrian-ext-function执行机制/" class="article-date">
+    <a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="article-date">
   <time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
 </a>
     
@@ -310,7 +310,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+      <a class="article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
     </h1>
   
 
@@ -348,13 +348,13 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 </ol>
         
           <p class="article-more-link">
-            <a href="/2014/11/13/mondrian-ext-function执行机制/#more">Read More</a>
+            <a href="/2014/11/13/2014/mondrian-ext-function执行机制/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci9b8x740002hp8gozczhqxa0" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/13/2014/mondrian-ext-function执行机制/" data-id="ci9giocug002h30gokhxx2fq5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -366,9 +366,9 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/11/02/mondrian-source-code-7/" class="article-date">
+    <a href="/2014/11/02/2014/mondrian-source-code-7/" class="article-date">
   <time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
 </a>
     
@@ -384,7 +384,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+      <a class="article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
     </h1>
   
 
@@ -425,7 +425,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         <span class="keyword">boolean</span> failIfNotFound)</span></span>;
 }    
 </code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
-<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
+<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/2014/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
 <pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
 
     <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
@@ -495,7 +495,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci9b8x73e001wp8gogt7cp94c" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/02/2014/mondrian-source-code-7/" data-id="ci9giocty001w30gob06rrvvo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -507,9 +507,9 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 
 
   
-    <article id="post-mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-6/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-6/" class="article-date">
   <time datetime="2014-10-26T10:07:05.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -525,7 +525,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
     </h1>
   
 
@@ -575,7 +575,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci9b8x73h001zp8go6806n4lp" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-6/" data-id="ci9giocu1001z30gokiz36o3t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -587,9 +587,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-5/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
   <time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -605,7 +605,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
     </h1>
   
 
@@ -616,16 +616,16 @@ Table对象..星型模型
         <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
 <h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
 <h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
-<h3 id="结构图">结构图</h3><p><img src="/img/QQ图片20141026172247.jpg" alt=""><br>
+<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-5/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-5/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci9b8x73k0022p8goieqovu8h" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-5/" data-id="ci9giocu3002230goz9pd2uym" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -637,9 +637,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-4/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-4/" class="article-date">
   <time datetime="2014-10-26T05:27:33.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -655,7 +655,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
     </h1>
   
 
@@ -685,13 +685,13 @@ Table对象..星型模型
 </code></pre><p>实际上，由于这里永远是true，所以返回的是JavaccParserValidatorImpl。这个类也是实现了MdxParserValidator。它与原生的javaccparser生成的MdxParserValidatorImpl的主要不同在于factory的创建方式和异常的处理方式，这里就不做过多解读了，具体请看源代码。
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-4/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-4/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci9b8x73n0025p8goyw6bjo0w" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-4/" data-id="ci9giocu6002530goyvk70vyi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -703,9 +703,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-3/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-3/" class="article-date">
   <time datetime="2014-10-26T04:12:55.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -721,7 +721,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
     </h1>
   
 
@@ -734,13 +734,13 @@ Table对象..星型模型
 <h3 id="计算层(dimensional_layer)">计算层(dimensional layer)</h3><p>分析,验证,执行MDX查询. 一个mdx查询语句会有多个处理阶段。先是计算轴，然后是轴上的单元值。为效率起见，计算层批量将单元请求发送到聚集层。请求转换器允许程序操作存在的请求，而不是为每个请求从头构造mdx请求。元数据描述了计算模型和它怎么匹配到关系模型。</p>
 <h3 id="聚集层(star_layer)">聚集层(star layer)</h3><p>一个聚集指内存中一组计算值(cell),这些值通过维列来限制.计算层发送单元请求,如果请求不在缓存中,或者不能通过旋转聚集导出的话,聚集层向存储层发送请求. 聚集层是一个数据缓冲层(cache)<br>从数据库来的单元数据，聚合后提供给计算层。聚集层的主要作用是提高系统的性能。 </p>
 <h3 id="存储层(storage_layer)">存储层(storage layer)</h3><p>提供聚集单元数据(cell)和维表的成员(member),这些层可以不在同一机子上,但是计算和聚集层必须在同一台机子上。有三种需要存储的数据：事实数据(事实表)、维度表和聚集数据(即聚合表)</p>
-<p><img src="/img/arch_mondrian_v1_lrg.png" alt="架构图"></p>
+<p><img src="/img/2014/arch_mondrian_v1_lrg.png" alt="架构图"></p>
 <p>更多内容请移步：<a href="http://mondrian.pentaho.com/documentation/architecture.php" target="_blank" rel="external">http://mondrian.pentaho.com/documentation/architecture.php</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci9b8x73q0028p8goqysd0fe1" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-3/" data-id="ci9giocu8002830gokiaw5iv5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -752,9 +752,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-2/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-2/" class="article-date">
   <time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -770,7 +770,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
     </h1>
   
 
@@ -783,13 +783,13 @@ Table对象..星型模型
 <p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-2/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-2/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci9b8x73t002bp8godsh2cz70" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-2/" data-id="ci9giocub002b30go5wcr3ymc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -801,9 +801,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-1/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
   <time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -819,7 +819,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
     </h1>
   
 
@@ -832,13 +832,13 @@ Table对象..星型模型
 <p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-1/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-1/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci9b8x73w002ep8golepslfxr" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-1/" data-id="ci9giocue002e30goe9mnuc7r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -902,23 +902,23 @@ Table对象..星型模型
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

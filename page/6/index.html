@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/19/hadoop2/" class="article-date">
+    <a href="/2014/05/19/2014/hadoop2/" class="article-date">
   <time datetime="2014-05-19T02:30:32.000Z" itemprop="datePublished">5月 19 2014</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/hadoop2/">hadoop配置信息处理（2）</a>
+      <a class="article-title" href="/2014/05/19/2014/hadoop2/">hadoop配置信息处理（2）</a>
     </h1>
   
 
@@ -115,7 +115,7 @@
 <p>合并资源指将多个配置文件合并，产生一个配置。如果有两个配置文件，也就是两个资源，如 core-default.xml 和 core-site.xml，通过 Configuration 类的 loadResources() 方法，把它们合并成一个配置。代码如下：<br>    Configurationconf = new Configuration();<br>    conf.addResource(“core-default.xml”);<br>    conf.addResource(“core-site.xml”);<br>如果这两个配置资源都包含了相同的配置项，而且前一个资源的配置项没有标记为final，那么，后面的配置将覆盖前面的配置。上面的例子中，core-site.xml 中的配置将覆盖core-default.xml 中的同名配置。如果在第一个资源（core-default.xml）中某配置项被标记为final，那么，在加载第二个资源的时候，会有警告提示。</p>
 <p>Hadoop 配置系统还有一个很重要的功能，就是属性扩展。如配置项 dfs.name.dir 的值是${hadoop.tmp.dir}/dfs/name，其中，${hadoop.tmp.dir} 会使用 Configuration 中的相应属性值进行扩展。如果 hadoop.tmp.dir 的值是“/data”，那么扩展后的 dfs.name.dir 的值就是“/data/dfs/name”。</p>
 <p>使 用 Configuration 类 的 一 般 过 程 是 ： 构 造 Configuration 对 象， 并 通 过 类 的addResource() 方法添加需要加载的资源 ；然后就可以使用 get<em> 方法和 set</em> 方法访问 / 设置配置项，资源会在第一次使用的时候自动加载到对象中。</p>
-<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
+<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/2014/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
 <p>布尔变量quietmode，用来设置加载配置的模式。如果quietmode为true （默认值），则在加载解析配置文件的过程中，不输出日志信息。quietmode只是一个方便开发人员调试的变量。</p>
 <p>数组resources保存了所有通过addResource( ) 方法添加Congiguation对象的资源。</p>
 <p>布尔变量 loadDefaults 用于确定是否加载默认资源，这些默认资源保存在 defaultResources中。注意，defaultResources 是个静态成员变量，通过方法 addDefaultResource() 可以添加系统的默认资源。在 HDFS 中，会把 hdfs-default.xml 和 hdfs-site.xml 作为默认资源，并通过addDefaultResource() 保存在成员变量defaultResources 中 ；在 MapReduce 中，默认资源是mapred-default.xml 和 mapred-site.xml。如 HDFS 的 DataNode 中，就有下面的代码，加载上述两个默认资源：</p>
@@ -145,7 +145,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/19/hadoop2/" data-id="ci9b8x75a003xp8goaqbjnc5g" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/19/2014/hadoop2/" data-id="ci9giocvi003x30gof4ypehwe" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
@@ -157,9 +157,9 @@
 
 
   
-    <article id="post-composition" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/composition" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/18/composition/" class="article-date">
+    <a href="/2014/05/18/2014/composition/" class="article-date">
   <time datetime="2014-05-18T14:59:53.000Z" itemprop="datePublished">5月 18 2014</time>
 </a>
     
@@ -175,7 +175,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/18/composition/">Android 应用程序的组成部分</a>
+      <a class="article-title" href="/2014/05/18/2014/composition/">Android 应用程序的组成部分</a>
     </h1>
   
 
@@ -186,13 +186,13 @@
         <p>android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。
         
           <p class="article-more-link">
-            <a href="/2014/05/18/composition/#more">Read More</a>
+            <a href="/2014/05/18/2014/composition/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/18/composition/" data-id="ci9b8x75j0049p8gosk734vif" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/18/2014/composition/" data-id="ci9giocvr004930gon5wsqlud" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
@@ -204,9 +204,9 @@
 
 
   
-    <article id="post-列式存储机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/列式存储机制" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/11/列式存储机制/" class="article-date">
+    <a href="/2014/05/11/2014/列式存储机制/" class="article-date">
   <time datetime="2014-05-11T12:17:33.000Z" itemprop="datePublished">5月 11 2014</time>
 </a>
     
@@ -218,7 +218,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/11/列式存储机制/">列式存储机制</a>
+      <a class="article-title" href="/2014/05/11/2014/列式存储机制/">列式存储机制</a>
     </h1>
   
 
@@ -230,13 +230,13 @@
 <p>由于大数据的发展，越来越多的企业利用大数据来挖掘数据更多的价值，关系型数据库受到了越来越严重的挑战。人们迫切需要找到一个新的突破口来处理大数据。在这样的环境下，列式存储孕育而出。
         
           <p class="article-more-link">
-            <a href="/2014/05/11/列式存储机制/#more">Read More</a>
+            <a href="/2014/05/11/2014/列式存储机制/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/11/列式存储机制/" data-id="ci9b8x721000bp8go74rkfqzo" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/11/2014/列式存储机制/" data-id="ci9giocst000b30go3e8gnyho" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/列式/">列式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/存储/">存储</a></li></ul>
@@ -248,9 +248,9 @@
 
 
   
-    <article id="post-hexo-cmd" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/hexo-cmd" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/11/hexo-cmd/" class="article-date">
+    <a href="/2014/05/11/2014/hexo-cmd/" class="article-date">
   <time datetime="2014-05-11T09:26:20.000Z" itemprop="datePublished">5月 11 2014</time>
 </a>
     
@@ -262,7 +262,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/11/hexo-cmd/">hexo常用命令</a>
+      <a class="article-title" href="/2014/05/11/2014/hexo-cmd/">hexo常用命令</a>
     </h1>
   
 
@@ -273,13 +273,13 @@
         <h2 id="hexo_g_==_hexo_generate">hexo g == hexo generate</h2><p>记住：每次修改本地文件后，需要hexo generate才能保存。每次使用命令时，都要在H:\hexo目录下。
         
           <p class="article-more-link">
-            <a href="/2014/05/11/hexo-cmd/#more">Read More</a>
+            <a href="/2014/05/11/2014/hexo-cmd/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/11/hexo-cmd/" data-id="ci9b8x758003wp8go3qfvrldv" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/11/2014/hexo-cmd/" data-id="ci9giocvg003w30goncnmdegj" class="article-share-link">Share</a>
       
       
     </footer>
@@ -341,23 +341,23 @@
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

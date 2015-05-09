@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/11/13/mondrian-ext-function执行机制/" class="article-date">
+    <a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="article-date">
   <time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/13/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+      <a class="article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
     </h1>
   
 
@@ -121,13 +121,13 @@
 </ol>
         
           <p class="article-more-link">
-            <a href="/2014/11/13/mondrian-ext-function执行机制/#more">Read More</a>
+            <a href="/2014/11/13/2014/mondrian-ext-function执行机制/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/13/mondrian-ext-function执行机制/" data-id="ci9b8x740002hp8gozczhqxa0" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/13/2014/mondrian-ext-function执行机制/" data-id="ci9giocug002h30gokhxx2fq5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -139,9 +139,9 @@
 
 
   
-    <article id="post-mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/11/02/mondrian-source-code-7/" class="article-date">
+    <a href="/2014/11/02/2014/mondrian-source-code-7/" class="article-date">
   <time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
 </a>
     
@@ -157,7 +157,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/02/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+      <a class="article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
     </h1>
   
 
@@ -198,7 +198,7 @@
         <span class="keyword">boolean</span> failIfNotFound)</span></span>;
 }    
 </code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
-<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
+<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/2014/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
 <pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
 
     <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
@@ -268,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/11/02/mondrian-source-code-7/" data-id="ci9b8x73e001wp8gogt7cp94c" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/11/02/2014/mondrian-source-code-7/" data-id="ci9giocty001w30gob06rrvvo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -280,9 +280,9 @@
 
 
   
-    <article id="post-mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-6/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-6/" class="article-date">
   <time datetime="2014-10-26T10:07:05.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -298,7 +298,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
     </h1>
   
 
@@ -348,7 +348,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-6/" data-id="ci9b8x73h001zp8go6806n4lp" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-6/" data-id="ci9giocu1001z30gokiz36o3t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -360,9 +360,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-5/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
   <time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -378,7 +378,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
     </h1>
   
 
@@ -389,16 +389,16 @@ Table对象..星型模型
         <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
 <h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
 <h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
-<h3 id="结构图">结构图</h3><p><img src="/img/QQ图片20141026172247.jpg" alt=""><br>
+<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-5/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-5/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-5/" data-id="ci9b8x73k0022p8goieqovu8h" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-5/" data-id="ci9giocu3002230goz9pd2uym" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -410,9 +410,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-4/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-4/" class="article-date">
   <time datetime="2014-10-26T05:27:33.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -428,7 +428,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
     </h1>
   
 
@@ -458,13 +458,13 @@ Table对象..星型模型
 </code></pre><p>实际上，由于这里永远是true，所以返回的是JavaccParserValidatorImpl。这个类也是实现了MdxParserValidator。它与原生的javaccparser生成的MdxParserValidatorImpl的主要不同在于factory的创建方式和异常的处理方式，这里就不做过多解读了，具体请看源代码。
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-4/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-4/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-4/" data-id="ci9b8x73n0025p8goyw6bjo0w" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-4/" data-id="ci9giocu6002530goyvk70vyi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -476,9 +476,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-3/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-3/" class="article-date">
   <time datetime="2014-10-26T04:12:55.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -494,7 +494,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
     </h1>
   
 
@@ -507,13 +507,13 @@ Table对象..星型模型
 <h3 id="计算层(dimensional_layer)">计算层(dimensional layer)</h3><p>分析,验证,执行MDX查询. 一个mdx查询语句会有多个处理阶段。先是计算轴，然后是轴上的单元值。为效率起见，计算层批量将单元请求发送到聚集层。请求转换器允许程序操作存在的请求，而不是为每个请求从头构造mdx请求。元数据描述了计算模型和它怎么匹配到关系模型。</p>
 <h3 id="聚集层(star_layer)">聚集层(star layer)</h3><p>一个聚集指内存中一组计算值(cell),这些值通过维列来限制.计算层发送单元请求,如果请求不在缓存中,或者不能通过旋转聚集导出的话,聚集层向存储层发送请求. 聚集层是一个数据缓冲层(cache)<br>从数据库来的单元数据，聚合后提供给计算层。聚集层的主要作用是提高系统的性能。 </p>
 <h3 id="存储层(storage_layer)">存储层(storage layer)</h3><p>提供聚集单元数据(cell)和维表的成员(member),这些层可以不在同一机子上,但是计算和聚集层必须在同一台机子上。有三种需要存储的数据：事实数据(事实表)、维度表和聚集数据(即聚合表)</p>
-<p><img src="/img/arch_mondrian_v1_lrg.png" alt="架构图"></p>
+<p><img src="/img/2014/arch_mondrian_v1_lrg.png" alt="架构图"></p>
 <p>更多内容请移步：<a href="http://mondrian.pentaho.com/documentation/architecture.php" target="_blank" rel="external">http://mondrian.pentaho.com/documentation/architecture.php</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-3/" data-id="ci9b8x73q0028p8goqysd0fe1" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-3/" data-id="ci9giocu8002830gokiaw5iv5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -525,9 +525,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-2/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-2/" class="article-date">
   <time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -543,7 +543,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
     </h1>
   
 
@@ -556,13 +556,13 @@ Table对象..星型模型
 <p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-2/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-2/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-2/" data-id="ci9b8x73t002bp8godsh2cz70" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-2/" data-id="ci9giocub002b30go5wcr3ymc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -574,9 +574,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/10/26/mondrian-source-code-1/" class="article-date">
+    <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
   <time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     
@@ -592,7 +592,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
     </h1>
   
 
@@ -605,13 +605,13 @@ Table对象..星型模型
 <p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
         
           <p class="article-more-link">
-            <a href="/2014/10/26/mondrian-source-code-1/#more">Read More</a>
+            <a href="/2014/10/26/2014/mondrian-source-code-1/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/10/26/mondrian-source-code-1/" data-id="ci9b8x73w002ep8golepslfxr" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/10/26/2014/mondrian-source-code-1/" data-id="ci9giocue002e30goe9mnuc7r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -623,9 +623,9 @@ Table对象..星型模型
 
 
   
-    <article id="post-antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/03/antlr4-tips/" class="article-date">
+    <a href="/2014/09/03/2014/antlr4-tips/" class="article-date">
   <time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
 </a>
     
@@ -641,7 +641,7 @@ Table对象..星型模型
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/antlr4-tips/">antlr4-技巧（十）</a>
+      <a class="article-title" href="/2014/09/03/2014/antlr4-tips/">antlr4-技巧（十）</a>
     </h1>
   
 
@@ -651,7 +651,7 @@ Table对象..星型模型
       
         <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
 <h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
-<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/QQ图片20140903210304.jpg" alt=""></p>
+<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/2014/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/2014/QQ图片20140903210304.jpg" alt=""></p>
 <h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
 <pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
 <span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
@@ -808,7 +808,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-tips/" data-id="ci9b8x760004yp8gopw0lstcu" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/2014/antlr4-tips/" data-id="ci9giocwf004y30gopyz6p7jp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -820,9 +820,9 @@ IGNORE      :   .                       -&gt; more ;
 
 
   
-    <article id="post-antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/09/03/antlr4-semantic-predicate/" class="article-date">
+    <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
   <time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
 </a>
     
@@ -838,7 +838,7 @@ IGNORE      :   .                       -&gt; more ;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
+      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
     </h1>
   
 
@@ -853,7 +853,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/09/03/antlr4-semantic-predicate/" data-id="ci9b8x76a0057p8goenmdjc1m" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/09/03/2014/antlr4-semantic-predicate/" data-id="ci9giocwl005730gou1norb51" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -917,23 +917,23 @@ IGNORE      :   .                       -&gt; more ;
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

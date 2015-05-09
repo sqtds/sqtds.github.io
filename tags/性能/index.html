@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/27/性能调优总结/" class="article-date">
+    <a href="/2015/04/27/2014/性能调优总结/" class="article-date">
   <time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/27/性能调优总结/">性能调优总结</a>
+      <a class="article-title" href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
     </h1>
   
 
@@ -91,7 +91,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/性能调优.png" alt="性能调优"></p>
+        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
 <h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
 <p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
 <p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
@@ -105,7 +105,7 @@
 <h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
 <h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
 <h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
-<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
+<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/2014/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
 <h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
 <h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
 <p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
@@ -113,7 +113,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/27/性能调优总结/" data-id="ci9b8x71w0006p8go9abq0ikz" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/27/2014/性能调优总结/" data-id="ci9giocsq000630goqppf06op" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
@@ -173,23 +173,23 @@
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

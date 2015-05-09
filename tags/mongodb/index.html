@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mongodb-biji" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/04/05/mongodb-biji/" class="article-date">
+    <a href="/2015/04/05/2014/mongodb-biji/" class="article-date">
   <time datetime="2015-04-05T04:06:03.000Z" itemprop="datePublished">4月 5 2015</time>
 </a>
     
@@ -79,7 +79,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/mongodb-biji/">MongoDB权威指南笔记</a>
+      <a class="article-title" href="/2015/04/05/2014/mongodb-biji/">MongoDB权威指南笔记</a>
     </h1>
   
 
@@ -104,7 +104,7 @@
 <p><strong>大尺寸，低价值的数据</strong>：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储</p>
 <p><strong>高伸缩性的场景</strong>： MongoDB 非常适合由数十或数百台服务器组成的数据库。 MongoDB的路线图中已经包含对 MapReduce 引擎的内置支持</p>
 <p><strong>用于对象及 JSON 数据的存储</strong>： MongoDB 的 BSON 数据格式非常适合文档化格式的存储及查询</p>
-<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/mongodb_chengci.png" alt=""></p>
+<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/2014/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/2014/mongodb_chengci.png" alt=""></p>
 <h2 id="性能篇">性能篇</h2><p>MongoDB 提供了多样性的索引支持，索引信息被保存在 system.indexes 中，且默认总是为_id<br>创建索引 ，它的索引使用基本和 MySQL 等关系型数据库一样。</p>
 <h3 id="基础索引">基础索引</h3><pre><code>在字段 <span class="tag">age</span> 上创建索引， 1(升序);<span class="tag">-1</span>(降序)
 <span class="tag">db</span><span class="class">.t3</span><span class="class">.ensureIndex</span>(<span class="rules">{<span class="rule"><span class="attribute">age</span>:<span class="value"><span class="number">1</span>})</span></span></span>
@@ -127,7 +127,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  只需要在某一个服务启动时加上–master 参数，而另一个服务加上–slave 与–source 参数，即可实现同步。 MongoDB 的最新版本已不再推荐此方案。</p>
 </li>
 <li><p>Replica Sets 复制集：</p>
-<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/mongodb_replica.png" alt=""></p>
+<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/2014/mongodb_replica.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Sharding_分片">Sharding 分片</h3><p>这是一种将海量的数据水平扩展的数据库集群系统，数据分表存储在 sharding 的各个节点上，使用者通过简单的配置就可以很方便地构建一个分布式 MongoDB 集群。</p>
@@ -140,7 +140,7 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  为了将一个特定的 collection 存储在多个 shard 中，需要为该 collection 指定一个shard key，例如{age: 1} ，shard key 可以决定该条记录属于哪个 chunk。 Config Servers 就是用来存储：所有 shard 节点的配置信息、每个 chunk 的 shard key 范围、 chunk 在各 shard 的分布情况、该集群中所有 DB 和 collection 的 sharding 配置信息。</p>
 </li>
 <li><p>Route Process</p>
-<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/mongodb_shard.png" alt=""></p>
+<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/2014/mongodb_shard.png" alt=""></p>
 </li>
 </ul>
 <h3 id="Replica_Sets_+_Sharding">Replica Sets + Sharding</h3><p>MongoDB Auto-Sharding 解决了海量存储和动态扩容的问题，但离实际生产环境所需的高可<br>靠、高可用还有些距离，所以有了 ” Replica Sets + Sharding”的解决方案:</p>
@@ -155,12 +155,12 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <p>  使用 3 个路由进程，实现负载平衡，提高客户端接入性能</p>
 </li>
 </ul>
-<p><img src="/img/mongodb_replica_shard.png" alt=""></p>
+<p><img src="/img/2014/mongodb_replica_shard.png" alt=""></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2015/04/05/mongodb-biji/" data-id="ci9b8x731001lp8go0xtg3jcv" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/04/05/2014/mongodb-biji/" data-id="ci9gioctp001l30goncju7wgj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
@@ -220,23 +220,23 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

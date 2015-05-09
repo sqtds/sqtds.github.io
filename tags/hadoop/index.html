@@ -65,9 +65,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-hadoop-start" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/hadoop-start" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/19/hadoop-start/" class="article-date">
+    <a href="/2014/05/19/2014/hadoop-start/" class="article-date">
   <time datetime="2014-05-19T13:50:32.000Z" itemprop="datePublished">5月 19 2014</time>
 </a>
     
@@ -83,7 +83,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/hadoop-start/">hadoop的生态圈（1）</a>
+      <a class="article-title" href="/2014/05/19/2014/hadoop-start/">hadoop的生态圈（1）</a>
     </h1>
   
 
@@ -94,13 +94,13 @@
         <h2 id="hadoop的历史">hadoop的历史</h2><p>谈到 Hadoop 的历史，就不得不提到 Lucene 和 Nutch。Hadoop 开始时是 Nutch 的一个子项目，而 Nutch 又是 Apache Lucene 的子项目。这 3 个项目都是由 Doug Cutting 创立，每个项目在逻辑上都是前一个项目的演进。
         
           <p class="article-more-link">
-            <a href="/2014/05/19/hadoop-start/#more">Read More</a>
+            <a href="/2014/05/19/2014/hadoop-start/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/19/hadoop-start/" data-id="ci9b8x75d0041p8gou2rlnuh4" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/19/2014/hadoop-start/" data-id="ci9giocvl004130go28pbg6gj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
@@ -112,9 +112,9 @@
 
 
   
-    <article id="post-hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/05/19/hadoop2/" class="article-date">
+    <a href="/2014/05/19/2014/hadoop2/" class="article-date">
   <time datetime="2014-05-19T02:30:32.000Z" itemprop="datePublished">5月 19 2014</time>
 </a>
     
@@ -130,7 +130,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/hadoop2/">hadoop配置信息处理（2）</a>
+      <a class="article-title" href="/2014/05/19/2014/hadoop2/">hadoop配置信息处理（2）</a>
     </h1>
   
 
@@ -162,7 +162,7 @@
 <p>合并资源指将多个配置文件合并，产生一个配置。如果有两个配置文件，也就是两个资源，如 core-default.xml 和 core-site.xml，通过 Configuration 类的 loadResources() 方法，把它们合并成一个配置。代码如下：<br>    Configurationconf = new Configuration();<br>    conf.addResource(“core-default.xml”);<br>    conf.addResource(“core-site.xml”);<br>如果这两个配置资源都包含了相同的配置项，而且前一个资源的配置项没有标记为final，那么，后面的配置将覆盖前面的配置。上面的例子中，core-site.xml 中的配置将覆盖core-default.xml 中的同名配置。如果在第一个资源（core-default.xml）中某配置项被标记为final，那么，在加载第二个资源的时候，会有警告提示。</p>
 <p>Hadoop 配置系统还有一个很重要的功能，就是属性扩展。如配置项 dfs.name.dir 的值是${hadoop.tmp.dir}/dfs/name，其中，${hadoop.tmp.dir} 会使用 Configuration 中的相应属性值进行扩展。如果 hadoop.tmp.dir 的值是“/data”，那么扩展后的 dfs.name.dir 的值就是“/data/dfs/name”。</p>
 <p>使 用 Configuration 类 的 一 般 过 程 是 ： 构 造 Configuration 对 象， 并 通 过 类 的addResource() 方法添加需要加载的资源 ；然后就可以使用 get<em> 方法和 set</em> 方法访问 / 设置配置项，资源会在第一次使用的时候自动加载到对象中。</p>
-<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
+<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/2014/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
 <p>布尔变量quietmode，用来设置加载配置的模式。如果quietmode为true （默认值），则在加载解析配置文件的过程中，不输出日志信息。quietmode只是一个方便开发人员调试的变量。</p>
 <p>数组resources保存了所有通过addResource( ) 方法添加Congiguation对象的资源。</p>
 <p>布尔变量 loadDefaults 用于确定是否加载默认资源，这些默认资源保存在 defaultResources中。注意，defaultResources 是个静态成员变量，通过方法 addDefaultResource() 可以添加系统的默认资源。在 HDFS 中，会把 hdfs-default.xml 和 hdfs-site.xml 作为默认资源，并通过addDefaultResource() 保存在成员变量defaultResources 中 ；在 MapReduce 中，默认资源是mapred-default.xml 和 mapred-site.xml。如 HDFS 的 DataNode 中，就有下面的代码，加载上述两个默认资源：</p>
@@ -192,7 +192,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/05/19/hadoop2/" data-id="ci9b8x75a003xp8goaqbjnc5g" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2014/05/19/2014/hadoop2/" data-id="ci9giocvi003x30gof4ypehwe" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
@@ -252,23 +252,23 @@
       <ul>
         
           <li>
-            <a href="/2015/05/05/collections-uml/">集合UML图</a>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
           </li>
         
           <li>
-            <a href="/2015/04/29/linux-command/">(no title)</a>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
           </li>
         
           <li>
-            <a href="/2015/04/27/性能调优总结/">性能调优总结</a>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
           </li>
         
           <li>
-            <a href="/2015/04/26/java-string/">String字符串小结</a>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
           </li>
         
           <li>
-            <a href="/2015/04/25/collection-total/">java集合小结</a>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
           </li>
         
       </ul>

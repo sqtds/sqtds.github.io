@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>mysql索引总结 | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。
+索引分类B-Tree索引MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。可以使用B-Tree索引的查询类型：
+
+全值匹配：和索引中的所有列进行匹配
+匹配最左前缀：匹配第一个索引
+匹配列前缀：匹配某一列的值的开头部分，只使用第一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql索引总结">
+<meta property="og:url" content="http://sqtds.github.io/2015/04/25/2014/mysql-index/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。
+索引分类B-Tree索引MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。可以使用B-Tree索引的查询类型：
+
+全值匹配：和索引中的所有列进行匹配
+匹配最左前缀：匹配第一个索引
+匹配列前缀：匹配某一列的值的开头部分，只使用第一个">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql索引总结">
+<meta name="twitter:description" content="索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。
+索引分类B-Tree索引MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。可以使用B-Tree索引的查询类型：
+
+全值匹配：和索引中的所有列进行匹配
+匹配最左前缀：匹配第一个索引
+匹配列前缀：匹配某一列的值的开头部分，只使用第一个">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">蜻蜓点水</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">if you never try , you will lost forever.</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://sqtds.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2014/mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/25/2014/mysql-index/" class="article-date">
+  <time datetime="2015-04-25T08:26:28.000Z" itemprop="datePublished">4月 25 2015</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      mysql索引总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。</p>
+<h2 id="索引分类">索引分类</h2><h3 id="B-Tree索引">B-Tree索引</h3><p>MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。<br>MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。<br>可以使用B-Tree索引的查询类型：</p>
+<ul>
+<li>全值匹配：和索引中的所有列进行匹配</li>
+<li>匹配最左前缀：匹配第一个索引</li>
+<li>匹配列前缀：匹配某一列的值的开头部分，只使用第一个索引</li>
+<li>匹配范围值：匹配某个范围，只使用第一个索引</li>
+<li>精确匹配某一列并范围匹配另外一列</li>
+<li>只访问索引的查询</li>
+<li>排序操作：索引的有序性</li>
+</ul>
+<h3 id="哈希索引">哈希索引</h3><p>哈希索引基于哈希表实现，只有精确匹配所有列的查询才有效。对于每一行数据，存储引擎会对所有的索引列计算一个hash值。<br>哈希索引的限制：</p>
+<ul>
+<li>哈希索引只能包含哈希值和行指针，不能使用索引的值避免行读取。</li>
+<li>哈希索引数据并不是按照索引值顺序存储的，无法用于排序。</li>
+<li>哈希索引也不支持部分索引列匹配查找，因为哈希索引始终是使用索引列的全部内容来计算哈希值的。</li>
+<li>哈希索引只支持等值查找。</li>
+<li>访问哈希索引的数据非常快，除非有很多哈希冲突。</li>
+</ul>
+<h3 id="空间数据索引">空间数据索引</h3><p>地理数据索引。（略）</p>
+<h3 id="全文索引">全文索引</h3><p>全文索引查找文本中的关键词，一般采用倒排索引。</p>
+<h3 id="其他">其他</h3><h2 id="索引的优点">索引的优点</h2><p>索引可以让服务器快速的定位到指定的位置。</p>
+<ul>
+<li>索引大大减少了服务器需要扫描的数量。</li>
+<li>索引可以帮助服务器避免排序和临时表。</li>
+<li>索引可以将随机IO变为顺序IO。</li>
+</ul>
+<p>参考:Relational Database Index Design and the Optimizers.</p>
+<p>索引是最好的解决方案吗？<br>对于非常小的表，大部分情况下简单的全表扫描更高效。<br>对于中大型的表，索引就非常有效。<br>对于特大型的表，建立和使用索引的代价随之增长。可以采用分区技术等。</p>
+<h2 id="索引策略">索引策略</h2><h3 id="独立的列">独立的列</h3><p>索引列不能是表达式的一部分，也不能使函数的参数。</p>
+<h3 id="前缀索引和索引选择性">前缀索引和索引选择性</h3><p>有时候需要索引很长的字符列，会让索引变得很大，这是我们可以使用哈希索引。我们是否还有更好的方法？</p>
+<p>通常可以索引开始的部分字符，这样可以节省索引空间，从而提高索引效率。但这样也会降低索引的选择性。</p>
+<h3 id="多列索引">多列索引</h3><p>很多人对多列索引的理解都不够。一个常见的错误就是，为每个列创建独立的索引，或者按照错误的顺序创建多列索引。</p>
+<p>在多个列上建立独立的单列索引大部分情况下并不能提高MySql的查询性能。MySql5.0以上引入了一种“索引合并”的策略，一定程度上可以使用表上的多个单列索引来定位指定的行。</p>
+<h3 id="选择合适的索引列顺序">选择合适的索引列顺序</h3><p>经验法则：将选择性最高的列放在索引最前列。</p>
+<h3 id="聚簇索引">聚簇索引</h3><p>聚簇索引并不是一种单独的索引类型，而是一种数据存储方式。InnoDB的聚簇索引索引实际上在同一个结构中保存了B-Tree索引和物理行。<br>当表有聚簇索引时，实际上它的数据行保存在索引的叶子节点中。所以，一个表中只能有一个聚簇索引。</p>
+<p>聚簇索引的优点：</p>
+<ul>
+<li>把相关数据保存在一起</li>
+<li>数据访问更快，提高了IO的性能</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>插入速度依赖于插入顺序。</li>
+<li>更新索引的代价很高。</li>
+<li>插入新行，更新主键或者移动行的时候，面临“页分裂”的问题。</li>
+<li>可能导致全表扫描变慢，尤其是行稀疏，也分裂导致数据不连续</li>
+<li>二级索引（非聚簇索引）可能比想象的大，因为包含了主键列。</li>
+</ul>
+<h3 id="覆盖索引">覆盖索引</h3><p>如果索引的叶子节点已经包含了需要查询的字段，那么还有什么必要再回表查询？如果一个索引包含所有需要查询的字段的值，我们就称为“覆盖索引”。</p>
+<p>适应场景：</p>
+<ul>
+<li>索引条目通常远小于数据行的大小。</li>
+<li>对于IO密集型的范围查询会比随机从磁盘读取每一行数据的IO要小的多。</li>
+<li>可内存缓存索引，避免系统调用</li>
+</ul>
+<h3 id="使用索引进行排序">使用索引进行排序</h3><p>当索引的列序列和order by子句的顺序完全一致，并且所有列的排序方向（倒序或正序）都一样时，MySql才能够使用索引来对结果进行排序。如果查询关联多个表时，则只有当ORDER BY子句引用的字段全部为第一个表时，才能使用索引进行排序。ORDER BY 子句和查找型查询的限制是一样的：需要全部满足索引的最左前缀的要求；否则，MySql都需要执行排序操纵，而无法利用索引进行排序。</p>
+<p>有一种情况下ORDER BY子句可以不满足索引的最左前缀要求，就是前导列为常量的时候。如果WHERE子句或者JOIN子句中对这些列指定了常量，就可以“弥补”索引的不足。</p>
+<h3 id="索引和锁">索引和锁</h3><p>索引可以让查询锁定更少的行。如果你的查询不需要访问那些不需要的行，那么就会锁定更少的行。</p>
+<h2 id="设计原则">设计原则</h2><h3 id="选择性特别低，并且经常用到的的作为索引前列">选择性特别低，并且经常用到的的作为索引前列</h3><p>例如性别只有2种选择，但是我们经常会用到。如果没有用到性别查询，我们也可以使用 sex in（‘m’，‘f’）来让mysql选择该索引。</p>
+<p>有一点需要注意的是，使用in的方式覆盖不在where条件中查询的列，不能过度使用。因为每增加一个in条件，优化器都需要以指数的形式增加，a<em>b</em>c。</p>
+<h3 id="对于经常性范围查询，应放到索引后列">对于经常性范围查询，应放到索引后列</h3><p>对于范围查询，MySql无法再使用范围列后面的其他索引了，但是对于多个“等值条件查询”则没有这个限制。<br>例如年龄查询，可能是查询某个范围的，我们就要放到后面。</p>
+<h3 id="避免多个范围查询">避免多个范围查询</h3><p>使用in来代替多范围查询</p>
+<h3 id="优化排序">优化排序</h3><p>对于选择性非常低的列，可以添加一些特殊的索引进行排序。<br>例如sex进行排序时，可以使用(sex,rating)索引进行排序。<br>select <cols> from table where sex=’M’ order by rating ;</cols></p>
+<p>PS:本文总结来自《mysql高性能》一书</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://sqtds.github.io/2015/04/25/2014/mysql-index/" data-id="ci9gioctm001f30go7w12os8l" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/index/">index</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/04/25/2014/collection-total/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          java集合小结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/04/06/2014/tomcat-artic/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">tomcat架构</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">32</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/其他/">其他</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/大数据/">大数据</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/性能/">性能</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机原理/">计算机原理</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/antlr4/">antlr4</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aop/">aop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collection/">collection</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/collections/">collections</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/exception/">exception</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/groupby/">groupby</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hadoop/">hadoop</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/impala/">impala</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/index/">index</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/j2se/">j2se</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdbc/">jdbc</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jdk/">jdk</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mondrian/">mondrian</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nosql/">nosql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oralce/">oralce</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plan/">plan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/string/">string</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tx/">tx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/列式/">列式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串替换/">字符串替换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/存储/">存储</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能/">性能</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码/">源码</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/环境变量/">环境变量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机原理/">计算机原理</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/android/" style="font-size: 18px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/collections/" style="font-size: 10px;">collections</a><a href="/tags/exception/" style="font-size: 12px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 12px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 14px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 14px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 12px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 16px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 14px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 12px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/05/">五月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/04/">四月 2015</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/06/">六月 2014</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/public/_posts/2014/05/">五月 2014</a><span class="archive-list-count">12</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/05/05/2014/collections-uml/">集合UML图</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/29/2014/linux-command/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/26/2014/java-string/">String字符串小结</a>
+          </li>
+        
+          <li>
+            <a href="/2015/04/25/2014/collection-total/">java集合小结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 sqtds<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
