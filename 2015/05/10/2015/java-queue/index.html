@@ -3,25 +3,30 @@
 <head>
   <meta charset="utf-8">
   
-  <title>antlr4-共享上下文(六) | 蜻蜓点水</title>
+  <title>java队列 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。
-这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。
-Visitor方式通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。">
+  <meta name="description" content="队列概览
+1，BlockingQueue
+ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小
+LinkedBlockingQueue，由链表结构组成,若其构造函数带一个规定大小的参数，生成的BlockingQueue有大小限制，若不带大小参数，所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定
+PriorityBlocki">
 <meta property="og:type" content="article">
-<meta property="og:title" content="antlr4-共享上下文(六)">
-<meta property="og:url" content="http://sqtds.github.io/2014/08/30/2014/antlr4-share-context/index.html">
+<meta property="og:title" content="java队列">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/java-queue/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。
-这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。
-Visitor方式通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。">
-<meta property="og:image" content="/img/2014/QQ图片20140830171113.jpg">
-<meta property="og:image" content="/img/2014/QQ图片20140830171636.jpg">
+<meta property="og:description" content="队列概览
+1，BlockingQueue
+ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小
+LinkedBlockingQueue，由链表结构组成,若其构造函数带一个规定大小的参数，生成的BlockingQueue有大小限制，若不带大小参数，所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定
+PriorityBlocki">
+<meta property="og:image" content="/img/2015/Queue.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="antlr4-共享上下文(六)">
-<meta name="twitter:description" content="当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。
-这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。
-Visitor方式通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。">
+<meta name="twitter:title" content="java队列">
+<meta name="twitter:description" content="队列概览
+1，BlockingQueue
+ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小
+LinkedBlockingQueue，由链表结构组成,若其构造函数带一个规定大小的参数，生成的BlockingQueue有大小限制，若不带大小参数，所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定
+PriorityBlocki">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -71,10 +76,10 @@ Visitor方式通常的访问器并没有指定返回值，在这个例子中，�
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-2014/antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-2015/java-queue" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/08/30/2014/antlr4-share-context/" class="article-date">
-  <time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">8月 30 2014</time>
+    <a href="/2015/05/10/2015/java-queue/" class="article-date">
+  <time datetime="2015-05-10T12:31:10.000Z" itemprop="datePublished">5月 10 2015</time>
 </a>
     
   <div class="article-category">
@@ -89,7 +94,7 @@ Visitor方式通常的访问器并没有指定返回值，在这个例子中，�
         
   
     <h1 class="article-title" itemprop="name">
-      antlr4-共享上下文(六)
+      java队列
     </h1>
   
 
@@ -97,107 +102,43 @@ Visitor方式通常的访问器并没有指定返回值，在这个例子中，�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
-<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
-<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
-    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
-    }
-
-    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
-    }
-
-    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
-        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
-    }
-}
-</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
-<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
-</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
-<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push( left * right );
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push(left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
-    }
-}
-</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/2014/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/2014/QQ图片20140830171636.jpg" alt=""></p>
-<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
-    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
-}
-</code></pre><p>所以，我们用一个map来保存所有的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
-    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
-    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
-
-    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
-        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left * right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
-        setValue(ctx, Integer.valueOf(intText));
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
-    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
-}
-
-<span class="comment">//保存树的节点和值的map</span>
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
-    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
-
-    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-}
-</code></pre><h2 id="对比">对比</h2><ul>
-<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
-<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
-<li>注解：map字段映射了节点和值的关系。</li>
+        <h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
+<h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
+<li>ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小</li>
+<li>LinkedBlockingQueue，由链表结构组成,若其构造函数带一个规定大小的参数，生成的BlockingQueue有大小限制，若不带大小参数，所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定</li>
+<li>PriorityBlockingQueue，其所含对象的排序不是FIFO,而是依据对象的自然排序顺序或者是构造函数的Comparator决定的顺序</li>
+<li><p>DelayQueue：一个使用优先级队列实现的无界阻塞队列。DelayQueue是一个支持延时获取元素的无界阻塞队列。队列使用PriorityQueue来实现。队列中的元素必须实现Delayed接口，<strong>在创建元素时可以指定多久才能从队列中获取当前元素</strong>。<strong>只有在延迟期满时才能从队列中提取元素。</strong>我们可以将DelayQueue运用在以下应用场景：</p>
+<p> 缓存系统的设计：<br> 可以用DelayQueue保存缓存元素的有效期，使用一个线程循环查询DelayQueue，一旦能从DelayQueue中获取元素时，表示缓存有效期到了。<br> 定时任务调度：<br> 使用DelayQueue保存当天将会执行的任务和执行时间，一旦从DelayQueue中获取到任务就开始执行，从比如TimerQueue就是使用DelayQueue实现的。</p>
+</li>
+<li><p>SynchronousQueue：一个不存储元素的阻塞队列。每一个put操作必须等待一个take操作，否则不能继续添加元素。</p>
+</li>
+<li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</li>
+<li>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</li>
 </ul>
+<h3 id="2，Queue">2，Queue</h3><ul>
+<li><p>PriorityQueue是个基于优先级堆的极大优先级队列。<br>此队列按照在构造时所指定的顺序对元素排序，既可以根据元素的自然顺序来指定排序（参阅 Comparable）， 也可以根据 Comparator 来指定，这取决于使用哪种构造方法。优先级队列不允许 null 元素。</p>
+</li>
+<li><p>ConcurrentLinkedQueue一个无锁的并发线程安全的队列。对比锁机制的实现，使用无锁机制的难点在于要充分考虑线程间的协调。简单的说就是多个线程对内部数据结构进行访问时，如果其中一个线程执行的中途因为一些原因出现故障，其他的线程能够检测并帮助完成剩下的操作。这就需要把对数据结构的操作过程精细的划分成多个状态或阶段，考虑每个阶段或状态多线程访问会出现的情况。<br>需要说一下的是，<strong>ConcurrentLinkedQueue的size()是要遍历一遍集合的，所以尽量要避免用size而改用isEmpty()，以免性能过慢。</strong></p>
+</li>
+</ul>
+<h3 id="3，Deque">3，Deque</h3><p>LinkedList，ArrayDeque，LinkedBlockingDeque</p>
+<p>按照我们一般的理解，Deque是一个双向队列，这将意味着它不过是对Queue接口的增强。如果仔细分析Deque接口代码的话，我们会发现它里面主要包含有4个部分的功能定义。</p>
+<ol>
+<li>双向队列特定方法定义。 </li>
+<li>Queue方法定义。 </li>
+<li><strong>Stack方法定义。 </strong></li>
+<li>Collection方法定义。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\\Stack定义</span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">peekLast</span><span class="params">()</span> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerLast</span><span class="params">(E e)</span></span><br><span class="line"><span class="keyword">public</span> E <span class="title">pollLast</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="4,参考资料">4,参考资料</h3><p><a href="http://www.infoq.com/cn/articles/java-blocking-queue" target="_blank" rel="external">聊聊并发（七）——Java中的阻塞队列</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278350" target="_blank" rel="external"> Java多线程（五）之BlockingQueue深入分析</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278355" target="_blank" rel="external">Java多线程（六）之Deque与LinkedBlockingDeque深入分析</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/08/30/2014/antlr4-share-context/" data-id="ci9iid6hy005ljogoz102s6se" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/05/10/2015/java-queue/" data-id="ci9iid6cz000ljogolfyc3azf" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/collection/">collection</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
 
     </footer>
   </div>
@@ -205,19 +146,19 @@ Visitor方式通常的访问器并没有指定返回值，在这个例子中，�
     
 <nav id="article-nav">
   
-    <a href="/2014/08/30/2014/antlr4-embedd-action/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/05/10/2015/java-object-size/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          antlr4-添加嵌入式的行为(七)
+          java对象大小
         
       </div>
     </a>
   
   
-    <a href="/2014/08/30/2014/antlr4-label-rule/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2015/05/10/2015/java-thread/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">antlr4-添加标签（lable）(五)</div>
+      <div class="article-nav-title">java线程</div>
     </a>
   
 </nav>
