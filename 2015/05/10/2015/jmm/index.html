@@ -3,26 +3,37 @@
 <head>
   <meta charset="utf-8">
   
-  <title>spring事务原理2-隔离级别 | 蜻蜓点水</title>
+  <title>java内存模型 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="spring提供了5种事务的隔离级别：
-ISOLATION_DEFAULT如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。
-ISOLATION_READ_UNCOMMITTED对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。
-ISOLATION_READ_COMMITTED对应Rea">
+  <meta name="description" content="JMM内存概览
+参考资料
+成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
+成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
+成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
+成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
+成为Java GC专家（5）—Java性能">
 <meta property="og:type" content="article">
-<meta property="og:title" content="spring事务原理2-隔离级别">
-<meta property="og:url" content="http://sqtds.github.io/2014/06/09/2014/spring-tx2/index.html">
+<meta property="og:title" content="java内存模型">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/jmm/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="spring提供了5种事务的隔离级别：
-ISOLATION_DEFAULT如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。
-ISOLATION_READ_UNCOMMITTED对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。
-ISOLATION_READ_COMMITTED对应Rea">
+<meta property="og:description" content="JMM内存概览
+参考资料
+成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
+成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
+成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
+成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
+成为Java GC专家（5）—Java性能">
+<meta property="og:image" content="/img/2015/JMM.png">
+<meta property="og:image" content="/img/2015/java_object_size.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="spring事务原理2-隔离级别">
-<meta name="twitter:description" content="spring提供了5种事务的隔离级别：
-ISOLATION_DEFAULT如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。
-ISOLATION_READ_UNCOMMITTED对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。
-ISOLATION_READ_COMMITTED对应Rea">
+<meta name="twitter:title" content="java内存模型">
+<meta name="twitter:description" content="JMM内存概览
+参考资料
+成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
+成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
+成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
+成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
+成为Java GC专家（5）—Java性能">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -72,10 +83,10 @@ ISOLATION_READ_COMMITTED对应Rea">
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-2014/spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-2015/jmm" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/06/09/2014/spring-tx2/" class="article-date">
-  <time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+    <a href="/2015/05/10/2015/jmm/" class="article-date">
+  <time datetime="2015-05-10T00:10:03.000Z" itemprop="datePublished">5月 10 2015</time>
 </a>
     
   <div class="article-category">
@@ -90,7 +101,7 @@ ISOLATION_READ_COMMITTED对应Rea">
         
   
     <h1 class="article-title" itemprop="name">
-      spring事务原理2-隔离级别
+      java内存模型
     </h1>
   
 
@@ -98,20 +109,26 @@ ISOLATION_READ_COMMITTED对应Rea">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>spring提供了5种事务的隔离级别：</p>
-<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
-<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
-<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
-<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
-<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
+        <h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
+<h3 id="参考资料">参考资料</h3><ul>
+<li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
+<li><a href="&quot;http://www.importnew.com/2057.html&quot;">成为JavaGC专家Part II — 如何监控Java垃圾回收机制 </a></li>
+<li><a href="http://www.importnew.com/3146.html" target="_blank" rel="external">成为Java GC专家系列Part III–如何优化Java垃圾回收机制 </a></li>
+<li><a href="http://www.importnew.com/3151.html" target="_blank" rel="external">成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响</a></li>
+<li><a href="http://www.importnew.com/13954.html" target="_blank" rel="external">成为Java GC专家（5）—Java性能调优原则</a></li>
+<li><a href="http://ju.outofmemory.cn/entry/65368" target="_blank" rel="external">G1垃圾收集器</a></li>
+<li><a href="http://ifeve.com/jvm-permgen-where-art-thou/" target="_blank" rel="external">JVM的持久代——何去何从？</a></li>
+</ul>
+<h2 id="对象大小">对象大小</h2><p><img src="/img/2015/java_object_size.png" alt=""></p>
+<h3 id="参考资料-1">参考资料</h3><p><a href="http://www.importnew.com/14948.html" target="_blank" rel="external">一个Java对象到底占多大内存？</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://sqtds.github.io/2014/06/09/2014/spring-tx2/" data-id="ci9htjn28000vc0gogykzeht0" class="article-share-link">Share</a>
+      <a data-url="http://sqtds.github.io/2015/05/10/2015/jmm/" data-id="ci9htjn1i0006c0go6hzqaxuu" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
 
     </footer>
   </div>
@@ -119,19 +136,10 @@ ISOLATION_READ_COMMITTED对应Rea">
     
 <nav id="article-nav">
   
-    <a href="/2014/06/14/2014/linuxcommand/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          linux常用命令
-        
-      </div>
-    </a>
   
-  
-    <a href="/2014/06/09/2014/spring-tx1/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2015/05/05/2014/collections-uml/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">spring事务原理1-事务的抽象</div>
+      <div class="article-nav-title">集合UML图</div>
     </a>
   
 </nav>
