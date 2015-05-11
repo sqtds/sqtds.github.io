@@ -91,7 +91,7 @@
 						
 							<li><a href="/">主页</a></li>
 				        
-							<li><a href="/categories">所有文章</a></li>
+							<li><a href="/archives">所有文章</a></li>
 				        
 							<li><a href="/tags/随笔">随笔</a></li>
 				        
@@ -162,7 +162,7 @@
 				
 					<li><a href="/">主页</a></li>
 		        
-					<li><a href="/categories">所有文章</a></li>
+					<li><a href="/archives">所有文章</a></li>
 		        
 					<li><a href="/tags/随笔">随笔</a></li>
 		        
@@ -185,11 +185,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
-  	<time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
+      <a href="/2014/06/09/2014/spring-aop1/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
 </a>
     </div>
   
@@ -202,7 +202,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
+      <a class="article-title" href="/2014/06/09/2014/spring-aop1/">spring aop</a>
     </h1>
   
 
@@ -211,9 +211,485 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="mondrian是什么？">mondrian是什么？</h2><p>mondrian是一款基于java的开源的多维分析olap服务器。更多资料请移步mondrian官方网站：<a href="http://community.pentaho.com/projects/mondrian/。">http://community.pentaho.com/projects/mondrian/。</a></p>
-<h2 id="如何部署mondrian？">如何部署mondrian？</h2><p>在mondrian官方文档中，已经有详细的步骤了，请移步：<a href="http://mondrian.pentaho.com/documentation/developers_guide.php">http://mondrian.pentaho.com/documentation/developers_guide.php</a></p>
-<p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
+        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
+<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
+<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
+
+}
+
+public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
+    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+
+}
+
+public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
+    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
+}
+</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
+<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aop/">aop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/06/09/2014/spring-aop1/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/spring-tx1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/09/2014/spring-tx1/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/2014/spring-tx1/">spring事务原理1-事务的抽象</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概要">概要</h3><p>spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，<br>TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。</p>
+<h3 id="PlatformTransactionManager">PlatformTransactionManager</h3><p>PlatformTransactionManager 的整个抽象体系基于Strategy 模式，由PlatformTransactionManager 对事务界定进行统一抽象，而具体的界定策略的实现则交由具体的实现类。</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>{
+
+  <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(TransactionDefinition definition)</span>
+    <span class="keyword">throws</span> TransactionException</span>;
+
+  <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
+
+  <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
+}
+</code></pre><h3 id="TransactionDefinition">TransactionDefinition</h3><p>TransactionDefinition定义了事务的相关属性：隔离级别，传播性，超时，只读状态。<br><img src="/img/2014/QQ图片20140609221319.jpg" alt=""></p>
+<ul>
+<li><p>Isolation: The degree to which this transaction is isolated from the work of other transactions. For example, can this transaction see uncommitted writes from other transactions?</p>
+</li>
+<li><p>Propagation: Typically, all code executed within a transaction scope will run in that transaction. However, you have the option of specifying the behavior in the event that a transactional method is executed when a transaction context already exists. For example, code can continue running in the existing transaction (the common case); or the existing transaction can be suspended and a new transaction created. Spring offers all of the transaction propagation options familiar from EJB CMT. To read about the semantics of transaction propagation in Spring, see Section 10.5.7, “Transaction propagation”.</p>
+</li>
+<li><p>Timeout: How long this transaction runs before timing out and being rolled back automatically by the underlying transaction infrastructure.</p>
+</li>
+<li><p>Read-only status: A read-only transaction can be used when your code reads but does not modify data. Read-only transactions can be a useful optimization in some cases, such as when you are using Hibernate.</p>
+</li>
+</ul>
+<h3 id="TransactionStatus">TransactionStatus</h3><p>org.springframework.transaction.TransactionStatus 接口定义表示整个事务处理过程中的事务状态，更多时候，我们将在编程式事务中使用该接口。 </p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span> <span class="keyword">extends</span> <span class="title">SavepointManager</span> </span>{
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">isCompleted</span><span class="params">()</span></span>;
+
+}
+</code></pre><p><img src="/img/2014/QQ图片20140609221008.jpg" alt=""></p>
+<p>在事务处理过程中，我们可以使用TransactionStatus 进行如下工作。 </p>
+<ul>
+<li>使用TransactionStatus 提供的相应方法查询事务状态。 </li>
+<li>通过setRollbackOnly() 方法标记当前事务以使其回滚。</li>
+<li>如果相应的PlatformTransactionManager支持Savepoint，可以通过TransactionStatus 在当前事务中创建内部嵌套事务。</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/09/2014/spring-tx2/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/2014/spring-tx2/">spring事务原理2-隔离级别</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>spring提供了5种事务的隔离级别：</p>
+<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
+<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
+<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
+<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
+<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tx/">tx</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/2014plan" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/08/2014/2014plan/" class="article-date">
+  	<time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/08/2014/2014plan/">2014年下半年计划</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>2014年已经过去一半了,感觉什么事也没做。<br>上半年买的书都还有大半没看完，进度太慢了。发现再这样下去还是不行的，必须要给自己一点压力，让自己成长起来。so,so,so制定下下半年的计划，不能再这样继续荒废时间了：</p>
+<h3 id="plan1：_读书">plan1： 读书</h3><ul>
+<li><p>《java性能优化》</p>
+<p> 根据书上的性能优化措施,看完了至少能将公司的项目提升一个层次。</p>
+</li>
+<li><p>《android4高级编程》</p>
+<p>希望能上架自己的1,2个小应用，暂时还没想好做什么。</p>
+</li>
+<li><p>《数据挖掘》《深入浅出数据分析》《大数据》《大规模分布式存储系统》</p>
+<p>想办法做好公司的BI系统吧。</p>
+</li>
+<li><p>《大型网站系统与java中间件架构实践》《大型网站技术架构》《软件架构设计》</p>
+<p>要多练练架构才好，不过这些书讲的太过空泛了。</p>
+</li>
+<li><p>《深入理解计算机系统》《计算机程序的构造和解释》《代码大全》</p>
+<p>底层也要多了解了解才好。</p>
+</li>
+</ul>
+<h3 id="plan2：_分析开源框架">plan2： 分析开源框架</h3><ul>
+<li>spring</li>
+</ul>
+<p>感觉对spring的理解还是比较欠缺，下半年努力把spring的方方面面都理解清楚吧。</p>
+<ul>
+<li>网络，并发</li>
+</ul>
+<p>netty，concurrent包，这两部分也是需要继续研究的。</p>
+<ul>
+<li>大数据</li>
+</ul>
+<p>如果还有精力的话，就研究hadoop的代码吧。</p>
+<h3 id="plan3：_锻炼">plan3： 锻炼</h3><ul>
+<li><p>每周必须要跑一次步</p>
+</li>
+<li><p>计划一次爬山</p>
+</li>
+<li><p>每天至少3分钟平板支撑</p>
+</li>
+</ul>
+<h3 id="plan4：_赚钱">plan4： 赚钱</h3><p>没钱的屌丝，要想办法赚钱呀。</p>
+<ul>
+<li>炒股</li>
+</ul>
+<p>炒股就是博弈，人生要敢于冒风险。希望自己的资产能够在过年的时候上涨10%。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/plan/">plan</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/其他/">其他</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-ext-Cal" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/08/2014/mondrian-ext-Cal/" class="article-date">
+  	<time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/08/2014/mondrian-ext-Cal/">Calc层次结构</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="接口层">接口层</h3><p>首先我们看Calc的接口。<br>他下面还有11个其他类型的计算器接口，分别是:</p>
+<ul>
+<li>VoidCalc   接口 <code>void evaluateVoid(Evaluator evaluator)</code></li>
+<li>MemberCalc  接口 <code>Member evaluateMember(Evaluator evaluator)</code></li>
+<li>LevelCalc   接口  <code>Level evaluateLevel(Evaluator evaluator)</code></li>
+<li>DateTimeCalc  接口 <code>Date evaluateDateTime(Evaluator evaluator)</code></li>
+<li>DimensionCalc  接口 <code>Dimension evaluateDimension(Evaluator evaluator)</code></li>
+<li>HierarchyCalc 接口 <code>Hierarchy evaluateHierarchy(Evaluator evaluator)</code></li>
+<li>DoubleCalc 接口 <code>double evaluateDouble(Evaluator evaluator)</code></li>
+<li>BooleanCalc 接口 <code>boolean evaluateBoolean(Evaluator evaluator)</code></li>
+<li>TupleCalc 接口 <code>Member[] evaluateTuple(Evaluator evaluator)</code></li>
+<li>StringCalc 接口 <code>String evaluateString(Evaluator evaluator)</code></li>
+<li>IntegerCalc 接口 <code>int evaluateInteger(Evaluator evaluator)</code></li>
+</ul>
+<hr>
+<h3 id="抽象层">抽象层</h3><p>AbstractCal实现了Calc接口。<br>在它下面有10种不同的抽象计算器，分别实现了上述的11中接口类型。<br>注意AbstractVoidCalc并没有继承。</p>
+<ul>
+<li>GenericCal 抽象类  实现了所有的Calc下层接口，除了Calc的<code>Object evaluate(Evaluator evaluator)</code>接口</li>
+<li>AbstractMemberCalc 抽象类 需实现<code>Member evaluateMember(Evaluator evaluator)</code></li>
+<li>AbstractLevelCalc 抽象类 需实现<code>Level evaluateLevel(Evaluator evaluator)</code></li>
+<li>AbstractDimensionCalc 抽象类 需实现<code>Dimension evaluateDimension(Evaluator evaluator)</code></li>
+<li>AbstractHierarchyCalc 抽象类 需实现<code>Hierarchy evaluateHierarchy(Evaluator evaluator)</code></li>
+<li>AbstractDoubleCalc 抽象类 需实现<code>double evaluateDouble(Evaluator evaluator)</code></li>
+<li>AbstractBooleanCalc 抽象类 需实现<code>boolean evaluateBoolean(Evaluator evaluator)</code></li>
+<li>AbstractTupleCalc 抽象类 需实现<code>Member[] evaluateTuple(Evaluator evaluator)</code></li>
+<li>AbstractStringCalc 抽象类 需实现<code>String evaluateString(Evaluator evaluator)</code></li>
+<li>AbstractIntegerCalc 抽象类 需实现<code>int evaluateInteger(Evaluator evaluator)</code></li>
+</ul>
+<hr>
+<h3 id="通用层">通用层</h3><p>GenericCal实现了这11个接口并继层了AbstractCal，在它下面还有几个实现类</p>
+<ul>
+<li>AbstractVoidCalc 具体类，不返回任何值，这个类貌似应该继承AbstractCal即可，没必要继承GenericCal。</li>
+<li>ConstantCalc 具体类 求值结果与原参数相同。</li>
+<li>TupleValueCalc 具体类 在当前元组上下文中求cell值。</li>
+<li>ValueCalc 具体类  直接在当前上下文中求Cell值</li>
+<li>MemberArrayValueCalc  在多个成员上下文中求Cell值</li>
+<li>CacheCalc 具体类 在缓存中获取Cell值</li>
+<li>MemberValueCalc 具体类 在当前成员上下文中求Cell值</li>
+</ul>
+<hr>
+<h3 id="集合层">集合层</h3><p>还有一种特殊类型IterCalc接口也继承了Calc。<br>ListCalc接口也继承IterCalc.<br>他们有4个类</p>
+<ul>
+<li>AbstractIterCalc实现了IterCalc,并继承了AbstractCal。</li>
+<li>AbstractListCalc实现了ListCalc,并继承了AbstractCal。</li>
+<li>GenericIterCalc实现了ListCalc和IterCalc，并继承了AbstractCal。</li>
+<li>IterableCalc继承了AbstractListCalc</li>
+</ul>
+<hr>
+<h3 id="使用">使用</h3><p>那么问题来了，有了这么多求值器，我应该在程序中使用哪种呢？下面将对如何选择各个层做分析。</p>
+<ul>
+<li>如果是求一般的成员，维度，数值，级别等等。那么，使用抽象层即可。</li>
+<li>如果是求集（Set）类型的，那么使用集合层。</li>
+<li>如果是求Cell值或者其他操作，那么使用通用层。</li>
+</ul>
+
       
     </div>
     
@@ -230,8 +706,67 @@
 
 
       
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/linux环境变量加载顺序" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/02/2014/linux环境变量加载顺序/" class="article-date">
+  	<time datetime="2014-06-02T15:17:33.000Z" itemprop="datePublished">6月 2 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/02/2014/linux环境变量加载顺序/">linux环境变量的加载顺序</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>当使用export设置环境变量的时候，注意前面的环境变量会覆盖后面设置的环境变量。<br>例如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME/usr/java1.<span class="number">7</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br></pre></td></tr></table></figure></p>
+<p>当在/etc/profile中设置这2个选项的时候，如果PATH中已经包含了java的运行时环境，那么此设置会失败。</p>
+<p>要想使自定义设置生效，最好将自定义的path设置在前面，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME/usr/java1.<span class="number">7</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/环境变量/">环境变量</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/linux/">linux</a>
+	</div>
+
+
+      
         <p class="article-more-link">
-          <a  href="/2014/10/26/2014/mondrian-source-code-1/#more">more >></a>
+          <a  href="/2014/06/02/2014/linux环境变量加载顺序/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -247,11 +782,11 @@
 
 
   
-    <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/Activity生命周期" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/09/03/2014/antlr4-tips/" class="article-date">
-  	<time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
+      <a href="/2014/05/25/2014/Activity生命周期/" class="article-date">
+  	<time datetime="2014-05-25T13:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
 </a>
     </div>
   
@@ -264,7 +799,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/2014/antlr4-tips/">antlr4-技巧（十）</a>
+      <a class="article-title" href="/2014/05/25/2014/Activity生命周期/">理解Android Activity</a>
     </h1>
   
 
@@ -273,701 +808,221 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
-<h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
-<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/2014/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/2014/QQ图片20140903210304.jpg" alt=""></p>
-<h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
-<pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
-<span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
-walker.walk(extractor, tree); <span class="comment">// initiate walk of tree with listener</span>
-
-public <span class="class"><span class="keyword">class</span> <span class="title">InsertSerialIDListener</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">JavaBaseListener</span> {</span>
-    <span class="type">TokenStreamRewriter</span> rewriter;
-    public <span class="type">InsertSerialIDListener</span>(<span class="type">TokenStream</span> tokens) {
-    rewriter = <span class="keyword">new</span> <span class="type">TokenStreamRewriter</span>(tokens);
-}
-<span class="annotation">@Override</span>
-public void enterClassBody(<span class="type">JavaParser</span>.<span class="type">ClassBodyContext</span> ctx) {
-        <span class="type">String</span> field = <span class="string">"\n\tpublic static final long serialVersionUID = 1L;"</span>;
-        rewriter.insertAfter(ctx.start, field);
-    }
-}
-</code></pre><p>回到最开始，我们看看如何使用隐藏的通道。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">CommentShifter</span> <span class="title">extends</span> <span class="title">CymbolBaseListener</span> {
-    BufferedTokenStream tokens;
-    TokenStreamRewriter rewriter;
-    <span class="comment">/** Create TokenStreamRewriter attached to token stream
-     *  sitting between the Cymbol lexer and parser.
-     */</span>
-    <span class="function"><span class="keyword">public</span> <span class="title">CommentShifter</span><span class="params">(BufferedTokenStream tokens)</span> </span>{
-        <span class="keyword">this</span>.tokens = tokens;
-        rewriter = <span class="keyword">new</span> TokenStreamRewriter(tokens);
-    }
-
-    @<span class="function">Override
-    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitVarDecl</span><span class="params">(CymbolParser.VarDeclContext ctx)</span> </span>{
-        Token semi = ctx.getStop(); 
-        <span class="keyword">int</span> i = semi.getTokenIndex();
-        List&lt;Token&gt; cmtChannel =
-            tokens.getHiddenTokensToRight(i, CymbolLexer.COMMENTS); 
-        <span class="keyword">if</span> ( cmtChannel!=<span class="keyword">null</span> ) {
-            Token cmt = cmtChannel.<span class="keyword">get</span>(<span class="number">0</span>); 
-            <span class="keyword">if</span> ( cmt!=<span class="keyword">null</span> ) {
-                String txt = cmt.getText().substring(<span class="number">2</span>);
-                String newCmt = <span class="string">"/* "</span> + txt.trim() + <span class="string">" */\n"</span>;
-                rewriter.insertBefore(ctx.start, newCmt); 
-                rewriter.replace(cmt, <span class="string">"\n"</span>);              
-            }
-        }
-    }
-}
-
-ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-CymbolLexer lexer = <span class="keyword">new</span> CymbolLexer(input);
-CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-CymbolParser parser = <span class="keyword">new</span> CymbolParser(tokens);
-RuleContext tree = parser.file();
-
-ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-CommentShifter shifter = <span class="keyword">new</span> CommentShifter(tokens);
-walker.walk(shifter, tree);
-
-
-lexmagic/t.cym
-<span class="keyword">int</span> n = <span class="number">0</span>; <span class="comment">// define a counter</span>
-<span class="keyword">int</span> i = <span class="number">9</span>;
-we want to generate the following output:
-<span class="comment">/* define a counter */</span>
-<span class="keyword">int</span> n = <span class="number">0</span>;
-<span class="keyword">int</span> i = <span class="number">9</span>;
-</code></pre><p>所有的工作都发送在exitVarDecl()中。首先，我们得到‘；’所在的位置。然后我们查询它的后面是否有隐藏的通道，如果有的话，我们将获取通道的第一个字符来判断通道中是否有tokens，最后插入到最前面即可。</p>
-<h2 id="上下文敏感的词法">上下文敏感的词法</h2><h2 id="在流中孤立">在流中孤立</h2><p>这里需要注意一点，.*？表示非贪婪操作符。他们一直扫描直到遇到符合下一个规则的操作符为止。</p>
-<pre><code><span class="xml">COMMENT : '<span class="comment">&lt;!--' .*? '--&gt;</span>' -&gt; skip ;
-CDATA : '<span class="cdata">&lt;![CDATA[' .*? ']]&gt;</span>' ;
-TAG : '<span class="tag">&lt;<span class="title">'</span> <span class="attribute">.</span>*? '&gt;</span>' ; // must come after other tag-like structures
-ENTITY : '&amp;' .*? ';' ;
-TEXT : ~[<span class="tag">&lt;<span class="title">&amp;]+</span> ; // <span class="attribute">any</span> <span class="attribute">sequence</span> <span class="attribute">of</span> <span class="attribute">chars</span> <span class="attribute">except</span> &lt; <span class="attribute">and</span> &amp; <span class="attribute">chars</span></span></span>
-</code></pre><p>在某种场景下，一个语言可能有几种不同的模式。词法模式可以允许我们分离单个的词法语言到多个子规则。当进入到当前规则的模式时，词法仅仅返回符合的token。最常用的需求可能是在不同的词法之间进行转换。          例如，对于一个xml文件，我们可以定义2个模式，在标签‘&lt;’之外的模式和在‘&gt;’之内的模式。这2中模式是孤立的，下面是这个例子的语法：</p>
-<pre><code>lexer grammar ModeTagsLexer;
-<span class="comment">// Default mode rules (the SEA)</span>
-<span class="string">OPEN :</span> <span class="string">'&lt;'</span> -&gt; mode(ISLAND) ; <span class="comment">// switch to ISLAND mode</span>
-<span class="string">TEXT :</span> ~<span class="string">'&lt;'</span> + ; <span class="comment">// clump all text together</span>
-mode ISLAND;
-<span class="string">CLOSE :</span> <span class="string">'&gt;'</span> -&gt; mode(DEFAULT_MODE) ; <span class="comment">// back to SEA mode</span>
-<span class="string">SLASH :</span> <span class="string">'/'</span> ;
-<span class="string">ID :</span> [a-zA-Z]+ ; <span class="comment">// match/send ID in tag to parser</span>
-
-parser grammar ModeTagsParser;
-options { tokenVocab=ModeTagsLexer; } <span class="comment">// use tokens from ModeTagsLexer.g4</span>
-<span class="string">file:</span> (tag | TEXT)* ;
-<span class="string">tag :</span> <span class="string">'&lt;'</span> ID <span class="string">'&gt;'</span>
-| <span class="string">'&lt;'</span> <span class="string">'/'</span> ID <span class="string">'&gt;'</span>
-;
-</code></pre><p>在这个例子中，仅仅是options tokenVocab不常用的。它的意思是保持lexer和parser是同步的，即有相同的token类型。</p>
-<h2 id="解析xml">解析xml</h2><p>在这个例子中，我们只需要了解有pushMode和popMode即可，就像入栈和出栈一样，挺简单的。</p>
-<pre><code>lexer grammar XMLLexer;
-
-<span class="comment">// Default "mode": Everything OUTSIDE of a tag</span>
-COMMENT     :   <span class="string">'&lt;!--'</span> .*? <span class="string">'--&gt;'</span> ;
-CDATA       :   <span class="string">'&lt;![CDATA['</span> .*? <span class="string">']]&gt;'</span> ;
-<span class="comment">/** Scarf all DTD stuff, Entity Declarations like &lt;!ENTITY ...&gt;,
- *  and Notation Declarations &lt;!NOTATION ...&gt;
- */</span>
-DTD         :   <span class="string">'&lt;!'</span> .*? <span class="string">'&gt;'</span>            -&gt; skip ; 
-EntityRef   :   <span class="string">'&amp;'</span> Name <span class="string">';'</span> ;
-CharRef     :   <span class="string">'&amp;#'</span> DIGIT+ <span class="string">';'</span>
-            |   <span class="string">'&amp;#x'</span> HEXDIGIT+ <span class="string">';'</span>
-            ;
-SEA_WS      :   (<span class="string">' '</span>|<span class="string">'\t'</span>|<span class="string">'\r'</span>? <span class="string">'\n'</span>) ;
-
-OPEN        :   <span class="string">'&lt;'</span>                     -&gt; pushMode(INSIDE) ;
-XMLDeclOpen :   <span class="string">'&lt;?xml'</span> S               -&gt; pushMode(INSIDE) ;
-SPECIAL_OPEN:   <span class="string">'&lt;?'</span> Name               -&gt; more, pushMode(PROC_INSTR) ;
-
-TEXT        :   ~[&lt;&amp;]+ ;        <span class="comment">// match any 16 bit char other than &lt; and &amp;</span>
-
-<span class="comment">// ----------------- Everything INSIDE of a tag ---------------------</span>
-mode INSIDE;
-
-CLOSE       :   <span class="string">'&gt;'</span>                     -&gt; popMode ;
-SPECIAL_CLOSE:  <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?xml...?&gt;</span>
-SLASH_CLOSE :   <span class="string">'/&gt;'</span>                    -&gt; popMode ;
-SLASH       :   <span class="string">'/'</span> ;
-EQUALS      :   <span class="string">'='</span> ;
-STRING      :   <span class="string">'"'</span> ~[&lt;<span class="string">"]* '"</span><span class="string">'
-            |   '</span>\<span class="string">''</span> ~[&lt;<span class="string">']* '</span>\<span class="string">''</span>
-            ;
-Name        :   NameStartChar NameChar* ;
-S           :   [ \t\r\n]               -&gt; skip ;
-
-fragment
-HEXDIGIT    :   [a-fA-F0-<span class="number">9</span>] ;
-
-fragment
-DIGIT       :   [<span class="number">0</span>-<span class="number">9</span>] ;
-
-fragment
-NameChar    :   NameStartChar
-            |   <span class="string">'-'</span> | <span class="string">'.'</span> | DIGIT 
-            |   <span class="string">'\u00B7'</span>
-            |   <span class="string">'\u0300'</span>..<span class="string">'\u036F'</span>
-            |   <span class="string">'\u203F'</span>..<span class="string">'\u2040'</span>
-            ;
-
-fragment
-NameStartChar
-            :   [:a-zA-Z]
-            |   <span class="string">'\u2070'</span>..<span class="string">'\u218F'</span> 
-            |   <span class="string">'\u2C00'</span>..<span class="string">'\u2FEF'</span> 
-            |   <span class="string">'\u3001'</span>..<span class="string">'\uD7FF'</span> 
-            |   <span class="string">'\uF900'</span>..<span class="string">'\uFDCF'</span> 
-            |   <span class="string">'\uFDF0'</span>..<span class="string">'\uFFFD'</span>
-            ;
-
-<span class="comment">// ----------------- Handle &lt;? ... ?&gt; ---------------------</span>
-mode PROC_INSTR;
-PI          :   <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?...?&gt;</span>
-IGNORE      :   .                       -&gt; more ;
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
-  	<time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
-<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
-<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/01/2014/antlr4-use-problem/" class="article-date">
-  	<time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/2014/antlr4-use-problem/">antlr4-使用小结(续)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要记录在使用antlr4中中遇到的一些问题。</p>
-<p>一，标明了fragment的词法是不会被parser识别的，它只会在当前词法中可用。</p>
-<p>二，当未标明fragment的词法似乎是有包含关系的。当前面的词法包含了后面的词法时，后面的词法将不被parser解析出来。（可以看第9小节关系词法包含关系）。</p>
-<p>三，antlr的ieda插件只支持4.4以上的版本，所以如果需要生成4.4一下的版本的话，可以使用maven插件，或者手工生成。</p>
-<p>四，当一个词法中出现了2个同名的tokens名称时，另一个需要命名一个别名，不然会引起冲突。</p>
-<pre><code><span class="comment">//tokens1</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4.<span class="built_in">exp</span>}); <span class="comment">//$term4.exp取的是第一行的term4的内容</span>
-}
-;
-
-
-<span class="comment">//tokens2</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4alias = term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
-}
-;
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/01/2014/antlr4-exception/" class="article-date">
-  	<time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/2014/antlr4-exception/">antlr4-异常处理（八）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>antlr4的异常处理机制很简单，下面我们来具体看看</p>
-<h2 id="修改和重定向错误">修改和重定向错误</h2><p>默认情况下， antlr发送所有的错误到标准错误中，但是我们可以提供ANTERErrorListener接口的实现来改变错误的内容和目的地。<br>这个接口有一个syntaxError方法适用于词法和解析器。方法接收所有已排序的本地错误和消息错误。它也可以接收一个parser的引用，所以我们能够查询状态的识别。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> class UnderlineListener extends BaseErrorListener {
-<span class="keyword">public</span> <span class="keyword">void</span> syntaxError(Recognizer&lt;?, ?&gt; recognizer,
-            <span class="keyword">Object</span> offendingSymbol,
-            <span class="built_in">int</span> <span class="built_in">line</span>, <span class="built_in">int</span> charPositionInLine,
-            <span class="keyword">String</span> msg,
-            RecognitionException e)
-{
-    System.err.<span class="built_in">println</span>(<span class="string">"line "</span>+<span class="built_in">line</span>+<span class="string">":"</span>+charPositionInLine+<span class="string">" "</span>+msg);
-    underlineError(recognizer,(Token)offendingSymbol,
-                   <span class="built_in">line</span>, charPositionInLine);
-}
-
-<span class="keyword">protected</span> <span class="keyword">void</span> underlineError(Recognizer recognizer,
-                              Token offendingToken, <span class="built_in">int</span> <span class="built_in">line</span>,
-                              <span class="built_in">int</span> charPositionInLine) {
-    CommonTokenStream tokens =
-        (CommonTokenStream)recognizer.getInputStream();
-    <span class="keyword">String</span> input = tokens.getTokenSource().getInputStream().toString();
-    <span class="keyword">String</span>[] lines = input.<span class="built_in">split</span>(<span class="string">"\n"</span>);
-    <span class="keyword">String</span> errorLine = lines[<span class="built_in">line</span> - <span class="number">1</span>];
-    System.err.<span class="built_in">println</span>(errorLine);
-    <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;charPositionInLine; i++) System.err.<span class="built_in">print</span>(<span class="string">" "</span>);
-    <span class="built_in">int</span> start = offendingToken.getStartIndex();
-    <span class="built_in">int</span> stop = offendingToken.getStopIndex();
-    <span class="keyword">if</span> ( start&gt;=<span class="number">0</span> &amp;&amp; stop&gt;=<span class="number">0</span> ) {
-        <span class="keyword">for</span> (<span class="built_in">int</span> i=start; i&lt;=stop; i++) System.err.<span class="built_in">print</span>(<span class="string">"^"</span>);
-        }
-    System.err.<span class="built_in">println</span>();
-    }
-}
-
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception {
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(System.in);
-    SimpleLexer lexer = <span class="keyword">new</span> SimpleLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    SimpleParser parser = <span class="keyword">new</span> SimpleParser(tokens);
-    parser.removeErrorListeners(); <span class="comment">// remove ConsoleErrorListener</span>
-    parser.addErrorListener(<span class="keyword">new</span> UnderlineListener());
-    parser.prog();
-}
-</code></pre><h2 id="自动错误恢复">自动错误恢复</h2><p>错误恢复就是运行解析器在发现了一个词法错误后可以继续执行。原则上，最佳的错误恢复应该是我们手写的递归下沿的解析器。解析器执行单个token插入和单个token删除直到不符合的token错误被修正。如果没有，解析器吞掉tokens知道他发现一个token能够可理解的跟着当前的规则然后返回，继续直到所有的解析完。</p>
-<h3 id="捕获失败的语义预测">捕获失败的语义预测</h3><p>so easy!  当预测失败时，你可以使用这样的函数{…}?<fail={failed()}>来执行某些动作。</fail={failed()}></p>
-<pre><code><span class="attribute">vec4</span>: <span class="string">  '[' ints[4] ']' ;</span>
-
-<span class="mel">ints[<span class="keyword">int</span> <span class="keyword">max</span>]
-locals [<span class="keyword">int</span> i=<span class="number">1</span>]
-:   INT ( <span class="string">','</span> {<span class="variable">$i</span>++;} {<span class="variable">$i</span>&lt;=<span class="variable">$max</span>}?&lt;fail={<span class="string">"exceeded max "</span>+<span class="variable">$max</span>}&gt; INT )*
-;
-
-INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
-WS  :   [ \t\r\n]+ -&gt; skip ;</span>
-</code></pre><h2 id="错误的替代选择">错误的替代选择</h2><p>同样不解释了.</p>
-<pre><code>fcall
-:   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span>
-|   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span> <span class="string">')'</span> {notifyErrorListeners(<span class="string">"Too many parentheses"</span>);}
-|   ID <span class="string">'('</span> <span class="keyword">expr</span>         {notifyErrorListeners(<span class="string">"Missing closing ')'"</span>);}
-;
-</code></pre><h2 id="另一个可选的错误策略">另一个可选的错误策略</h2><p>有时候我们不想用默认的错误处理策略。第一，在运行期的时候，我们可能想要禁用一些内部的错误处理。第二，我们可能想要提示最开始的语法错误。<br>要查看错误处理策略，我们可以看一下ANTLRErrorStrategy接口的默认具体实现DefaultErrorStrategy。这个类处理了antlr4所有的错误处理行为。<br>从antlr生成的代码中我们也可以看到：</p>
-<pre><code>_errHandler.reportError(<span class="keyword">this</span>, re);
-_errHandler.recover(<span class="keyword">this</span>, re);
-</code></pre><p>另一种错误处理就是BailErrorStrategy处理策略，即遇到异常后自动抛出。我们只需要告诉parser使用这种策略即可。当然，我们也可以用我们自己的错误处理方式，只需要继承DefaultErrorStrategy即可。</p>
-<blockquote>
-<p>parser.setErrorHandler( new BailErrorStrategy());</p>
-</blockquote>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">BailErrorStrategy</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">DefaultErrorStrategy</span> {</span>
-<span class="comment">/** Instead of recovering from exception {@code e}, re-throw it wrapped
- *  in a {@link ParseCancellationException} so it is not caught by the
- *  rule function catches.  Use {@link Exception#getCause()} to get the
- *  original {@link RecognitionException}.
- */</span>
-<span class="annotation">@Override</span>
-public void recover(<span class="type">Parser</span> recognizer, <span class="type">RecognitionException</span> e) {
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover inline; if the parser
- *  successfully recovers, it won't throw an exception.
- */</span>
-<span class="annotation">@Override</span>
-public <span class="type">Token</span> recoverInline(<span class="type">Parser</span> recognizer)
-    <span class="keyword">throws</span> <span class="type">RecognitionException</span>
-{
-    <span class="type">InputMismatchException</span> e = <span class="keyword">new</span> <span class="type">InputMismatchException</span>(recognizer);
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover from problems in subrules. */</span>
-<span class="annotation">@Override</span>
-public void sync(<span class="type">Parser</span> recognizer) { }
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-embedd-action" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-embedd-action/" class="article-date">
-  	<time datetime="2014-08-30T09:54:59.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-embedd-action/">antlr4-添加嵌入式的行为(七)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一般情况下我们最好不要这么做，这会使应用代码与语法代码混淆。但是在某些情况下也有她的好处：</p>
+        <p>每一个Activity都表示一个屏幕，应用程序会把它呈现给用户。应用程序越复杂，需要的屏幕可能越多。</p>
+<p>典型情况下，这至少包括一个用来处理应用程序的主ui功能的主屏幕。这个主界面由许多fragment组成，并且通常由一组次要Activity支持。要在屏幕之间进行切换，就要启动一个新的Activity。</p>
+<h2 id="Activity的生存周期">Activity的生存周期</h2><h2 id="1-activity栈">1.activity栈</h2><p>每一个Activity的状态是由它所在Activity栈中所处的位置所决定的，Activity栈是当前所有正在运行的Activity的后进先出的集合。当一个新的Activity启动时，它就变为Activity状态了，并被移动到栈顶。如果用户使用Back（返回）按钮返回到了刚才的Activity，或者前台Activity被关闭了，那么栈中的下一个Activity就会移动到栈顶，变为活动状态。<br><img src="/img/2014/3-7.PNG" alt=""></p>
+<h3 id="2-Activity的状态">2.Activity的状态</h3><p>随着Activity的创建和销毁，它们会按照上图从栈中进进出出。在这个过程中，它们经历了一下4中状态：</p>
 <ul>
-<li>简易的：有时候仅仅是简答的几个动作，避免创建监听器或访问器。</li>
-<li>有效的：在特定的资源应用中，我们不想浪费时间和内存去构建一个解析树。</li>
-<li>判断解析：在很少的情况下，我么需要依靠之前的输入流来判断解析属性。一些语法需要构建符号表来意识到将来的不同情况的输入，依赖与标识符是否是类型或者方法。</li>
+<li><p>活动状态<br>当一个Activity位于栈顶的时候，它是可见的，具有焦点的前台Activity,这时候它可以接收用户输入。Android将会不惜一切代价来保持它处于活动状态，并根据需要来销毁栈下面部分的Activity，以保证这个Activity拥有它所需要的资源。当另一个Activity变为活动状态的时候，这个Activity就被暂停。</p>
+</li>
+<li><p>暂停状态<br>在某些情况下，Activity是可见的，但是没有获得焦点，此时它就处于暂停状态。当一个透明的或者非全屏的Activity位于该Activity之前时，就会达到这个状态。当Activity被暂停的时候，它任然会被当做近视与活动状态的状态，但是它不能接受用户的输入事件。在极端情况下，Android会终止暂停的Activity，以方便为活动状态的Activity释放资源。当一个Activity变得完全不可见的时候，它就变为停止状态。</p>
+</li>
+<li><p>停止状态<br>当一个Activity不可见的时候，它就处于停止状态。此时，Activity仍然会停留在内存中，保存所有的状态信息，然而当系统的其他地方要求使用内存的时候，他们就会成为被终止的首要侯选对象。在一个Activity停止的时候，保存数据和当前的UI状态以及停止任何飞关键操作是很重要的。一旦一个Activity被退出或者关闭，它就会变为非活动状态。</p>
+</li>
+<li><p>非活动状态<br>当一个Activity被终止后，在启动之前它就处于非活动状态。处于非活动状态的Activity已经从Activity栈中删除了，因此，在他们可以被显示和使用之前，需要重新被启动。</p>
+</li>
 </ul>
-<h2 id="演示">演示</h2><pre><code>grammar Rows;
+<h3 id="3-理解Activity的生命周期">3.理解Activity的生命周期</h3><p><img src="/img/2014/2012120122450787.png" alt=""></p>
+<ul>
+<li>完整生命周期</li>
+</ul>
+<p>Activity的完整生成周期是指对OnCreate方法的第一次调用和对OnDestroy方法的最后一次调用之间的时间范围。有时候还会发生一个Activity的进程被终止，却没有调用OoDestory方法的情况。</p>
+<p>OnCreate方法来初始化Activity：填充用户界面，得到对Fragment的引用，分配对类变量的引用，将数据绑定到控件，并启动Service和定时器。</p>
+<p>OnDestory方法来清理OnCreate方法创建的所有资源，并保证所有的外部连接都被关闭了。</p>
+<ul>
+<li>可见生存期</li>
+</ul>
+<p>一个Activity的可见生成期是指调用Onstart和Onstop之间的那段时间。在这个时间段中，Activity是对用户可见的，但是他们可能不具有焦点，或者她可能被部分遮挡了。</p>
+<p>OnStop方法应该用来暂停或者停止动画，线程，传感器监听器，GPS查找，定时器，Service或者其他专门用于更新用户界面的进程。当UI不可见的时候它是没有意义的，因为这消耗了资源缺没起到实际的作用。</p>
+<p>当UI再次可见的时候，可以使用OnStart或者OnRestart方法来恢复或者重启这些进程。OnRestart在除了对Onstart方法的第一次调用之外的所有方法之前被立即调用。</p>
+<ul>
+<li>活动生存期</li>
+</ul>
+<p>活动生存期是指OnResume及对应的OnPause之间的那段时间。</p>
+<p>一个处于活动状态的Activity是在前台的，并且正在接受用户输入事件。一定要让OnPause和OnResume中的代码执行迅速，并且其中的代码尽可能的少，以保证在前台和后台之间进行切换的时候应用程序能够迅速响应。</p>
 
-<span class="variable">@parser</span>::members { <span class="comment">// add members to generated RowsParser</span>
-    <span class="keyword">int</span> col;
-    public RowsParser(TokenStream input, <span class="keyword">int</span> col) { <span class="comment">// custom constructor</span>
-        this(input);
-        this.col = col;
-    }
-}
-
-<span class="keyword">file</span>: (row NL)+ ;
-
-row
-locals [<span class="keyword">int</span> i=<span class="number">0</span>]   <span class="comment">//locals 本地变量表</span>
-    : (   STUFF
-          { <span class="comment">//行为 ，通过$来取出本地变量 ,col是全局变量</span>
-          <span class="variable">$i</span>++;
-          <span class="keyword">if</span> ( <span class="variable">$i</span> == col ) System.out.println(<span class="variable">$STUFF</span>.<span class="keyword">text</span>);
-          }
-      )+
-    ;
-
-TAB  :  <span class="string">'\t'</span> -&gt; skip ;   <span class="comment">// match but don't pass to the parser</span>
-NL   :  <span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// match and pass to the parser</span>
-STUFF:  ~[\t\r\n]+ ;     <span class="comment">// match any chars except tab, newline</span>
-</code></pre><h2 id="利用语法规则的外部行为">利用语法规则的外部行为</h2><pre><code>&lt;header&gt;
-public <span class="class"><span class="keyword">class</span> <span class="title">&lt;grammarName&gt;</span> <span class="title">Parser</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Parser</span> {</span>
-&lt;members&gt;
-...
-}
-</code></pre><p>package/import  statements is header and<br>class members like fields and methods is members<br>如果要指定header行为，我们用@header,如果要注入字段和方法，我们用@memers。<br>在一个合并的parser/lexer语法中，他们命名的行为应用在parser和lexer中。如果要限制生成的行为在parser或lexer中，我们可以用 @parser::name 或者 @lexer::name.</p>
-<p>通常情况下，$x.y表示y属性的x元素，x可以是token的引用或者rule引用。</p>
-<h3 id="expr例子">expr例子</h3><pre><code><span class="comment">/** Grammar from tour chapter augmented with actions */</span>
-grammar Expr;
-
-<span class="variable">@header</span> {
-<span class="comment">/**package tools;*/</span>
-import java.util.<span class="variable">*;</span>
-}
-
-<span class="variable">@parser</span>::members {
-    <span class="comment">/** "memory" for our calculator; variable/value pairs go here */</span>
-    Map&lt;String, Integer&gt; <span class="keyword">memory</span> = new HashMap&lt;String, Integer&gt;();
-
-    <span class="keyword">int</span> <span class="keyword">eval</span>(<span class="keyword">int</span> left, <span class="keyword">int</span> op, <span class="keyword">int</span> right) {
-        <span class="keyword">switch</span> ( op ) {
-            <span class="keyword">case</span> MUL : <span class="keyword">return</span> left * right;
-            <span class="keyword">case</span> DIV : <span class="keyword">return</span> left / right;
-            <span class="keyword">case</span> ADD : <span class="keyword">return</span> left + right;
-            <span class="keyword">case</span> SUB : <span class="keyword">return</span> left - right;
-        }
-        <span class="keyword">return</span> <span class="number">0</span>;
-    }
-}
-
-stat:   e NEWLINE           {System.out.println(<span class="variable">$e</span>.v);}
-    |   ID <span class="string">'='</span> e NEWLINE    {<span class="keyword">memory</span>.put(<span class="variable">$ID</span>.<span class="keyword">text</span>, <span class="variable">$e</span>.v);}
-    |   NEWLINE                   
-    ;
-
-e returns [<span class="keyword">int</span> v]
-    : a=e op=(<span class="string">'*'</span>|<span class="string">'/'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}
-    | a=e op=(<span class="string">'+'</span>|<span class="string">'-'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}  
-    | INT                   {<span class="variable">$v</span> = <span class="variable">$INT</span>.<span class="keyword">int</span>;}    
-    | ID
-      {
-      String id = <span class="variable">$ID</span>.<span class="keyword">text</span>;
-      <span class="variable">$v</span> = <span class="keyword">memory</span>.containsKey(id) ? <span class="keyword">memory</span>.get(id) : <span class="number">0</span>;
-      }
-    | <span class="string">'('</span> e <span class="string">')'</span>             {<span class="variable">$v</span> = <span class="variable">$e</span>.v;}       
-    ; 
-
-MUL : <span class="string">'*'</span> ;
-DIV : <span class="string">'/'</span> ;
-ADD : <span class="string">'+'</span> ;
-SUB : <span class="string">'-'</span> ;
-
-ID  :   [a-zA-Z]+ ;      <span class="comment">// match identifiers</span>
-INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;         <span class="comment">// match integers</span>
-NEWLINE:<span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// return newlines to parser (is end-statement signal)</span>
-WS  :   [ \t]+ -&gt; skip ; <span class="comment">// toss out whitespace                </span>
-</code></pre><h3 id="keyword例子">keyword例子</h3><pre><code>grammar Keywords;
-@lexer::header {    // place this header <span class="keyword">action</span> <span class="keyword">only</span> <span class="type">in</span> lexer, not the parser
-    <span class="keyword">import</span> java.util.*;
-}
-
-// explicitly define keyword token types to avoid <span class="type">implicit</span> def warnings
-tokens { BEGIN, <span class="keyword">END</span>, <span class="keyword">IF</span>, <span class="keyword">THEN</span>, <span class="keyword">WHILE</span> }
-
-@lexer::members {   // place this <span class="keyword">class</span> member <span class="keyword">only</span> <span class="type">in</span> lexer
-    Map&lt;String,<span class="type">Integer</span>&gt; keywords = new HashMap&lt;String,<span class="type">Integer</span>&gt;() &lt;<span class="comment">!--￼0--&gt;;</span>
-}
-
-
-stat:   BEGIN stat* <span class="keyword">END</span> 
-    |   <span class="keyword">IF</span> expr <span class="keyword">THEN</span> stat
-    |   <span class="keyword">WHILE</span> expr stat
-    |   ID <span class="string">'='</span> expr <span class="string">';'</span>
-    ;
-
-expr:   <span class="built_in">INT</span> | <span class="built_in">CHAR</span> ;
-
-ID  :   [a-zA-Z]+
-        {//嵌入式代码
-        <span class="keyword">if</span> ( keywords.containsKey(getText()) ) {
-            setType(keywords.get(getText())); // reset token <span class="keyword">type</span>
-        }
-        }
-    ;
-
-/** Convert <span class="number">3</span>-<span class="built_in">char</span> <span class="string">'x'</span> input <span class="keyword">sequence</span> to string x */
-<span class="built_in">CHAR</span>:   <span class="string">'\''</span> . <span class="string">'\''</span> {setText( String.valueOf(getText().charAt(<span class="number">1</span>)) );} ;
-
-<span class="built_in">INT</span> :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
-
-WS  :   [ \t\n\r]+ -&gt; skip ;
-</code></pre><h3 id="csvexample">csvexample</h3><pre><code>grammar CSV;
-
-@header {
-import java.util.*;
-}
-
-<span class="comment">/** Derived from rule "file : hdr row+ ;" */</span>
-<span class="keyword">file</span>
-locals [int i=0]
-     : hdr ( rows+=row[<span class="label">$hdr</span>.text.<span class="keyword">split</span>(<span class="string">","</span>)] {<span class="label">$i</span>++;} )+
-       {
-       System.<span class="keyword">out</span>.println(<span class="label">$i</span>+<span class="string">" rows"</span>);
-       <span class="keyword">for</span> (RowContext r : <span class="label">$rows</span>) {
-           System.<span class="keyword">out</span>.println(<span class="string">"row token interval: "</span>+r.getSourceInterval());
-       }
-       }
-     ;
-
-hdr : row[null] {System.<span class="keyword">out</span>.println(<span class="string">"header: '"</span>+<span class="label">$text</span>.<span class="literal">trim</span>()+<span class="string">"'"</span>);} ;
-
-<span class="comment">/** Derived from rule "row : field (',' field)* '\r'? '\n' ;" */</span>
-<span class="comment">//参数 columns ，返回值values</span>
-row[String[] columns] returns [Map&lt;String,String&gt; values]
-locals [int col=0]
-@init {
-    <span class="label">$values</span> = new HashMap&lt;String,String&gt;();
-}
-@after {
-    <span class="keyword">if</span> (<span class="label">$values</span>!=null &amp;&amp; <span class="label">$values</span>.size()&gt;0) {
-        System.<span class="keyword">out</span>.println(<span class="string">"values = "</span>+<span class="label">$values</span>);
-    }
-}
-<span class="comment">// rule row cont'd...</span>
-    :   field
-        {
-        <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
-            <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
-        }
-        }
-        (   ',' field
-            {
-            <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
-                <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
-            }
-            }
-        )* '\r'? '\<span class="keyword">n</span>'
-    ;
-
-field
-    :   TEXT
-    |   <span class="literal">STRING</span>
-    |
-    ;
-
-TEXT : ~[,\<span class="keyword">n</span>\r"]+ ;
-STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')* '"' ; <span class="comment">// quote-quote is an escaped quote</span>
-</code></pre>
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
 	</div>
 
       
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/intent" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/05/25/2014/intent/" class="article-date">
+  	<time datetime="2014-05-25T10:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/25/2014/intent/">Intent和Broadcast Receiver</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Intent简介">Intent简介</h2><p>Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：</p>
+<ul>
+<li>使用类名显示启动一个特定的Service或Activity</li>
+<li>启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。</li>
+<li>广播某个事件的发生。</li>
+</ul>
+<h3 id="使用Intent来启动Activity">使用Intent来启动Activity</h3><p>显示：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Intent</span> <span class="type">intent</span> = new <span class="type">Intent</span>(MyActivity.this, MyOtherActivity.<span class="keyword">class</span>);</span><br><span class="line">startActivity(<span class="type">intent</span>);</span><br></pre></td></tr></table></figure>
+<p>隐式：<br>隐式的Intent提供了一种机制，可以让匿名的应用程序组件响应动作请求。这意味着可以要求系统启动一个可执行给定动作的Activity，而不必知道需要启动哪个应用程序或Activity。</p>
+<p>例如：如果希望用户从应用程序中打电话，可以实现一个新的拨号程序，也可以使用一个隐式的Intent来请求一个在电话号码（表示为一个URI）上执行动作（拨号）。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(somethingWeird&amp;&amp;itDontLookGood)&#123;</span><br><span class="line">	<span class="type">Intent</span> <span class="type">intent</span> = </span><br><span class="line">      new <span class="type">Intent</span> (<span class="type">Intent</span>.Action_DLL,Uri.parse(<span class="string">"tel:555-2368"</span>));</span><br><span class="line">	startActivity(<span class="type">intent</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Android就会解析这个Intent，并启动一个新的Activity，该Activity会提供对这个电话号码进行拨号的动作—-在这种情况下，通常是Phone Dialer.</p>
+<h2 id="Linfify简介">Linfify简介</h2><p>Linkify是一个辅助类，它会自动地在TextView类（或者TextView的派生类）中通过RegEx模型匹配来创建超链接。</p>
+<p>那些匹配一个指定的RegEx模式的文本都将会被转换为一个可以单击的超链接，这些超链接可以隐式使用匹配的文本作为目标URI来触发startActivity（new Intent(Intent.ACTION_VIEW，uri)）。</p>
+<h3 id="原生Linkify链接类型">原生Linkify链接类型</h3><p>Linkify类有一些预设值可以检测到Web URL，电子邮件地址和电话号码，并把他们转换为链接。要应用一个预设值，需要使用静态的Linkify.addLinks方法，并传入要建立的链接的视图，以及以下的一个活更多个自描述的Linkify类常量的位掩码:WEB_URLS，EMAIL_ADDRESS,PHONE_NUMBERS和ALL。</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextView textView = (TextView)findViewById(R.id.myTextView);</span><br><span class="line">Linkify.addLinks(textView,Linkify.WEB_URLS<span class="string">|Linkify.EMAIL_ADDRESSES);</span></span><br></pre></td></tr></table></figure>
+<p>也可以使用Android:autoLink属性来在一个布局内部链接视图。<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	android:<span class="variable">layout_width =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">layout_height =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">text =</span> <span class="string">"@string/linkify_name"</span></span><br><span class="line">	android:<span class="variable">autoLink =</span> <span class="string">"phone|email"</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="创建定制的链接字符串">创建定制的链接字符串</h3><h3 id="使用Match_Filter">使用Match Filter</h3><h3 id="使用Transform_Filter">使用Transform Filter</h3><p>Transform Filter 允许修改匹配的链接文本生成的隐式URI。把链接文本和目标URI分离开，你能够更自由的决定如何把数据字符串显示给用户。</p>
+<h2 id="使用Intent广播事件">使用Intent广播事件</h2><p>作为一个系统级的消息传递机制，Intent可以在进程之间发送结构化的消息。因此，可以通过实现Broadcast Receiver来监听和响应应用程序内的这些Broadcast Intent。</p>
+<p>Broadcast Intent 用于向监听器通知系统的应用程序或应用事件，从而可以扩展应用程序间的事件驱动的编程模型。</p>
+<p>Broadcast Intent 可以是应用程序更加开发：通过使用Intent来广播一个事件，可以在不用修改原始应用程序的情况下，让你和第三方开发人员对事件做出反应。在应用程序中，可以通过监听Broadcast Intent来对设备状态变化和第三方应用程序事件做出反应。</p>
+<h3 id="使用_Intent广播事件">使用 Intent广播事件</h3><p>在应用程序组件中，可以构建希望广播的Intent，然后使用sendBroadcast方法来发送它。</p>
+<p>可以对Intent的动作，数据和分类进行设置，从而使Broadcast Receiver能够精确的确定他们的需求。</p>
+<h3 id="使用Broadcast_Receiver来监听广播">使用Broadcast Receiver来监听广播</h3><p>Broadcast Receiver可以用来监听Broadcast Intent。要使Broadcast Receiver 能够接受广播，就需要对其进行注册，即可以使用代码，也可以在应用程序的manifest文件中注册。无论怎么注册，都要使用一个Intent Filter来指定它要监听哪些Intent和数据。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/impalajdbcpool" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/05/23/2014/impalajdbcpool/" class="article-date">
+  	<time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/23/2014/impalajdbcpool/">impala 使用连接池报“Cannot get a connection, pool exhausted”异常</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在使用dbcp 为impala创建连接池时，创建的时候没有报错，但是取连接的时候发现报错了，错误信息如下:<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Caused by: org<span class="class">.apache</span><span class="class">.commons</span><span class="class">.dbcp</span><span class="class">.SQLNestedException</span>: Cannot get <span class="tag">a</span> connection, pool exhausted</span><br></pre></td></tr></table></figure></p>
+<p>通过debug发现连接池中的连接数为0，断定是创建连接池的时候出了异常。<br>于是debug进入commons dbcp的源代码中，发现在PoolableConnectionFactory中的passivateObject(Object obj)方法中出了异常。</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">passivateObject</span><span class="params">(Object obj)</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span>(obj <span class="keyword">instanceof</span> Connection) {
+        Connection conn = (Connection)obj;
+        <span class="keyword">if</span>(!conn.getAutoCommit() &amp;&amp; !conn.isReadOnly()) {
+            conn.rollback();
+        }
+        conn.clearWarnings();
+        <span class="comment">//由于impala没有事务，所以设置自动提交必然失败</span>
+        conn.setAutoCommit(<span class="keyword">true</span>);
+    }
+    <span class="keyword">if</span>(obj <span class="keyword">instanceof</span> DelegatingConnection) {
+        ((DelegatingConnection)obj).passivate();
+    }
+}
+</code></pre><p>发现dbcp代码有问题后，首先看了下版本号1.2.1。进入官网后，发现有1.4的新版本，于是下载下来后，查看源代码：</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">passivateObject</span><span class="params">(Object obj)</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span>(obj <span class="keyword">instanceof</span> Connection) {
+        Connection conn = (Connection)obj;
+        <span class="keyword">if</span>(!conn.getAutoCommit() &amp;&amp; !conn.isReadOnly()) {
+            conn.rollback();
+        }
+        conn.clearWarnings();
+        <span class="keyword">if</span>(!conn.getAutoCommit()) {
+            conn.setAutoCommit(<span class="keyword">true</span>);
+        }
+    }
+    <span class="keyword">if</span>(obj <span class="keyword">instanceof</span> DelegatingConnection) {
+        ((DelegatingConnection)obj).passivate();
+    }
+}
+</code></pre><p>发现在1.4的代码中已经先判断连接自动提交的状态再设置。果断更新dbcp后，运行一切正常。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/impala/">impala</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/大数据/">大数据</a>
+	</div>
+
 
       
       <div class="clearfix"></div>
@@ -985,7 +1040,7 @@ STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/4/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/10/">10</a><a class="extend next" rel="next" href="/archives/page/6/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/archives/page/4/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/archives/page/6/">6</a><a class="extend next" rel="next" href="/archives/page/6/">Next &raquo;</a>
     </nav>
   
 </div>
