@@ -185,128 +185,52 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/oracle-group-by" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2015/03/31/2014/oracle-group-by/" class="article-date">
-  	<time datetime="2015-03-31T09:45:27.000Z" itemprop="datePublished">3月 31 2015</time>
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2015" class="archive-year">2015</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/03/31/2014/oracle-group-by/" class="archive-article-date">
+  	<time datetime="2015-03-31T09:45:27.000Z" itemprop="datePublished">3月 31</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/31/2014/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
+      <a class="archive-article-title" href="/2015/03/31/2014/oracle-group-by/">Oracle rollup、cube、grouping sets</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
-<h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用group by rollup(A,B,C)，首先会对(A、B、C)进行GROUP BY，然后对(A、B)进行GROUP BY，然后是(A)进行GROUP BY，最后对全表进行GROUP BY操作。roll up的意思是“卷起”，这也可以帮助我们理解group by rollup就是对选择的列从右到左以一次少一列的方式进行grouping直到所有列都去掉后的grouping(也就是全表grouping)，对于n个参数的rollup，有n+1次的grouping。以下2个sql的结果集是一样的：</p>
-<p><code>Select A,B,C,sum(E) from test group by rollup(A,B,C)</code><br>与</p>
-<p><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,null,null,sum(E) from test</code></p>
-<h2 id="2_cube">2 cube</h2><p>cube的意思是立方，对cube的每个参数，都可以理解为取值为参与grouping和不参与grouping两个值的一个维度，然后所有维度取值组合的集合就是grouping的集合，对于n个参数的cube，有2^n次的grouping。如果使用group by cube(A,B,C),，则首先会对(A、B、C)进行GROUP BY，然后依次是(A、B)，(A、C)，(A)，(B、C)，(B)，(C)，最后对全表进行GROUP BY操作，一共是2^3=8次grouping。同rollup一样，也可以用基本的group by加上结果集的union all写出一个与group by cube结果集相同的sql：<br><code>Select A,B,C,sum(E) from test group by cube(A,B,C);</code><br>与<br><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,C,sum(E) from test group by A,C
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,B,C,sum(E) from test group by B,C
-union all
-Select null,B,null,sum(E) from test group by B
-union all
-Select null,null,C,sum(E) from test group by C
-union all
-Select null,null,null,sum(E) from test;</code></p>
-<h2 id="3_grouping_sets">3 grouping sets</h2><p>grouping sets就是对参数中的每个参数做grouping，也就是有几个参数做几次grouping,例如使用<code>group by grouping sets(A,B,C)</code>，则对(A),(B),(C)进行group by，如果使用<code>group by grouping sets((A,B),C)</code>,则对(A,B),(C)进行group by。甚至<code>grouping by grouping set(A,A)</code>都是语法允许的，也就是对(A)进行2次group by,grouping sets的参数允许重复</p>
-<h2 id="4_总结">4 总结</h2><ul>
-<li>rollup        (N+1个分组方案)</li>
-<li>cube         (2^N个分组方案)</li>
-<li>grouping sets (自定义罗列出分组方案)</li>
-</ul>
-<hr>
-<h2 id="5_注意点">5 注意点</h2><h3 id="5-1_机制不同">5.1 机制不同</h3><p>在rollup和cube的说明中分别给出了用基本group by加结果集union all给出了结果集相同的sql，但这只是为了理解的方便而给出的sql，并不说明rollup和cube与基本group by加结果集union all等价。实际上两者的内部机制是安全不一样的，前者除了写法简洁以外，运行时不需多次扫描表，效率远比后者高。</p>
-<h3 id="5-2_集合可运算">5.2 集合可运算</h3><p>3种扩展用法的参数可以是源表中的某一个具体的列，也可以是若干列经过计算而形成的一个新列（比如说A+B，A||B），也可以是这两种列的一个集合（例如（A+B，C）），对于grouping set更是特殊，可以是空集合()，表示对全表进行group by。</p>
-<h3 id="5-3_group_by_与_rollup,_cube组合使用">5.3 group by 与 rollup, cube组合使用</h3><p>Group by的基本用法以及这3种扩展用法可以组合使用，也就是说可以出现group by A,rollup(A,B)这样的用法，oracle将对出现在group by中的每种用法的grouping列集合做笛卡尔积然后对其中的每一个元素做group by。这话说起来挺绕口，举例说明吧，group by A, rollup(A,B)，基本用法的grouping集合是(A),rollup(A,B)的grouping集合是((A,B),(A),()),两个集合的笛卡尔积集合是((A,A,B),(A,A),(A))，所以会首先对(A,A,B)做group by，然后对(A,A)做group by，最后对(A)做group by。实际上对(A,A,B)做group by和对(A,B)做group by两者是完全等价的(group by A,A,B结果和group by A,B完全一样)，同理对(A,A)做group by和对(A)做group by也是等价的。简化后的结果就是首先对(A,B)做group by，然后对(A)做group by，最后再对(A)做group by。下面给出两个等价的sql以便理解：<br><code>Select A,B,sum(E) from test1 group by A, rollup(A,B);</code><br>与<br><code>Select A,B,sum(E) from test1 group by A,B
-Union all
-Select A,null,sum(E) from test1 group by A
-Union all
-Select A,null,sum(E) from test1 group by A;</code></p>
-<h2 id="6_grouping()、grouping_id()、group_id()">6 grouping()、grouping_id()、group_id()</h2><h3 id="6-1_grouping()">6.1 grouping()</h3><p>参数只有一个，而且必须为group by中出现的某一列，表示结果集的一行是否对该列做了grouping。对于对该列做了grouping的行而言，grouping()=0，反之为1；</p>
-<h3 id="6-2_grouping_id()">6.2 grouping_id()</h3><p>参数可以是多个，但必须为group by中出现的列。Grouping_id()的返回值其实就是参数中的每列的grouping()值的二进制向量，例如如果grouping(A)=1，grouping(B)=0，则grouping_id(A,B)的返回值就是二进制的10，转成10进制就是2。</p>
-<h3 id="6-3_group_id()">6.3 group_id()</h3><p>无参数。见上面的说明3），group by对某些列的集合会进行重复的grouping，而实际上绝大多数情况下对结果集中的这些重复行是不需要的，那就必须有办法剔出这些重复grouping的行。当结果集中有n条重复grouping而形成的行时，每行的group_id()分别是0,1,…,n，这样我们在条件中加入一个group_id()&lt;1就可以剔出这些重复grouping的行了。</p>
-<h2 id="7_示例">7 示例</h2><h3 id="7-1_建表与数据">7.1 建表与数据</h3><p>SQL&gt; <code>create table test(department_id number, a varchar2(20), b varchar2(20));</code></p>
-<p>Table created</p>
-<p>SQL&gt; <code>insert into test values(10, &#39;A&#39;, &#39;B&#39;);</code></p>
-<p>1 row inserted</p>
-<p>SQL&gt; <code>commit;</code></p>
-<p>Commit complete</p>
-<h3 id="7-2_查询语句">7.2 查询语句</h3><p><code>select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by rollup(department_id, a, b)
-order by 4, 5, 6;
-select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by cube(department_id, a, b)
-order by 4, 5, 6;</code></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/groupby/">groupby</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oralce/">oralce</a></li></ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/数据库/">数据库</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
   
+  
+    </div></section>
   
 </div>
       <footer id="footer">

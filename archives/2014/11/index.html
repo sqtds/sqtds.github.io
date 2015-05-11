@@ -185,248 +185,87 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="article-date">
-  	<time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2014" class="archive-year">2014</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="archive-article-date">
+  	<time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+      <a class="archive-article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
-<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
-<ul>
-<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
-<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
-</li>
-<li><p>第二，轴上的计算器(Calc)的创建。</p>
-<p>  主要是针对各个轴如何创建计算器。</p>
-</li>
-</ul>
-<p>下面是的resolve()方法解释：</p>
-<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
-    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
-    resolve(validator); <span class="comment">// resolve self and children ,2</span>
-    <span class="comment">// Create a dummy result so we can use its evaluator</span>
-    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
-    ExpCompiler compiler =
-            createCompiler(
-                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
-    compile(compiler);  <span class="comment">//5</span>
-}
-</code></pre><ol>
-<li>第1行创建校验器(Validator)。</li>
-<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
-<li>第3行针对当前Query创建求值器(Evaluator)。</li>
-<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
-<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
-</ol>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
-      
-        <p class="article-more-link">
-          <a  href="/2014/11/13/2014/mondrian-ext-function执行机制/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
   
-    <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/11/02/2014/mondrian-source-code-7/" class="article-date">
-  	<time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2014/11/02/2014/mondrian-source-code-7/" class="archive-article-date">
+  	<time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+      <a class="archive-article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在前面几节中我们了解了cube的创建和query的创建。有了这2样东西后，我们就可以开始执行mdx语句了。在第二小节中，我们了解了mdx的执行顺序。</p>
-<ol>
-<li>先执行from，即表示从哪个cube中获取结果。</li>
-<li>再执行where，with和axis，即获取member阶段。</li>
-<li>有了所有依赖的成员后，最后执行Cell的值。</li>
-</ol>
-<p>cube的创建已经在前一节中讲过了，接着是member获取阶段，由于这一阶段分为3部分，内容比较多。所以下面我们先将member是如何读取的，后几节再介绍它的执行过程。</p>
-<h2 id="MemberSource">MemberSource</h2><p>所有对成员的读取操作都是通过MemberSource来完成的。<br>MemberSource基本功能就是是读取层次的成员操作。<br>我们看下它的基本接口：</p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MemberSource</span> </span>{
-
-    <span class="function">RolapHierarchy <span class="title">getHierarchy</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">setCache</span><span class="params">(MemberCache cache)</span></span>;
-
-    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembers</span><span class="params">()</span></span>;
-
-    <span class="function">List&lt;RolapMember&gt; <span class="title">getRootMembers</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
-        RolapMember parentMember,
-        List&lt;RolapMember&gt; children)</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
-        List&lt;RolapMember&gt; parentMembers,
-        List&lt;RolapMember&gt; children)</span></span>;
-
-    <span class="function"><span class="keyword">int</span> <span class="title">getMemberCount</span><span class="params">()</span></span>;
-
-    <span class="function">RolapMember <span class="title">lookupMember</span><span class="params">(
-        List&lt;Id.Segment&gt; uniqueNameParts,
-        <span class="keyword">boolean</span> failIfNotFound)</span></span>;
-}    
-</code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
-<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/2014/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
-<pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
-
-    <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
-
-
-    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
-        RolapLevel level)</span></span>;
-
-
-    <span class="function"><span class="keyword">void</span> <span class="title">getMemberRange</span><span class="params">(
-        RolapLevel level,
-        RolapMember startMember,
-        RolapMember endMember,
-        List&lt;RolapMember&gt; list)</span></span>;
-
-    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(
-        RolapMember m1,
-        RolapMember m2,
-        <span class="keyword">boolean</span> siblingsAreEqual)</span></span>;
-
-    Map&lt;? extends Member, Access&gt; getMemberChildren(
-        RolapMember member,
-        List&lt;RolapMember&gt; children,
-        MemberChildrenConstraint constraint);
-
-    Map&lt;? extends Member, Access&gt; getMemberChildren(
-        List&lt;RolapMember&gt; parentMembers,
-        List&lt;RolapMember&gt; children,
-        MemberChildrenConstraint constraint);
-
-    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
-        RolapLevel level,
-        TupleConstraint constraint)</span></span>;
-
-    <span class="function"><span class="keyword">int</span> <span class="title">getLevelMemberCount</span><span class="params">(RolapLevel level)</span></span>;
-
-    <span class="function">MemberBuilder <span class="title">getMemberBuilder</span><span class="params">()</span></span>;
-
-    <span class="function">RolapMember <span class="title">getDefaultMember</span><span class="params">()</span></span>;
-
-    <span class="function">RolapMember <span class="title">getMemberParent</span><span class="params">(RolapMember member)</span></span>;
-
-    <span class="function">RolapMember <span class="title">substitute</span><span class="params">(RolapMember member)</span></span>;
-
-    <span class="function">RolapMember <span class="title">desubstitute</span><span class="params">(RolapMember member)</span></span>;
-
-    <span class="function">RolapMember <span class="title">getMemberByKey</span><span class="params">(
-        RolapLevel level,
-        List&lt;Comparable&gt; keyValues)</span></span>;
-}
-</code></pre><p>从上面大家发现没，MemberReader更细化功能，它可以获取到Level上的成员，也可以获取成员的父成员或者成员的子成员，并且在获取成员的时候可以添加约束条件。有了这些功能，我们就可以任意的获取成员了，所以MemberReader是成员获取的主接口。</p>
-<h2 id="具体实现">具体实现</h2><h3 id="SmartMemberReader">SmartMemberReader</h3><p>SmartMemberReader实现了MemberReader接口，它实现了维度成员及其子成员的缓存，如果有一个成员位于缓存中，则还会有一个其子成员的列表。它同时缓存了level下的成员们。该类主要的成员有：</p>
-<ul>
-<li>source：MemberReader，用于实际从数据库中读取维度成员值。</li>
-<li>mapMemberToChildren：map，实现成员及其子成员的映射， key为RolapMember，value为List<rolapmember>。</rolapmember></li>
-<li>mapKeyToMember： map ，实现所有成员的缓存，其中的key为MmberKey</li>
-<li>mapLevelToMembers: map，实现级别及其所有成员的映射， key为RolapLevel，value为List<rolapmember>。</rolapmember></li>
-</ul>
-<h3 id="SqlMemberSource">SqlMemberSource</h3><p>SqlMemberSource是最终更数据库打交道的类，它会针对要查询对Level生成一个sql，该sql最终通过数据库执行，将查询结果返回后拼装成member。需要注意的一点是，如果该member有parentmember，必须要生成其对应的parentmember。生成过程即先递归的在level中查找其上一级level的member是否缓存，如果没有缓存，则将其加入查询列表中，直到上一级为空或缓存了member。找到所有要查询的level后，最后一次性生成sql向数据库查询数据。</p>
-<p>SmartMemberReader的source其实为mondrian.rolap.SqlMemberSource类，该类中反过来又存储了SmartMemberReader对象，作为其cache成员属性。成员读取过程：</p>
-<ol>
-<li>smartMemberReader.getMemberChildren(parentMembers,children,constrain);</li>
-<li>最终通过source.getMemberChildren()…，其中反过来会把找到的children赋予mapKeyToMember。</li>
-<li>最终除了将结果返回在children输出参数中，同时也对mapMemberToChildren赋值了。</li>
-</ol>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
   
+  
+    </div></section>
   
 </div>
       <footer id="footer">
