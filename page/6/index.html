@@ -185,11 +185,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/android事件处理机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/23/2014/android事件处理机制/" class="article-date">
-  	<time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
+      <a href="/2014/08/30/2014/antlr4-share-context/" class="article-date">
+  	<time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">8月 30 2014</time>
 </a>
     </div>
   
@@ -202,7 +202,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/23/2014/android事件处理机制/">android 事件机制</a>
+      <a class="article-title" href="/2014/08/30/2014/antlr4-share-context/">antlr4-共享上下文(六)</a>
     </h1>
   
 
@@ -211,16 +211,99 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>android提供了2中事件处理方式:基于回调的事件处理和基于监听器的事件处理。</p>
-<h3 id="基于监听的事件处理">基于监听的事件处理</h3><p>在事件监听处理的处理模型中，主要涉及如下3种类型：</p>
-<ul>
-<li>Event Source（事件源）：事件发生的各个场所，通常是各个组件，例如按钮，窗口，菜单等。</li>
-<li>Event（事件）：事件封装了界面组件上发生的特定事件（通常就是一次用户操作）。</li>
-<li>Event Listener（事件监听器）：监听事件源发生的事件，对各个事件做出响应。</li>
+        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
+<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
+<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
+<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
+    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
+        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
+    }
+}
+</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
+<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
+</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
+<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
+    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push( left * right );
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push(left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
+    }
+}
+</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/2014/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/2014/QQ图片20140830171636.jpg" alt=""></p>
+<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
+    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
+}
+</code></pre><p>所以，我们用一个map来保存所有的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
+    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
+    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
+
+    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
+        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left * right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
+        setValue(ctx, Integer.valueOf(intText));
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
+    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
+}
+
+<span class="comment">//保存树的节点和值的map</span>
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
+    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
+
+    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+}
+</code></pre><h2 id="对比">对比</h2><ul>
+<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
+<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
+<li>注解：map字段映射了节点和值的关系。</li>
 </ul>
-<p>Android的事件处理机制是一种委派式事件处理方式：普通组件（事件源）将整个事件处理委托给特定的对象（事件监听器）；当该事件源发生特定的事件时，就通知所委托的事件监听器，由事件监听器来处理这个事件。<br><img src="/img/2014/QQ图片20140524151941.jpg" alt=""></p>
-<h2 id="基于回调的事件处理">基于回调的事件处理</h2><p>如果说事件监听机制是一种委托的事件处理，那么回调机制正好相反：对于基于回调的时间爱你处理模型来说，事件源与事件监听器是统一的，或者说事件监听器完全消失了。当用户在gui组件上激发某个事件的时候，组件自己特定的方法将会负责处理该事件。</p>
-<h2 id="比较">比较</h2><p>对于基于监听的事件处理模型来说，事件源和事件监听器是分离的，当事件源上发生特定的事件后，该事件交给事件监听器处理；对于基于回调的事件处理模型来说，事件源和事件监听器是统一的，当事件源发生特定的事件后，该事件还是由事件源本身负责处理。</p>
 
       
     </div>
@@ -228,205 +311,7 @@
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/android事件处理2" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/23/2014/android事件处理2/" class="article-date">
-  	<time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/23/2014/android事件处理2/">android 特殊事件处理</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在android中，可能需要一些特定的事件来处理某些任务。下面我们将介绍android中比较特殊的2种事件处理。</p>
-<h2 id="响应系统设置事件">响应系统设置事件</h2><p>在开发android中， 我们可能需要让应用程序随着系统的设置而响应。例如判断屏幕的方向，导航的方向等。</p>
-<h3 id="Configuration类介绍">Configuration类介绍</h3><p>Configuration类用于描述手机设备上的配置信息，这些配置信息包括用户特定的配置项，也包括系统的动态配置项。</p>
-<p><code>Configuration cfg = getResources().getConfiguration();</code></p>
-<ul>
-<li>fontScale — 来源于system.prop中 sys.font.scale配置项<br>输入设备类型配置：系统加入的任何输入device必须拥有输入属性:现在android中仅支持touchscreen(触摸),keyboard(键盘),navigation(滚动球)</li>
-<li>orientation — 屏幕方位</li>
-<li>keyboardHidden — 如果是划盖或开盖手机并且没有软键盘支持，这个设成true</li>
-<li>hardKeyboardHidden — 如果是划盖或开盖手机,这个设成true</li>
-<li>locale — 用户选择的location信息</li>
-<li>theme — 皮肤,资源等等</li>
-</ul>
-<h3 id="重写onConfigurationChanged响应系统设置更改">重写onConfigurationChanged响应系统设置更改</h3><p>如果应用程序需要监听系统设置的更改，则可以考虑重写Activityd的onConfigurationChanged（Configuation newConfig）方法，该方法是一个基于回调的事件处理方法：当系统设置发生更改是，改方法会被自动触发。</p>
-<p>为了在程序中动态的更改系统设置，我们可以调用Activity的setRequestedQrientation(int)方法来修改屏幕的方向。</p>
-<h2 id="Handler消息传递机制">Handler消息传递机制</h2><p>Android的消息传递机制是另一种形式的“事件处理”，这种机制主要是为了解决Android应用的多线程问题—android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样会导致新启动的线程无法动态改变界面组件的属性值。但在实际Android开发中，尤其是涉及动画的游戏开发中，需要让新启动的线程周期性的改变界面组件的属性值，这就需要借助于Handler的消息传递机制来实现了。</p>
-<h3 id="Handler类简介">Handler类简介</h3><p>Handler类的主要作用：</p>
-<ul>
-<li>在新启动的线程中发送消息。</li>
-<li>在主线程中获取，处理消息。</li>
-</ul>
-<p>为了让主线程能“适时”地处理新启动的线程锁发送的消息，显然只能通过回调的方式来实现—开发者只要重写Handler类中处理消息的方法，当新启动的线程发送消息时，Handler类中处理消息的方法被自动回调。<br>Handler类包含如下方法用于发送，处理消息。<br><img src="/img/2014/QQ图片20140524162001.jpg" alt=""></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/linux-replace" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/23/2014/linux-replace/" class="article-date">
-  	<time datetime="2014-05-23T13:03:22.000Z" itemprop="datePublished">5月 23 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/23/2014/linux-replace/">linux替换字符串</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在linux下替换字符串有3种方式，现在简要介绍下：</p>
-<h2 id="vim替换单个文件下的所有字符串方法">vim替换单个文件下的所有字符串方法</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">:%s/old/new/g</span></span><br><span class="line">\<span class="comment"># %表示替换所有行，g表示替换一行中所有匹配点。</span></span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="comment">##Sed替换</span></span><br></pre></td></tr></table></figure>
-<p>:sed -i “s/old/new/g” <code>grep old -rl /dir</code><br># -i表示替换文本内容<br>注意后面的grep命令，表示寻找当前目录下的所有包含”old”字符串的文件</p>
-<p>:sed -i ‘1d’ file<br># 删除文件的第一行</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">##perl替换</span></span><br></pre></td></tr></table></figure>
-<p>: perl -pi -e ‘s|old|new|g’ <code>find /dir -type f</code><br># 注意”s/old/new/g”这部分和其他2中命令都挺类似。<br>```</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/字符串替换/">字符串替换</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/linux/">linux</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/exception-idea" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/21/2014/exception-idea/" class="article-date">
-  	<time datetime="2014-05-21T14:50:27.000Z" itemprop="datePublished">5月 21 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/21/2014/exception-idea/">exception idea Server is not connected. Deploy is not available.</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <pre><code><span class="comment"><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Server</span> <span class="keyword">is</span> <span class="keyword">not</span> connected. Deploy <span class="keyword">is</span> <span class="keyword">not</span> available.</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>当在idea启动tomcat的时候，报如上错误。经过google，是由于在tomcat的bin目录下设置了java_opts指向了其他方向，导致环境变量改变。</p>
-<p>解决的方式就是将自己设置的java_opts去掉即可。 </p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/exception/">exception</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
 	</div>
 
       
@@ -449,11 +334,11 @@
 
 
   
-    <article id="post-2014/hadoop-start" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-label-rule" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/19/2014/hadoop-start/" class="article-date">
-  	<time datetime="2014-05-19T13:50:32.000Z" itemprop="datePublished">5月 19 2014</time>
+      <a href="/2014/08/30/2014/antlr4-label-rule/" class="article-date">
+  	<time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">8月 30 2014</time>
 </a>
     </div>
   
@@ -466,7 +351,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/2014/hadoop-start/">hadoop的生态圈（1）</a>
+      <a class="article-title" href="/2014/08/30/2014/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
     </h1>
   
 
@@ -475,26 +360,75 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="hadoop的历史">hadoop的历史</h2><p>谈到 Hadoop 的历史，就不得不提到 Lucene 和 Nutch。Hadoop 开始时是 Nutch 的一个子项目，而 Nutch 又是 Apache Lucene 的子项目。这 3 个项目都是由 Doug Cutting 创立，每个项目在逻辑上都是前一个项目的演进。
+        <h2 id="粒度问题">粒度问题</h2><p>由于以前生成的方法仅仅能够在规则上产生，当我们想要更小的粒度时，针对每个规则进行更小的粒度控制时，我们就显得力不从心了。</p>
+<p>这样，就产生了lable…</p>
+<h2 id="无标签情况下">无标签情况下</h2><p>下面是一个计算器。</p>
+<pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;
+<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
+<span class="rule"><span class="attribute">e </span>:<span class="value"> e op=MULT e    // MULT is <span class="string">'*'</span>
+  | e op=ADD e     // ADD is <span class="string">'+'</span>
+  | INT
+  </span></span>;
+
+<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
+<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
+<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
+</code></pre><p><img src="/img/2014/QQ图片20140830162901.jpg" alt=""></p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends ExprBaseListener {
+    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitE</span><span class="params">(ExprParser.EContext ctx)</span> </span>{
+        <span class="keyword">if</span> ( ctx.getChildCount()==<span class="number">3</span> ) { <span class="comment">// operations have 3 children</span>
+            <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+            <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+            <span class="keyword">if</span> ( ctx.op.getType()==ExprParser.MULT ) {
+                <span class="built_in">stack</span>.push( left * right );
+            }
+            <span class="keyword">else</span> {
+                <span class="built_in">stack</span>.push( left + right ); <span class="comment">// must be add</span>
+            }
+        }
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTerminal</span><span class="params">(TerminalNode node)</span> </span>{
+        Token symbol = node.getSymbol();
+        <span class="keyword">if</span> ( symbol.getType()==ExprParser.INT ) {
+            <span class="built_in">stack</span>.push( Integer.valueOf(symbol.getText()) );
+        }
+    }
+}
+</code></pre><p>从上面看出，原始的方式下，我们不得不对所有的操作符进行判断，即op=MULT和op=Add。</p>
+<h2 id="有标签情况下">有标签情况下</h2><pre><code><span class="tag">grammar</span> <span class="tag">LExpr</span>;
+
+<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
+
+<span class="rule"><span class="attribute">e </span>:<span class="value"> e MULT e         # Mult
+  | e ADD e         # Add
+  | INT                # Int
+  </span></span>;
+
+<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
+<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
+<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
+</code></pre><p>注意不同点，我们使用#号来表示标签。这样，antlr就会对每个标签生成一个方法和特定的上下文对象。</p>
+<p><img src="/img/2014/QQ图片20140830164801.jpg" alt=""></p>
+
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
 	</div>
 
       
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/大数据/">大数据</a>
+	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
-      
-        <p class="article-more-link">
-          <a  href="/2014/05/19/2014/hadoop-start/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -509,11 +443,11 @@
 
 
   
-    <article id="post-2014/hadoop2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/19/2014/hadoop2/" class="article-date">
-  	<time datetime="2014-05-19T02:30:32.000Z" itemprop="datePublished">5月 19 2014</time>
+      <a href="/2014/08/30/2014/antlr4-iterator-example/" class="article-date">
+  	<time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
 </a>
     </div>
   
@@ -526,7 +460,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/2014/hadoop2/">hadoop配置信息处理（2）</a>
+      <a class="article-title" href="/2014/08/30/2014/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
     </h1>
   
 
@@ -535,56 +469,65 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Hadoop_配置文件的格式">Hadoop 配置文件的格式</h2><pre><code><span class="pi">&lt;?xml version="1.0"?&gt;</span>
-<span class="pi">&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;</span>
-<span class="tag">&lt;<span class="title">configuration</span>&gt;</span>
-     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">name</span>&gt;</span>io.sort.factor<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">value</span>&gt;</span>10<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">description</span>&gt;</span>The number of streams to merge at once while sorting files. This determines the number of open file handles.<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
-     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
-     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.name.dir<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">value</span>&gt;</span>${hadoop.tmp.dir}/dfs/name<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">description</span>&gt;</span>Determines where on the local filesystem the DFS name nodeshould store the name table(fsimage). ……<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
-     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
-     <span class="tag">&lt;<span class="title">property</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.web.ugi<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">value</span>&gt;</span>webuser,webgroup<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">final</span>&gt;</span>true<span class="tag">&lt;/<span class="title">final</span>&gt;</span>
-         <span class="tag">&lt;<span class="title">description</span>&gt;</span>The user account used by the web interface.Syntax: USERNAME,GROUP1,GROUP2, ……<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
-     <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
-<span class="tag">&lt;/<span class="title">configuration</span>&gt;</span>
-</code></pre><p>Hadoop 配置文件的根元素是 configuration，一般只包含子元素 property。每一个property 元素就是一个配置项，配置文件不支持分层或分级。每个配置项一般包括配置属性的名称 name、值 value 和一个关于配置项的描述 description ；元素 final 和 Java 中的关键字<br>final 类似，意味着这个配置项是“固定不变的”。final 一般不出现，但在合并资源的时候，可以防止配置项的值被覆盖。</p>
-<p>合并资源指将多个配置文件合并，产生一个配置。如果有两个配置文件，也就是两个资源，如 core-default.xml 和 core-site.xml，通过 Configuration 类的 loadResources() 方法，把它们合并成一个配置。代码如下：<br>    Configurationconf = new Configuration();<br>    conf.addResource(“core-default.xml”);<br>    conf.addResource(“core-site.xml”);<br>如果这两个配置资源都包含了相同的配置项，而且前一个资源的配置项没有标记为final，那么，后面的配置将覆盖前面的配置。上面的例子中，core-site.xml 中的配置将覆盖core-default.xml 中的同名配置。如果在第一个资源（core-default.xml）中某配置项被标记为final，那么，在加载第二个资源的时候，会有警告提示。</p>
-<p>Hadoop 配置系统还有一个很重要的功能，就是属性扩展。如配置项 dfs.name.dir 的值是${hadoop.tmp.dir}/dfs/name，其中，${hadoop.tmp.dir} 会使用 Configuration 中的相应属性值进行扩展。如果 hadoop.tmp.dir 的值是“/data”，那么扩展后的 dfs.name.dir 的值就是“/data/dfs/name”。</p>
-<p>使 用 Configuration 类 的 一 般 过 程 是 ： 构 造 Configuration 对 象， 并 通 过 类 的addResource() 方法添加需要加载的资源 ；然后就可以使用 get<em> 方法和 set</em> 方法访问 / 设置配置项，资源会在第一次使用的时候自动加载到对象中。</p>
-<h2 id="Configuration_的成员变量">Configuration 的成员变量</h2><p><img src="/img/2014/BA0C6471-4652-44D7-B739-5A579E21A6C5.png" alt="Cnfiguation类图"></p>
-<p>布尔变量quietmode，用来设置加载配置的模式。如果quietmode为true （默认值），则在加载解析配置文件的过程中，不输出日志信息。quietmode只是一个方便开发人员调试的变量。</p>
-<p>数组resources保存了所有通过addResource( ) 方法添加Congiguation对象的资源。</p>
-<p>布尔变量 loadDefaults 用于确定是否加载默认资源，这些默认资源保存在 defaultResources中。注意，defaultResources 是个静态成员变量，通过方法 addDefaultResource() 可以添加系统的默认资源。在 HDFS 中，会把 hdfs-default.xml 和 hdfs-site.xml 作为默认资源，并通过addDefaultResource() 保存在成员变量defaultResources 中 ；在 MapReduce 中，默认资源是mapred-default.xml 和 mapred-site.xml。如 HDFS 的 DataNode 中，就有下面的代码，加载上述两个默认资源：</p>
-<pre><code><span class="comment">//下面的代码来自 org.apache.hadoop.hdfs.server.datanode.DataNode</span>
-<span class="keyword">static</span>{
-    Configuration.addDefaultResource(<span class="string">"hdfs-default.xml"</span>);
-    Configuration.addDefaultResource(<span class="string">"hdfs-site.xml"</span>); 
+        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
+<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
+<pre><code><span class="comment">//语法</span>
+grammar PropertyFile;
+file : prop+ ;
+prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
+ID   : [a-z]+ ;
+<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
+
+<span class="comment">//文件</span>
+user=<span class="string">"parrt"</span>
+machine=<span class="string">"maniac"</span>
+</code></pre><p><img src="/img/2014/QQ图片20140830154441.jpg" alt="解析树"></p>
+<p><img src="/img/2014/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
+<p><img src="/img/2014/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
+<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
+    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
+    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
+        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
+        <span class="built_in">String</span> value = ctx.STRING().getText();
+        props.put(id, value);
+    }
 }
-</code></pre><p>properties、overlay 和 finalParameters 都是和配置项相关的成员变量。其中，properties和 overlay 的类型都是前面介绍过的 java.util.Properties。Hadoop 配置文件解析后的键 – 值对，都存放在 properties 中。变量 finalParameters 的类型是 Set<string>，用来保存所有在配置文件中已经被声明为 final 的键 – 值对的键，如前面配置文件例子中的键“dfs.web.ugi”。变量overlay 用于记录通过 set() 方式改变的配置项。也就是说，出现在 overlay 中的键 – 值对是应用设置的，而不是通过对配置资源解析得到的。</string></p>
-<p>Configuration 中最后一个重要的成员变量是 classLoader，这是一个类加载器变量，可以通过它来加载指定类，也可以通过它加载相关的资源。上面提到 addResource() 可以通过字符串方式加载 CLASSPATH 资源，它其实通过 Configuration 中的 getResource() 将字符串转换成 URL 资源，相关代码如下：</p>
-<pre><code><span class="keyword">public</span> <span class="function">URL <span class="title">getResource</span><span class="params">(String name)</span> </span>{
-    <span class="function"><span class="keyword">return</span> classLoader.<span class="title">getResource</span><span class="params">(name)</span></span>;
+</code></pre><p>下面的类的依赖图，我就不解释了：</p>
+<p><img src="/img/2014/QQ图片20140830155248.jpg" alt=""></p>
+<p>最后直接看结果吧，so easy:</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
+    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
+    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
+    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
+    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
+    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
+    ParseTree tree = parser.file();
+
+    <span class="comment">// create a standard ANTLR parse tree walker</span>
+    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
+    <span class="comment">// create listener then feed to walker</span>
+    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
+    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
+    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
+    <span class="comment">//print {machine="maniac", user="parrt"}</span>
 }
-</code></pre><p>其中，getResource() 用于根据资源的名称查找相应的资源，并返回读取资源的 URL 对象。</p>
-<h2 id="资源加载">资源加载</h2><p>资源通过对象的 addResource() 方法或类的静态 addDefaultResource() 方法（设置了loadDefaults 标志）添加到 Configuration 对象中，添加的资源并不会立即被加载，只是通过reloadConfiguration() 方法清空 properties 和 finalParameters。</p>
-<h2 id="Configurable_接口">Configurable 接口</h2><p>从字面理解，Configurable 的含义是可配置的，如果一个类实现了 Configurable 接口，意味着这个类是可配置的。也就是说，可以通过为这个类的对象传入一个 Configuration 实例，提供对象工作需要的一些配置信息。Hadoop 的代码中有大量的类实现了 Configurable 接口，如<br>org.apache.hadoop.mapred.SequenceFileInputFilter.RegexFilter。<br>RegexFilter 对象工作时，需要提供一个正则表达式，用于过滤读取的记录。由于 RegexFilter的父类 Filter 中实现的 Configurable 接口，RegexFilter 可以在它的 setConf() 方法中，使用Configuration.get() 方法获取以字符串传入的正则表达式，并初始化成员变量 p。相关代码如下：</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setConf</span><span class="params">(Configuration conf)</span> </span>{
-     <span class="comment">//在conf中获取键为"sequencefile.filter.regex"（FILTER_REGEX）的配置项</span>
-     String regex = conf.<span class="keyword">get</span>(FILTER_REGEX);
-     <span class="keyword">if</span> (regex==<span class="keyword">null</span>)
-     <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(FILTER_REGEX + <span class="string">"not set"</span>);
-     <span class="keyword">this</span>.p = Pattern.compile(regex);
-     <span class="keyword">this</span>.conf = conf;
+</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
+<p><img src="/img/2014/QQ图片20140830160030.jpg" alt=""></p>
+<p><img src="/img/2014/QQ图片20140830160122.jpg" alt=""></p>
+<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
+</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
+{
+    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
+    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
+        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
+        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
+        props.put(id, value);
+        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
+    }
 }
-</code></pre><p>Configurable.setConf() 方法何时被调用呢？一般来说，对象创建以后，就应该使用setConf() 方法，为对象提供进一步的初始化工作。</p>
+</code></pre><p><img src="/img/2014/QQ图片20140830160343.jpg" alt=""></p>
+<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
 
       
     </div>
@@ -592,12 +535,12 @@
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
 	</div>
 
       
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/大数据/">大数据</a>
+	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
@@ -615,11 +558,11 @@
 
 
   
-    <article id="post-2014/composition" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4_iterator" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/18/2014/composition/" class="article-date">
-  	<time datetime="2014-05-18T14:59:53.000Z" itemprop="datePublished">5月 18 2014</time>
+      <a href="/2014/08/30/2014/antlr4_iterator/" class="article-date">
+  	<time datetime="2014-08-30T06:36:50.000Z" itemprop="datePublished">8月 30 2014</time>
 </a>
     </div>
   
@@ -632,7 +575,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/18/2014/composition/">Android 应用程序的组成部分</a>
+      <a class="article-title" href="/2014/08/30/2014/antlr4_iterator/">antlr4-遍历机制概念(三)</a>
     </h1>
   
 
@@ -641,26 +584,35 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。
+        <h2 id="antlr4如何遍历树?">antlr4如何遍历树?</h2><p>antlr4提供了2种树遍历方式。在默认情况下，antlr生成了一个解析树监听接口，它用内置的树遍历器响应事件触发。这个监听器正如SAX文档处理xml解析对象一样。SAX监听器接收通知事件，例如startDocument()和endDocumnet()。他们在监听器中仅仅被回调。</p>
+<h2 id="解析树监听器(Parse-Tree_Listeners)">解析树监听器(Parse-Tree Listeners)</h2><p>为了在遍历树的时候触发对监听器的调用，antlr的运行时包提供类ParseTreeWalker。</p>
+<p>antlr生成了一个ParerTreeListener的子类，这个类会对每个语法规则指定一个enter和exit方法。当遍历器遇到节点规则assign时，会触发enterAssign()方法然后传递给他解析树节点的AssignConext。在遍历器访问了assign的所有子节点后，会触发exitAssign()方法。下面的树状图显示了ParseTreeWalker执行了深度优先的遍历:</p>
+<p><img src="/img/2014/QQ图片20140830150257.jpg" alt=""></p>
+<p>接下来的图片显示了一个更完整的ParseTreeWalker调用：<br><img src="/img/2014/QQ图片20140830150508.jpg" alt=""></p>
+<h2 id="解析树访问器(Parse-Tree_Visitors)">解析树访问器(Parse-Tree Visitors)</h2><p>有这样一种情形，就是我们想自己控制遍历方式，明确的调用方法去访问子节点。可选的 -visitor 命令让ANTLR生产了一个访问器接口，这个接口的每个规则都对应一个visit方法。下图是的访问器模式：<br><img src="/img/2014/QQ图片20140830151050.jpg" alt=""></p>
+<p>为了实例化一个遍历树，应用代码需要创建vistor的实现类并且调用visit()方法。</p>
+<pre><code><span class="type">ParseTree</span> tree = ...;//tree <span class="keyword">is</span> <span class="literal">result</span> <span class="keyword">of</span> parsing
+<span class="type">MyVisitor</span> v = new <span class="type">MyVisitor</span>();
+v.visit(tree);
+</code></pre><p>antlr访问器支持编码调用visitStat()方法当遇到根节点的时候。visitStat（）方法的时候将带着子节点参数调用visit()方法以便继续遍历。或者,visitMethod()也可以明确的调用visitAssian（）方法，等等。</p>
+<h2 id="比较">比较</h2><p>监听器和遍历器的最大不同在于，监听方法并不为明确的嗲用方法区遍历他们的子节点负责。在另一方面，访问器必须明确的触发访问子节点，以便保持遍历的继续运行。</p>
+<p>访问器控制了遍历的顺序，由于明确的调用了子节点，也控制的树是否会被 遍历。</p>
+
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
 	</div>
 
       
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
+	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
-      
-        <p class="article-more-link">
-          <a  href="/2014/05/18/2014/composition/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -675,11 +627,11 @@
 
 
   
-    <article id="post-2014/列式存储机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/11/2014/列式存储机制/" class="article-date">
-  	<time datetime="2014-05-11T12:17:33.000Z" itemprop="datePublished">5月 11 2014</time>
+      <a href="/2014/08/24/2014/antlr4-core-notation/" class="article-date">
+  	<time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
 </a>
     </div>
   
@@ -692,7 +644,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/11/2014/列式存储机制/">列式存储机制</a>
+      <a class="article-title" href="/2014/08/24/2014/antlr4-core-notation/">antlr4-核心符号（二）</a>
     </h1>
   
 
@@ -701,23 +653,47 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="引言">引言</h3><hr>
-<p>由于大数据的发展，越来越多的企业利用大数据来挖掘数据更多的价值，关系型数据库受到了越来越严重的挑战。人们迫切需要找到一个新的突破口来处理大数据。在这样的环境下，列式存储孕育而出。
+        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/2014/QQ截图20140824182207.png" alt=""></p>
+<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
+<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
+<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
+</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
+<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
+(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
+</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
+<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
+stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
+</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
+<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
+<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
+<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
+<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
+</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
+<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
+ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
+<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
+<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
+</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
+<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
+classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
+</code></pre>
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/列式/">列式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/存储/">存储</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
 	</div>
 
       
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
 
-      
-        <p class="article-more-link">
-          <a  href="/2014/05/11/2014/列式存储机制/#more">more >></a>
-        </p>
+
       
       <div class="clearfix"></div>
     </div>
@@ -732,11 +708,11 @@
 
 
   
-    <article id="post-2014/hexo-cmd" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/11/2014/hexo-cmd/" class="article-date">
-  	<time datetime="2014-05-11T09:26:20.000Z" itemprop="datePublished">5月 11 2014</time>
+      <a href="/2014/08/24/2014/antlr4-start/" class="article-date">
+  	<time datetime="2014-08-24T10:04:40.000Z" itemprop="datePublished">8月 24 2014</time>
 </a>
     </div>
   
@@ -749,7 +725,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/11/2014/hexo-cmd/">hexo常用命令</a>
+      <a class="article-title" href="/2014/08/24/2014/antlr4-start/">antlr4快速开始（一）</a>
     </h1>
   
 
@@ -758,18 +734,51 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="hexo_g_==_hexo_generate">hexo g == hexo generate</h2><p>记住：每次修改本地文件后，需要hexo generate才能保存。每次使用命令时，都要在H:\hexo目录下。
+        <h2 id="antlr是什么？">antlr是什么？</h2><p>ANTLR (ANother Tool for Language Recognition) 是一个强大的解析生成器，它可以读，处理，执行或者转换格式化的文本或者二进制文件。它被广泛的用于构建语言，工具，和框架。从语法上来说，antlr生成了一个能够构建和遍历解析树的解析器。</p>
+<h2 id="快速开始">快速开始</h2><pre><code>Windows
+Download http:<span class="comment">//antlr.org/download/antlr-4.4-complete.jar.</span>
+<span class="keyword">Add</span> antlr4-complete.jar <span class="keyword">to</span> CLASSPATH, either:
+Permanently: <span class="keyword">Using</span> System Properties dialog &gt; Environment variables &gt; <span class="keyword">Create</span> <span class="keyword">or</span> append <span class="keyword">to</span> CLASSPATH variable
+Temporarily, at command line:
+<span class="keyword">SET</span> CLASSPATH=.;C:\Javalib\antlr4-complete.jar;%CLASSPATH%
+<span class="keyword">Create</span> batch commands <span class="keyword">for</span> ANTLR Tool, TestRig <span class="keyword">in</span> dir <span class="keyword">in</span> PATH
+ antlr4.bat: java org.antlr.v4.Tool %*
+ grun.bat:   java org.antlr.v4.runtime.misc.TestRig %*
+</code></pre><h2 id="例子">例子</h2><pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;        
+<span class="rule"><span class="attribute">prog</span>:<span class="value">    (expr NEWLINE)* </span></span>;
+<span class="rule"><span class="attribute">expr</span>:<span class="value">    expr (<span class="string">'*'</span>|<span class="string">'/'</span>) expr
+    |    expr (<span class="string">'+'</span>|<span class="string">'-'</span>) expr
+    |    INT
+    |    <span class="string">'('</span> expr <span class="string">')'</span>
+    </span></span>;
+<span class="rule"><span class="attribute">NEWLINE </span>:<span class="value"> [\r\n]+ </span></span>;
+<span class="rule"><span class="attribute">INT     </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+
+
+$ <span class="tag">antlr4</span> <span class="tag">Expr</span><span class="class">.g4</span>
+$ <span class="tag">javac</span> <span class="tag">Expr</span>*<span class="class">.java</span>
+$ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">prog</span> <span class="tag">-gui</span>
+100+2*34
+^<span class="tag">D</span>
+</code></pre><p><img src="http://pic.browser.360.cn/t012e3d32f2057cb701.png" alt=""></p>
+<p>注意：(That ^D means EOF on unix; it’s ^Z in Windows.) The -tree option prints the parse tree in LISP notation.</p>
+<p>更多请参考：<a href="https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4" target="_blank" rel="external">https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4</a></p>
+
       
     </div>
     
     <div class="article-info article-info-index">
       
-      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
 
       
-        <p class="article-more-link">
-          <a  href="/2014/05/11/2014/hexo-cmd/#more">more >></a>
-        </p>
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
       
       <div class="clearfix"></div>
     </div>
@@ -786,7 +795,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
+      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
   
 </div>

@@ -185,11 +185,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-share-context/" class="article-date">
-  	<time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">8月 30 2014</time>
+      <a href="/2014/11/02/2014/mondrian-source-code-7/" class="article-date">
+  	<time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
 </a>
     </div>
   
@@ -202,7 +202,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-share-context/">antlr4-共享上下文(六)</a>
+      <a class="article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
     </h1>
   
 
@@ -211,930 +211,113 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
-<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
-<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
-    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
-    }
+        <p>在前面几节中我们了解了cube的创建和query的创建。有了这2样东西后，我们就可以开始执行mdx语句了。在第二小节中，我们了解了mdx的执行顺序。</p>
+<ol>
+<li>先执行from，即表示从哪个cube中获取结果。</li>
+<li>再执行where，with和axis，即获取member阶段。</li>
+<li>有了所有依赖的成员后，最后执行Cell的值。</li>
+</ol>
+<p>cube的创建已经在前一节中讲过了，接着是member获取阶段，由于这一阶段分为3部分，内容比较多。所以下面我们先将member是如何读取的，后几节再介绍它的执行过程。</p>
+<h2 id="MemberSource">MemberSource</h2><p>所有对成员的读取操作都是通过MemberSource来完成的。<br>MemberSource基本功能就是是读取层次的成员操作。<br>我们看下它的基本接口：</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MemberSource</span> </span>{
 
-    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
-    }
+    <span class="function">RolapHierarchy <span class="title">getHierarchy</span><span class="params">()</span></span>;
 
-    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
-        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
-    }
+    <span class="function"><span class="keyword">boolean</span> <span class="title">setCache</span><span class="params">(MemberCache cache)</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembers</span><span class="params">()</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getRootMembers</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        RolapMember parentMember,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getMemberCount</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">lookupMember</span><span class="params">(
+        List&lt;Id.Segment&gt; uniqueNameParts,
+        <span class="keyword">boolean</span> failIfNotFound)</span></span>;
+}    
+</code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
+<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/2014/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
+<pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
+
+    <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
+
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level)</span></span>;
+
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberRange</span><span class="params">(
+        RolapLevel level,
+        RolapMember startMember,
+        RolapMember endMember,
+        List&lt;RolapMember&gt; list)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(
+        RolapMember m1,
+        RolapMember m2,
+        <span class="keyword">boolean</span> siblingsAreEqual)</span></span>;
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        RolapMember member,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level,
+        TupleConstraint constraint)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getLevelMemberCount</span><span class="params">(RolapLevel level)</span></span>;
+
+    <span class="function">MemberBuilder <span class="title">getMemberBuilder</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getDefaultMember</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberParent</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">substitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">desubstitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberByKey</span><span class="params">(
+        RolapLevel level,
+        List&lt;Comparable&gt; keyValues)</span></span>;
 }
-</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
-<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
-</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
-<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push( left * right );
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push(left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
-    }
-}
-</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/2014/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/2014/QQ图片20140830171636.jpg" alt=""></p>
-<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
-    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
-}
-</code></pre><p>所以，我们用一个map来保存所有的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
-    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
-    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
-
-    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
-        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left * right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
-        setValue(ctx, Integer.valueOf(intText));
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
-    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
-}
-
-<span class="comment">//保存树的节点和值的map</span>
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
-    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
-
-    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-}
-</code></pre><h2 id="对比">对比</h2><ul>
-<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
-<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
-<li>注解：map字段映射了节点和值的关系。</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-label-rule" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-label-rule/" class="article-date">
-  	<time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="粒度问题">粒度问题</h2><p>由于以前生成的方法仅仅能够在规则上产生，当我们想要更小的粒度时，针对每个规则进行更小的粒度控制时，我们就显得力不从心了。</p>
-<p>这样，就产生了lable…</p>
-<h2 id="无标签情况下">无标签情况下</h2><p>下面是一个计算器。</p>
-<pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e op=MULT e    // MULT is <span class="string">'*'</span>
-  | e op=ADD e     // ADD is <span class="string">'+'</span>
-  | INT
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p><img src="/img/2014/QQ图片20140830162901.jpg" alt=""></p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends ExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitE</span><span class="params">(ExprParser.EContext ctx)</span> </span>{
-        <span class="keyword">if</span> ( ctx.getChildCount()==<span class="number">3</span> ) { <span class="comment">// operations have 3 children</span>
-            <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-            <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-            <span class="keyword">if</span> ( ctx.op.getType()==ExprParser.MULT ) {
-                <span class="built_in">stack</span>.push( left * right );
-            }
-            <span class="keyword">else</span> {
-                <span class="built_in">stack</span>.push( left + right ); <span class="comment">// must be add</span>
-            }
-        }
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTerminal</span><span class="params">(TerminalNode node)</span> </span>{
-        Token symbol = node.getSymbol();
-        <span class="keyword">if</span> ( symbol.getType()==ExprParser.INT ) {
-            <span class="built_in">stack</span>.push( Integer.valueOf(symbol.getText()) );
-        }
-    }
-}
-</code></pre><p>从上面看出，原始的方式下，我们不得不对所有的操作符进行判断，即op=MULT和op=Add。</p>
-<h2 id="有标签情况下">有标签情况下</h2><pre><code><span class="tag">grammar</span> <span class="tag">LExpr</span>;
-
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e MULT e         # Mult
-  | e ADD e         # Add
-  | INT                # Int
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p>注意不同点，我们使用#号来表示标签。这样，antlr就会对每个标签生成一个方法和特定的上下文对象。</p>
-<p><img src="/img/2014/QQ图片20140830164801.jpg" alt=""></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-iterator-example/" class="article-date">
-  	<time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
-<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
-<pre><code><span class="comment">//语法</span>
-grammar PropertyFile;
-file : prop+ ;
-prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
-ID   : [a-z]+ ;
-<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
-
-<span class="comment">//文件</span>
-user=<span class="string">"parrt"</span>
-machine=<span class="string">"maniac"</span>
-</code></pre><p><img src="/img/2014/QQ图片20140830154441.jpg" alt="解析树"></p>
-<p><img src="/img/2014/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
-<p><img src="/img/2014/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
-<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
-    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
-    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
-        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="built_in">String</span> value = ctx.STRING().getText();
-        props.put(id, value);
-    }
-}
-</code></pre><p>下面的类的依赖图，我就不解释了：</p>
-<p><img src="/img/2014/QQ图片20140830155248.jpg" alt=""></p>
-<p>最后直接看结果吧，so easy:</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
-    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
-    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
-    ParseTree tree = parser.file();
-
-    <span class="comment">// create a standard ANTLR parse tree walker</span>
-    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-    <span class="comment">// create listener then feed to walker</span>
-    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
-    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
-    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
-    <span class="comment">//print {machine="maniac", user="parrt"}</span>
-}
-</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
-<p><img src="/img/2014/QQ图片20140830160030.jpg" alt=""></p>
-<p><img src="/img/2014/QQ图片20140830160122.jpg" alt=""></p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
-</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
-{
-    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
-    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
-        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
-        props.put(id, value);
-        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
-    }
-}
-</code></pre><p><img src="/img/2014/QQ图片20140830160343.jpg" alt=""></p>
-<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4_iterator" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4_iterator/" class="article-date">
-  	<time datetime="2014-08-30T06:36:50.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4_iterator/">antlr4-遍历机制概念(三)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="antlr4如何遍历树?">antlr4如何遍历树?</h2><p>antlr4提供了2种树遍历方式。在默认情况下，antlr生成了一个解析树监听接口，它用内置的树遍历器响应事件触发。这个监听器正如SAX文档处理xml解析对象一样。SAX监听器接收通知事件，例如startDocument()和endDocumnet()。他们在监听器中仅仅被回调。</p>
-<h2 id="解析树监听器(Parse-Tree_Listeners)">解析树监听器(Parse-Tree Listeners)</h2><p>为了在遍历树的时候触发对监听器的调用，antlr的运行时包提供类ParseTreeWalker。</p>
-<p>antlr生成了一个ParerTreeListener的子类，这个类会对每个语法规则指定一个enter和exit方法。当遍历器遇到节点规则assign时，会触发enterAssign()方法然后传递给他解析树节点的AssignConext。在遍历器访问了assign的所有子节点后，会触发exitAssign()方法。下面的树状图显示了ParseTreeWalker执行了深度优先的遍历:</p>
-<p><img src="/img/2014/QQ图片20140830150257.jpg" alt=""></p>
-<p>接下来的图片显示了一个更完整的ParseTreeWalker调用：<br><img src="/img/2014/QQ图片20140830150508.jpg" alt=""></p>
-<h2 id="解析树访问器(Parse-Tree_Visitors)">解析树访问器(Parse-Tree Visitors)</h2><p>有这样一种情形，就是我们想自己控制遍历方式，明确的调用方法去访问子节点。可选的 -visitor 命令让ANTLR生产了一个访问器接口，这个接口的每个规则都对应一个visit方法。下图是的访问器模式：<br><img src="/img/2014/QQ图片20140830151050.jpg" alt=""></p>
-<p>为了实例化一个遍历树，应用代码需要创建vistor的实现类并且调用visit()方法。</p>
-<pre><code><span class="type">ParseTree</span> tree = ...;//tree <span class="keyword">is</span> <span class="literal">result</span> <span class="keyword">of</span> parsing
-<span class="type">MyVisitor</span> v = new <span class="type">MyVisitor</span>();
-v.visit(tree);
-</code></pre><p>antlr访问器支持编码调用visitStat()方法当遇到根节点的时候。visitStat（）方法的时候将带着子节点参数调用visit()方法以便继续遍历。或者,visitMethod()也可以明确的调用visitAssian（）方法，等等。</p>
-<h2 id="比较">比较</h2><p>监听器和遍历器的最大不同在于，监听方法并不为明确的嗲用方法区遍历他们的子节点负责。在另一方面，访问器必须明确的触发访问子节点，以便保持遍历的继续运行。</p>
-<p>访问器控制了遍历的顺序，由于明确的调用了子节点，也控制的树是否会被 遍历。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/24/2014/antlr4-core-notation/" class="article-date">
-  	<time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/24/2014/antlr4-core-notation/">antlr4-核心符号（二）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/2014/QQ截图20140824182207.png" alt=""></p>
-<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
-<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
-<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
-</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
-<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
-(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
-</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
-<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
-( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
-<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
-stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
-</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
-<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
-<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
-<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
-<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
-</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
-<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
-ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
-<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
-<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
-</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
-<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
-classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/24/2014/antlr4-start/" class="article-date">
-  	<time datetime="2014-08-24T10:04:40.000Z" itemprop="datePublished">8月 24 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/24/2014/antlr4-start/">antlr4快速开始（一）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="antlr是什么？">antlr是什么？</h2><p>ANTLR (ANother Tool for Language Recognition) 是一个强大的解析生成器，它可以读，处理，执行或者转换格式化的文本或者二进制文件。它被广泛的用于构建语言，工具，和框架。从语法上来说，antlr生成了一个能够构建和遍历解析树的解析器。</p>
-<h2 id="快速开始">快速开始</h2><pre><code>Windows
-Download http:<span class="comment">//antlr.org/download/antlr-4.4-complete.jar.</span>
-<span class="keyword">Add</span> antlr4-complete.jar <span class="keyword">to</span> CLASSPATH, either:
-Permanently: <span class="keyword">Using</span> System Properties dialog &gt; Environment variables &gt; <span class="keyword">Create</span> <span class="keyword">or</span> append <span class="keyword">to</span> CLASSPATH variable
-Temporarily, at command line:
-<span class="keyword">SET</span> CLASSPATH=.;C:\Javalib\antlr4-complete.jar;%CLASSPATH%
-<span class="keyword">Create</span> batch commands <span class="keyword">for</span> ANTLR Tool, TestRig <span class="keyword">in</span> dir <span class="keyword">in</span> PATH
- antlr4.bat: java org.antlr.v4.Tool %*
- grun.bat:   java org.antlr.v4.runtime.misc.TestRig %*
-</code></pre><h2 id="例子">例子</h2><pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;        
-<span class="rule"><span class="attribute">prog</span>:<span class="value">    (expr NEWLINE)* </span></span>;
-<span class="rule"><span class="attribute">expr</span>:<span class="value">    expr (<span class="string">'*'</span>|<span class="string">'/'</span>) expr
-    |    expr (<span class="string">'+'</span>|<span class="string">'-'</span>) expr
-    |    INT
-    |    <span class="string">'('</span> expr <span class="string">')'</span>
-    </span></span>;
-<span class="rule"><span class="attribute">NEWLINE </span>:<span class="value"> [\r\n]+ </span></span>;
-<span class="rule"><span class="attribute">INT     </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-
-
-$ <span class="tag">antlr4</span> <span class="tag">Expr</span><span class="class">.g4</span>
-$ <span class="tag">javac</span> <span class="tag">Expr</span>*<span class="class">.java</span>
-$ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">prog</span> <span class="tag">-gui</span>
-100+2*34
-^<span class="tag">D</span>
-</code></pre><p><img src="http://pic.browser.360.cn/t012e3d32f2057cb701.png" alt=""></p>
-<p>注意：(That ^D means EOF on unix; it’s ^Z in Windows.) The -tree option prints the parse tree in LISP notation.</p>
-<p>更多请参考：<a href="https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4" target="_blank" rel="external">https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/branch_prdeiction" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/24/2014/branch_prdeiction/" class="article-date">
-  	<time datetime="2014-08-24T06:51:37.000Z" itemprop="datePublished">8月 24 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/24/2014/branch_prdeiction/">分支预测</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="概念：什么是分支预测？">概念：什么是分支预测？</h2><p>在电脑架构中，分支预测器（英语：Branch predictor）是一种数字电路，在分支指令执行结束之前猜测哪一路分支将会被运行，以提高处理器的指令流水线的性能。使用分支预测器的目的，在于改善指令管线化的流程。现代使用指令管线化处理器的性能能够提高，分支预测器对于现今的指令流水线微处理器获得高性能是非常关键的技术。</p>
-<p>如果没有分支预测器，处理器将会等待分支指令通过了指令流水线的执行阶段，才把下一条指令送入流水线的第一个阶段—取指令阶段（fetch stage）。这种技术叫做流水线停顿（stream stalled）或者流水线冒泡（stream bubbling）或者分支延迟间隙。这是早期的RISC体系结构处理器采用的应对分支指令的流水线执行的办法。</p>
-<p>分支预测器猜测两路分支中哪一路最可能发生，然后投机执行这一路的指令，来避免流水线停顿造成的时间浪费。如果后来发现分支预测错误，那么流水线中投机执行的那些中间结果全部放弃，重新取得正确的分支路线上的指令开始执行，这招致了程序执行的延迟。</p>
-<p>在分支预测失败时浪费的时间是从取指令到执行完指令（但还没有写回结果）的流水线的级数。现代微处理器趋向采用非常长的流水线，因此分支预测失败可能会损失10-20个时钟周期。越长的流水线就需要越好的分支预测。</p>
-<p><img src="/img/2014/375px-Pipeline,_4_stage.svg.png" alt=""></p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/计算机原理/">计算机原理</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/08/24/2014/branch_prdeiction/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/jdbc" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/10/2014/jdbc/" class="article-date">
-  	<time datetime="2014-08-10T09:50:39.000Z" itemprop="datePublished">8月 10 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/10/2014/jdbc/">jdbc连接数据库一定要用Class.forName吗？</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="一来源">一来源</h3><p>上周，在调试使用jdbc连接infobright的时候，遇到了一个奇怪的问题，当我使用Class.forName加载myslq jdbc的驱动的进行连接数据库的时候，连接缺报异常了。奇怪的是异常信息并不是mysql驱动抛出来的，而是另一个数据库驱动，达梦的驱动异常。</p>
-<h3 id="二好奇心">二好奇心</h3><p>为什么会这样呢，我明明没有加载达梦的数据集驱动呀？连不上也就算了，还抛了个其他的异常，百思不得其解。于是，我debug到了DriverManager中的源码看了看，发现已经加载了各种不同的jdbc驱动有6,7种之多。就这样，顺带的，我凑了眼DriverManager的源码。<br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jdbc/">jdbc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/08/10/2014/jdbc/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/int" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/09/2014/int/" class="article-date">
-  	<time datetime="2014-08-09T07:30:12.000Z" itemprop="datePublished">8月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/09/2014/int/">int源码赏析</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="概要">概要</h3><p>今天突发好奇，想不明白string是如何转换为int的，于是翻开jdk的源码，收货挺大的。</p>
-<h3 id="parseInt(String_s)">parseInt(String s)</h3><p>首先我们看parseInt这个方法，看下图，它又调用了parseInt(String s, int radix)，这个方法才是String转换成int的主要过程。这个方法比较有趣，我们来一一分析它的实现机制。</p>
-<pre><code>public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s) throws <span class="type">NumberFormatException</span> {
-        //此处表示s默认为<span class="number">10</span>进制
-        <span class="keyword">return</span> parseInt(s,<span class="number">10</span>);
-}
-
-//radix为s的进制格式，不能大于<span class="number">36</span>也不能小于<span class="number">2</span>，即最小为<span class="number">2</span>进制，最大为<span class="number">36</span>进制，<span class="number">36</span>进制的得来是<span class="number">10</span>个数字加<span class="number">26</span>个字母
-//例如，parseInt(<span class="string">"Kona"</span>, <span class="number">27</span>) returns <span class="number">411787</span>
-public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s, <span class="type">int</span> radix)
-            throws <span class="type">NumberFormatException</span>
-{
-    /*
-     * <span class="type">WARNING</span>: <span class="type">This</span> <span class="keyword">method</span> may be invoked early during <span class="type">VM</span> initialization
-     * before <span class="type">IntegerCache</span> <span class="keyword">is</span> initialized. <span class="type">Care</span> must be taken to <span class="keyword">not</span> use
-     * the valueOf <span class="keyword">method</span>.
-     */
-
-    <span class="keyword">if</span> (s == null) {
-        throw new <span class="type">NumberFormatException</span>(<span class="string">"null"</span>);
-    }
-
-    <span class="keyword">if</span> (radix &lt; <span class="type">Character</span>.<span class="type">MIN_RADIX</span>) {
-        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
-                                        <span class="string">" less than Character.MIN_RADIX"</span>);
-    }
-
-    <span class="keyword">if</span> (radix &gt; <span class="type">Character</span>.<span class="type">MAX_RADIX</span>) {
-        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
-                                        <span class="string">" greater than Character.MAX_RADIX"</span>);
-    }
-
-    <span class="type">int</span> <span class="literal">result</span> = <span class="number">0</span>;
-    boolean negative = <span class="literal">false</span>;
-    <span class="type">int</span> i = <span class="number">0</span>, len = s.length();
-    //统一转成负号进行处理，不会出现溢出现象
-    <span class="type">int</span> limit = -<span class="type">Integer</span>.<span class="type">MAX_VALUE</span>;
-    <span class="type">int</span> multmin;
-    <span class="type">int</span> digit;
-
-    <span class="keyword">if</span> (len &gt; <span class="number">0</span>) {
-        <span class="type">char</span> firstChar = s.charAt(<span class="number">0</span>);
-        <span class="keyword">if</span> (firstChar &lt; '<span class="number">0</span>') { // <span class="type">Possible</span> leading <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
-            <span class="keyword">if</span> (firstChar == '-') {
-                negative = <span class="literal">true</span>;
-                limit = <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>;
-            } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar != '+')
-                throw <span class="type">NumberFormatException</span>.forInputString(s);
-
-            <span class="keyword">if</span> (len == <span class="number">1</span>) // <span class="type">Cannot</span> have lone <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
-                throw <span class="type">NumberFormatException</span>.forInputString(s);
-            i++;
-        }
-        multmin = limit / radix;
-        <span class="keyword">while</span> (i &lt; len) {
-            // <span class="type">Accumulating</span> negatively avoids surprises near <span class="type">MAX_VALUE</span>
-            //拿到第i个数字并且格式化成<span class="number">10</span>进制
-            digit = <span class="type">Character</span>.digit(s.charAt(i++),radix);
-            <span class="keyword">if</span> (digit &lt; <span class="number">0</span>) {
-                throw <span class="type">NumberFormatException</span>.forInputString(s);
-            }
-            <span class="keyword">if</span> (<span class="literal">result</span> &lt; multmin) {
-                throw <span class="type">NumberFormatException</span>.forInputString(s);
-            }
-            <span class="literal">result</span> *= radix;
-            <span class="keyword">if</span> (<span class="literal">result</span> &lt; limit + digit) {
-                throw <span class="type">NumberFormatException</span>.forInputString(s);
-            }
-            //使用负号进行计算 , -<span class="number">20</span>-<span class="number">3</span>=-<span class="number">23</span>
-            <span class="literal">result</span> -= digit;
-        }
-    } <span class="keyword">else</span> {
-        throw <span class="type">NumberFormatException</span>.forInputString(s);
-    }
-    <span class="keyword">return</span> negative ? <span class="literal">result</span> : -<span class="literal">result</span>;
-}
-</code></pre><hr>
-<h3 id="Integer_decode(String_nm)">Integer decode(String nm)</h3><p>转换8进制，16进制，10进制到10进制</p>
-<pre><code>public <span class="keyword">static</span> <span class="type">Integer</span> decode(<span class="type">String</span> nm) throws <span class="type">NumberFormatException</span> {
-    <span class="type">int</span> radix = <span class="number">10</span>;
-    <span class="type">int</span> index = <span class="number">0</span>;
-    boolean negative = <span class="literal">false</span>;
-    <span class="type">Integer</span> <span class="literal">result</span>;
-
-    <span class="keyword">if</span> (nm.length() == <span class="number">0</span>)
-        throw new <span class="type">NumberFormatException</span>(<span class="string">"Zero length string"</span>);
-    <span class="type">char</span> firstChar = nm.charAt(<span class="number">0</span>);
-    // <span class="type">Handle</span> sign, <span class="keyword">if</span> present
-    <span class="keyword">if</span> (firstChar == '-') {
-        negative = <span class="literal">true</span>;
-        index++;
-    } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar == '+')
-        index++;
-
-    // <span class="type">Handle</span> radix specifier, <span class="keyword">if</span> present
-    <span class="keyword">if</span> (nm.startsWith(<span class="string">"0x"</span>, index) || nm.startsWith(<span class="string">"0X"</span>, index)) {
-        index += <span class="number">2</span>;
-        radix = <span class="number">16</span>;
-    }
-    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"#"</span>, index)) {
-        index ++;
-        radix = <span class="number">16</span>;
-    }
-    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"0"</span>, index) &amp;&amp; nm.length() &gt; <span class="number">1</span> + index) {
-        index ++;
-        radix = <span class="number">8</span>;
-    }
-
-    <span class="keyword">if</span> (nm.startsWith(<span class="string">"-"</span>, index) || nm.startsWith(<span class="string">"+"</span>, index))
-        throw new <span class="type">NumberFormatException</span>(<span class="string">"Sign character in wrong position"</span>);
-
-    <span class="keyword">try</span> {
-        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(nm.substring(index), radix);
-        <span class="literal">result</span> = negative ? <span class="type">Integer</span>.valueOf(-<span class="literal">result</span>.intValue()) : <span class="literal">result</span>;
-    } catch (<span class="type">NumberFormatException</span> e) {
-        // <span class="type">If</span> number <span class="keyword">is</span> <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>, we'll <span class="keyword">end</span> up here. <span class="type">The</span> next line
-        // handles this <span class="keyword">case</span>, <span class="keyword">and</span> causes <span class="type">any</span> genuine format error to be
-        // rethrown.
-        <span class="type">String</span> constant = negative ? (<span class="string">"-"</span> + nm.substring(index))
-                                   : nm.substring(index);
-        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(constant, radix);
-    }
-    <span class="keyword">return</span> <span class="literal">result</span>;
-}
-</code></pre><h3 id="String_toString(int_i,_int_radix)">String toString(int i, int radix)</h3><pre><code><span class="keyword">public</span> static String toString(<span class="built_in">int</span> i, <span class="built_in">int</span> <span class="built_in">radix</span>) {
-
-    <span class="keyword">if</span> (<span class="built_in">radix</span> &lt; <span class="type">Character</span>.MIN_RADIX || <span class="built_in">radix</span> &gt; <span class="type">Character</span>.MAX_RADIX)
-        <span class="built_in">radix</span> = <span class="number">10</span>;
-
-    /* <span class="keyword">Use</span> the faster version */
-    <span class="keyword">if</span> (<span class="built_in">radix</span> == <span class="number">10</span>) {
-        <span class="keyword">return</span> toString(i);
-    }
-
-    <span class="built_in">char</span> buf[] = new <span class="built_in">char</span>[<span class="number">33</span>];
-    boolean negative = (i &lt; <span class="number">0</span>);
-    <span class="built_in">int</span> charPos = <span class="number">32</span>;
-
-    //如果非负数，转成负数
-    <span class="keyword">if</span> (<span class="comment">!negative) {</span>
-        i = -i;
-    }
-
-    /**  <span class="number">12</span>|<span class="number">2</span> ..<span class="number">.0</span>
-    *     <span class="number">6</span>|<span class="number">2</span> ..<span class="number">.0</span>
-    *     <span class="number">3</span>|<span class="number">2</span> ..<span class="number">.1</span>
-    *     <span class="number">1</span>|<span class="number">2</span> ..<span class="number">.1</span>      
-    *    类似这种除法...
-     **/
-    <span class="keyword">while</span> (i &lt;= -<span class="built_in">radix</span>) {
-        buf[charPos--] = <span class="built_in">digits</span>[-(i % <span class="built_in">radix</span>)];
-        i = i / <span class="built_in">radix</span>;
-    }
-    buf[charPos] = <span class="built_in">digits</span>[-i];
-
-    <span class="keyword">if</span> (negative) {
-        buf[--charPos] = <span class="string">'-'</span>;
-    }
-
-    <span class="keyword">return</span> new String(buf, charPos, (<span class="number">33</span> - charPos));
-}
-</code></pre><hr>
-<h3 id="Integer_valueOf(String_s)">Integer valueOf(String s)</h3><p>valueOf有点特殊，他缓存了-128到127的值，所以数字在此范围内都是取的同一个对象。<br>与其类似的还有</p>
+</code></pre><p>从上面大家发现没，MemberReader更细化功能，它可以获取到Level上的成员，也可以获取成员的父成员或者成员的子成员，并且在获取成员的时候可以添加约束条件。有了这些功能，我们就可以任意的获取成员了，所以MemberReader是成员获取的主接口。</p>
+<h2 id="具体实现">具体实现</h2><h3 id="SmartMemberReader">SmartMemberReader</h3><p>SmartMemberReader实现了MemberReader接口，它实现了维度成员及其子成员的缓存，如果有一个成员位于缓存中，则还会有一个其子成员的列表。它同时缓存了level下的成员们。该类主要的成员有：</p>
 <ul>
-<li>Boolean：(全部缓存)</li>
-<li>Byte：(全部缓存)</li>
-<li>Character(&lt;= 127缓存)</li>
-<li>Short(-128 — 127缓存)</li>
-<li>Integer(-128 — 127缓存)</li>
-<li>Long(-128 — 127缓存)</li>
-<li>Float(没有缓存)</li>
-<li>Doulbe(没有缓存)</li>
+<li>source：MemberReader，用于实际从数据库中读取维度成员值。</li>
+<li>mapMemberToChildren：map，实现成员及其子成员的映射， key为RolapMember，value为List<rolapmember>。</rolapmember></li>
+<li>mapKeyToMember： map ，实现所有成员的缓存，其中的key为MmberKey</li>
+<li>mapLevelToMembers: map，实现级别及其所有成员的映射， key为RolapLevel，value为List<rolapmember>。</rolapmember></li>
 </ul>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException </span>{
-    <span class="keyword">return</span> Integer.valueOf(parseInt(s, <span class="number">10</span>));
-}
+<h3 id="SqlMemberSource">SqlMemberSource</h3><p>SqlMemberSource是最终更数据库打交道的类，它会针对要查询对Level生成一个sql，该sql最终通过数据库执行，将查询结果返回后拼装成member。需要注意的一点是，如果该member有parentmember，必须要生成其对应的parentmember。生成过程即先递归的在level中查找其上一级level的member是否缓存，如果没有缓存，则将其加入查询列表中，直到上一级为空或缓存了member。找到所有要查询的level后，最后一次性生成sql向数据库查询数据。</p>
+<p>SmartMemberReader的source其实为mondrian.rolap.SqlMemberSource类，该类中反过来又存储了SmartMemberReader对象，作为其cache成员属性。成员读取过程：</p>
+<ol>
+<li>smartMemberReader.getMemberChildren(parentMembers,children,constrain);</li>
+<li>最终通过source.getMemberChildren()…，其中反过来会把找到的children赋予mapKeyToMember。</li>
+<li>最终除了将结果返回在children输出参数中，同时也对mapMemberToChildren赋值了。</li>
+</ol>
 
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>{
-    <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;
-    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
-        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];
-    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);
-}
-</code></pre>
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jdk/">jdk</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
 	</div>
 
       
@@ -1157,11 +340,11 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
 
 
   
-    <article id="post-2014/linuxcommand" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/06/14/2014/linuxcommand/" class="article-date">
-  	<time datetime="2014-06-14T11:02:11.000Z" itemprop="datePublished">6月 14 2014</time>
+      <a href="/2014/10/26/2014/mondrian-source-code-6/" class="article-date">
+  	<time datetime="2014-10-26T10:07:05.000Z" itemprop="datePublished">10月 26 2014</time>
 </a>
     </div>
   
@@ -1174,7 +357,7 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/14/2014/linuxcommand/">linux常用命令</a>
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
     </h1>
   
 
@@ -1183,30 +366,326 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="目录和文件处理">目录和文件处理</h2><h3 id="目录符号">目录符号</h3><ul>
-<li>.   : 当前目录。</li>
-<li>..  : 当前的上一级目录。</li>
-<li>~   ： 用户主目录，即/home/我的登录名。当然你直接输入cd，也有同样功效</li>
-</ul>
-<h3 id="mkdir">mkdir</h3><p>建立目录<br>用法：mkdir [OPTION] DIRECTORY…<br>例：mkdir test<br>
+        <p>在第4节中，构建query的时候，有一个非常重要的东西被我忽略了，那就是构建cube <code>Util.lookupCube(statement.getSchemaReader(), cube, true)</code>，下面我们来谈谈cube是如何构建的。</p>
+<h2 id="Cube是什么？">Cube是什么？</h2><p>在第2节中，我们已经谈论了cube，即维度和度量的组合。</p>
+<h2 id="RolapCube">RolapCube</h2><p>在理解了Cube后，我们就可以理解RolapCube了。根据字面意思，我们也可以理解为关系型联机分析处理cube。我们看看它里面主要是实体对象：</p>
+<pre><code><span class="comment">//不解释</span>
+<span class="keyword">protected</span> Dimension[] dimensions;
+
+<span class="comment">//</span>
+<span class="keyword">private</span> <span class="keyword">final</span> RolapHierarchy measuresHierarchy;
+
+<span class="comment">/**
+ * List of calculated members.
+ * 定义在schema中的计算成员，注意公式是如何转换的呢？
+ */</span>
+<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Formula&gt; calculatedMemberList = <span class="keyword">new</span> ArrayList&lt;Formula&gt;();
+
+<span class="keyword">private</span> RolapStar star; <span class="comment">//关联的星型模型</span>
+
+<span class="comment">//在Evaluator中用于计算当前成员是否为空，如果当前度量成员中有count聚合，即为当前成员，如果没有找到，创建一个虚拟的count聚合为测量的成员。</span>
+RolapBaseCubeMeasure factCountMeasure;
+</code></pre><p>calculatedMemberList这里谈一下。如何将schema中定义的计算成员转换成已近解析好的Formula？<br>这里其实很简单，通过构造一个特定的mdx：<br><code>with member [Measures].[aa] as &#39;expression1&#39; ,
+[Measures].[bb] as &#39;expression2&#39;select from cube</code><br>然后使用parser解析器解析mdx后返回一个query，query里面的计算成员即为此计算成员。</p>
+<h2 id="RolapStar是什么？">RolapStar是什么？</h2><p>我们可以将它理解为一个关联了物理表之间的关系的对象。通过它来生成特定的sql，查询需要的数据。<br>具体实体对象大家可以打开看看，这里不做详细的解释了。</p>
+<pre><code><span class="keyword">private</span> DataSource dataSource;
+<span class="keyword">private</span> <span class="keyword">final</span> Table factTable;
+<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList = <span class="keyword">new</span> ArrayList&lt;Column&gt;();
+
+Table对象..星型模型
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Table</span> </span>{
+    <span class="keyword">private</span> <span class="keyword">final</span> RolapStar star;
+    <span class="keyword">private</span> <span class="keyword">final</span> MondrianDef.Relation relation;
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList;
+    <span class="keyword">private</span> <span class="keyword">final</span> Table <span class="keyword">parent</span>;
+    <span class="keyword">private</span> <span class="keyword">List</span>&lt;Table&gt; children;
+    <span class="keyword">private</span> <span class="keyword">final</span> Condition joinCondition;
+    <span class="keyword">private</span> <span class="keyword">final</span> String alias;
+}
+</code></pre><h2 id="源码修改">源码修改</h2><p>cube的创建是根据schema中定义的属性配置来创建cube，这部分没有细看，如何创建其实我们并不关系，理解cube的数据结构就行了。</p>
+<p>我们在修改mondrian源码时，将cube创建这块全部去掉了，取而代之的使用了自己的cube创建方式。由于我们底层的存储结构不依赖与xml，而是我们自己定义好的实体间的关系，所以我们将我们的实体转换成了cube。</p>
+
       
     </div>
     
     <div class="article-info article-info-index">
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
 	</div>
 
       
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/linux/">linux</a>
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
+  	<time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
+<h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
+<h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
+<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
       
         <p class="article-more-link">
-          <a  href="/2014/06/14/2014/linuxcommand/#more">more >></a>
+          <a  href="/2014/10/26/2014/mondrian-source-code-5/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-4/" class="article-date">
+  	<time datetime="2014-10-26T05:27:33.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前面几节我们介绍了一下mondrian最基础的东西，只有在了解了这些后，我们才能继续往下看。</p>
+<p>首先，mondrian需要将mdx语句解析成java对象，我们先看看他是如何解析的。</p>
+<h2 id="Query创建过程">Query创建过程</h2><p>我们从ConnectionBase的parser开始，在parseStatement中，有一句很重要的话语句。</p>
+<pre><code>public <span class="keyword">Query</span> parseQuery(String <span class="keyword">query</span>) {
+    <span class="keyword">return</span> (<span class="keyword">Query</span>) parseStatement(<span class="keyword">query</span>);
+}
+
+<span class="keyword">Query</span> parseStatement(...){
+...
+<span class="keyword">return</span> parser.parseInternal(
+                statement, <span class="keyword">query</span>, debug, funTable, strictValidation);
+...
+}
+</code></pre><h3 id="一，创建解析器">一，创建解析器</h3><p>首先，我们需要一个parser。在ConnectionBase类中，我们看到了parser的创建过程：</p>
+<pre><code><span class="keyword">protected</span> <span class="function">MdxParserValidator <span class="title">createParser</span><span class="params">()</span> </span>{
+    <span class="keyword">return</span> <span class="keyword">true</span>
+        ? <span class="keyword">new</span> JavaccParserValidatorImpl()
+        : <span class="keyword">new</span> MdxParserValidatorImpl();
+}
+</code></pre><p>实际上，由于这里永远是true，所以返回的是JavaccParserValidatorImpl。这个类也是实现了MdxParserValidator。它与原生的javaccparser生成的MdxParserValidatorImpl的主要不同在于factory的创建方式和异常的处理方式，这里就不做过多解读了，具体请看源代码。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-4/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-3/" class="article-date">
+  	<time datetime="2014-10-26T04:12:55.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="mondrian系统的层次">mondrian系统的层次</h2><p>mondrian总共包含四个层次：表示层,计算层,聚集层,存储层.。</p>
+<h3 id="表示层(presentation_layer)">表示层(presentation layer)</h3><p>指最终呈现在用户显示器上的,以及与用户之间的交互,有许多方法来展现多维数据,包括数据透视表,饼,柱,线状图. </p>
+<h3 id="计算层(dimensional_layer)">计算层(dimensional layer)</h3><p>分析,验证,执行MDX查询. 一个mdx查询语句会有多个处理阶段。先是计算轴，然后是轴上的单元值。为效率起见，计算层批量将单元请求发送到聚集层。请求转换器允许程序操作存在的请求，而不是为每个请求从头构造mdx请求。元数据描述了计算模型和它怎么匹配到关系模型。</p>
+<h3 id="聚集层(star_layer)">聚集层(star layer)</h3><p>一个聚集指内存中一组计算值(cell),这些值通过维列来限制.计算层发送单元请求,如果请求不在缓存中,或者不能通过旋转聚集导出的话,聚集层向存储层发送请求. 聚集层是一个数据缓冲层(cache)<br>从数据库来的单元数据，聚合后提供给计算层。聚集层的主要作用是提高系统的性能。 </p>
+<h3 id="存储层(storage_layer)">存储层(storage layer)</h3><p>提供聚集单元数据(cell)和维表的成员(member),这些层可以不在同一机子上,但是计算和聚集层必须在同一台机子上。有三种需要存储的数据：事实数据(事实表)、维度表和聚集数据(即聚合表)</p>
+<p><img src="/img/2014/arch_mondrian_v1_lrg.png" alt="架构图"></p>
+<p>更多内容请移步：<a href="http://mondrian.pentaho.com/documentation/architecture.php" target="_blank" rel="external">http://mondrian.pentaho.com/documentation/architecture.php</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-2/" class="article-date">
+  	<time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是MDX？">什么是MDX？</h2><p>MDX为MultiDimensional Expressions的缩写，多维表达式，是标准的OLAP查询语言。在多数OLAPServer都提供MDX支持，如Microsoft SQL Server OLAP Services,SAS,Hyperion Essbase等。</p>
+<p>支持多维对象与数据的定义和操作。MDX 在很多方面与结构化查询语言 (SQL) 语法相似，但它不是 SQL 语言的扩展；事实上，MDX 所提供的一些功能也可由 SQL 提供，尽管不是那么有效或直观。<br>如同 SQL 查询一样，每个 MDX 查询都要求有数据请求（SELECT 子句）、起始点（FROM 子句）和筛选（WHERE 子句）。这些关键字以及其它关键字提供了各种工具，用来从多维数据集析取数据的特定部分。</p>
+<p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-2/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -1224,7 +703,7 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 </div>
