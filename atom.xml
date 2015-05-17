@@ -37,8 +37,8 @@
     <link href="http://sqtds.github.io/2015/05/17/2015/java-reflection/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-reflection/</id>
     <published>2015-05-17T10:42:41.000Z</published>
-    <updated>2015-05-17T12:24:50.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。</p>
+    <updated>2015-05-17T12:33:44.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。<br><img src="/img/2015/反射.png" alt=""></p>
 <h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
 <p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
 <h3 id="1,Methods">1,Methods</h3><ul>
@@ -91,9 +91,8 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。</p>
-<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
-<p>g]]>
+    <![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。<br><img src="/img/2015/反射.png" alt=""></p>
+<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的X]]>
     </summary>
     
       <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
