@@ -301,7 +301,7 @@ var _hmt = _hmt || [];
 <li>查找本地缓存</li>
 <li>使用系统类加载器加载系统类</li>
 <li>使用本地类加载器加载类</li>
-<li>如果没有找到，使用父类加载器加载类<h3 id="11，OSGi">11，OSGi</h3>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。<h2 id="三，参考资料">三，参考资料</h2></li>
+<li>如果没有找到，使用父类加载器加载类<h3 id="12，OSGi">12，OSGi</h3>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。<h2 id="三，参考资料">三，参考资料</h2></li>
 <li><a href="http://www.importnew.com/15435.html" target="_blank" rel="external">详解java类的生命周期</a></li>
 <li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-classloader/#author1" target="_blank" rel="external">深入探讨 Java 类加载器</a></li>
 <li><a href="http://blog.csdn.net/zhoudaxia/article/details/35824249" target="_blank" rel="external">深入理解Java类加载器(1)：Java类加载原理解析</a></li>

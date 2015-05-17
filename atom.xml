@@ -106,7 +106,7 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
     <link href="http://sqtds.github.io/2015/05/17/2015/java-classloader/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-classloader/</id>
     <published>2015-05-17T08:21:51.000Z</published>
-    <updated>2015-05-17T10:39:07.000Z</updated>
+    <updated>2015-05-17T12:36:21.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概览">一，概览</h2><p><img src="/img/2015/类加载.png" alt="类加载"></p>
 <h3 id="1，类的生命周期">1，类的生命周期</h3><p>一个java类的完整的生命周期会经历<strong>加载、连接、初始化、使用、和卸载</strong>五个阶段，当然也有在加载或者连接之后没有被初始化就直接被使用的情况，如图所示：<br><img src="/img/2015/classloaderprocess.png" alt=""></p>
 <h3 id="2，连接">2，连接</h3><p>链接过程：验证、准备和解析。</p>
@@ -159,7 +159,7 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <li>查找本地缓存</li>
 <li>使用系统类加载器加载系统类</li>
 <li>使用本地类加载器加载类</li>
-<li>如果没有找到，使用父类加载器加载类<h3 id="11，OSGi">11，OSGi</h3>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。<h2 id="三，参考资料">三，参考资料</h2></li>
+<li>如果没有找到，使用父类加载器加载类<h3 id="12，OSGi">12，OSGi</h3>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。<h2 id="三，参考资料">三，参考资料</h2></li>
 <li><a href="http://www.importnew.com/15435.html" target="_blank" rel="external">详解java类的生命周期</a></li>
 <li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-classloader/#author1" target="_blank" rel="external">深入探讨 Java 类加载器</a></li>
 <li><a href="http://blog.csdn.net/zhoudaxia/article/details/35824249" target="_blank" rel="external">深入理解Java类加载器(1)：Java类加载原理解析</a></li>
