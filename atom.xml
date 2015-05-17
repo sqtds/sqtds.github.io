@@ -4,7 +4,7 @@
   <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-05-10T13:42:01.000Z</updated>
+  <updated>2015-05-17T07:52:13.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -13,6 +13,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[java核心系列]]></title>
+    <link href="http://sqtds.github.io/2015/05/17/2015/java-core/"/>
+    <id>http://sqtds.github.io/2015/05/17/2015/java-core/</id>
+    <published>2015-05-17T07:13:23.000Z</published>
+    <updated>2015-05-17T07:52:13.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="/img/2015/Java核心.png" alt="图1"></p>
+<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
+<p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
+<p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
+<h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
+<h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><img src="/img/2015/Java核心.png" alt="图1"></p>
+<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上]]>
+    </summary>
+    
+      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[java对象大小]]></title>
@@ -49,7 +73,7 @@
     <link href="http://sqtds.github.io/2015/05/10/2015/java-queue/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-queue/</id>
     <published>2015-05-10T12:31:10.000Z</published>
-    <updated>2015-05-10T13:41:15.000Z</updated>
+    <updated>2015-05-17T05:23:18.000Z</updated>
     <content type="html"><![CDATA[<h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
 <h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
 <li>ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小</li>
@@ -69,7 +93,7 @@
 <li><p>ConcurrentLinkedQueue一个无锁的并发线程安全的队列。对比锁机制的实现，使用无锁机制的难点在于要充分考虑线程间的协调。简单的说就是多个线程对内部数据结构进行访问时，如果其中一个线程执行的中途因为一些原因出现故障，其他的线程能够检测并帮助完成剩下的操作。这就需要把对数据结构的操作过程精细的划分成多个状态或阶段，考虑每个阶段或状态多线程访问会出现的情况。<br>需要说一下的是，<strong>ConcurrentLinkedQueue的size()是要遍历一遍集合的，所以尽量要避免用size而改用isEmpty()，以免性能过慢。</strong></p>
 </li>
 </ul>
-<h3 id="3，Deque">3，Deque</h3><p>LinkedList，ArrayDeque，LinkedBlockingDeque</p>
+<h3 id="3，Deque">3，Deque</h3><p>LinkedList，ArrayDeque，非线程安全的，可以通过Collections的工具方法改造成线程安全的。<br>LinkedBlockingDeque</p>
 <p>按照我们一般的理解，Deque是一个双向队列，这将意味着它不过是对Queue接口的增强。如果仔细分析Deque接口代码的话，我们会发现它里面主要包含有4个部分的功能定义。</p>
 <ol>
 <li>双向队列特定方法定义。 </li>
@@ -77,7 +101,7 @@
 <li><strong>Stack方法定义。 </strong></li>
 <li>Collection方法定义。</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\\Stack定义</span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">peekLast</span><span class="params">()</span> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerLast</span><span class="params">(E e)</span></span><br><span class="line"><span class="keyword">public</span> E <span class="title">pollLast</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">\\Stack定义</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addFirst(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> removeFirst();</span><br><span class="line">    &#125;</span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> E <span class="title">peek</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
 <h3 id="4,参考资料">4,参考资料</h3><p><a href="http://www.infoq.com/cn/articles/java-blocking-queue" target="_blank" rel="external">聊聊并发（七）——Java中的阻塞队列</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278350" target="_blank" rel="external"> Java多线程（五）之BlockingQueue深入分析</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278355" target="_blank" rel="external">Java多线程（六）之Deque与LinkedBlockingDeque深入分析</a></p>
 ]]></content>
     <summary type="html">
@@ -85,8 +109,6 @@
 <h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
 <li>ArrayBlockingQueu]]>
     </summary>
-    
-      <category term="collection" scheme="http://sqtds.github.io/tags/collection/"/>
     
       <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
     
@@ -199,32 +221,6 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
       <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
     
       <category term="memory" scheme="http://sqtds.github.io/tags/memory/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[集合UML图]]></title>
-    <link href="http://sqtds.github.io/2015/05/05/2014/collections-uml/"/>
-    <id>http://sqtds.github.io/2015/05/05/2014/collections-uml/</id>
-    <published>2015-05-05T11:21:50.000Z</published>
-    <updated>2015-05-11T12:29:41.000Z</updated>
-    <content type="html"><![CDATA[<p>本文只展现java.util下的集合类，供以后自己查看，不废话上图：</p>
-<h2 id="集合大图模式">集合大图模式</h2><p><img src="/img/2014/collections uml.png" alt="集合大图模式"></p>
-<h2 id="集合方法">集合方法</h2><p><img src="/img/2014/collection uml Method.png" alt="方法展现"></p>
-<h2 id="并发集合大图模式">并发集合大图模式</h2><p><img src="/img/2014/concurrent uml.png" alt="并发集合大图模式"></p>
-<h2 id="并发集合方法">并发集合方法</h2><p><img src="/img/2014/concurrent uml Method.png" alt="并发集合方法"></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>本文只展现java.util下的集合类，供以后自己查看，不废话上图：</p>
-<h2 id="集合大图模式">集合大图模式</h2><p><img src="/img/2014/collections uml.png" alt="集合大图模式"></p>
-<h2 id="集]]>
-    </summary>
-    
-      <category term="collections" scheme="http://sqtds.github.io/tags/collections/"/>
-    
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     

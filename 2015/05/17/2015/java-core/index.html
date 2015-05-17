@@ -3,33 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>集合UML图 | 蜻蜓点水</title>
+  <title>java核心系列 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文只展现java.util下的集合类，供以后自己查看，不废话上图：
-集合大图模式
-集合方法
-并发集合大图模式
-并发集合方法">
+  <meta name="description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
 <meta property="og:type" content="article">
-<meta property="og:title" content="集合UML图">
-<meta property="og:url" content="http://sqtds.github.io/2015/05/05/2014/collections-uml/index.html">
+<meta property="og:title" content="java核心系列">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/17/2015/java-core/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="本文只展现java.util下的集合类，供以后自己查看，不废话上图：
-集合大图模式
-集合方法
-并发集合大图模式
-并发集合方法">
-<meta property="og:image" content="/img/2014/collections uml.png">
-<meta property="og:image" content="/img/2014/collection uml Method.png">
-<meta property="og:image" content="/img/2014/concurrent uml.png">
-<meta property="og:image" content="/img/2014/concurrent uml Method.png">
+<meta property="og:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
+<meta property="og:image" content="/img/2015/Java核心.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="集合UML图">
-<meta name="twitter:description" content="本文只展现java.util下的集合类，供以后自己查看，不废话上图：
-集合大图模式
-集合方法
-并发集合大图模式
-并发集合方法">
+<meta name="twitter:title" content="java核心系列">
+<meta name="twitter:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -140,7 +134,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 11.67px;">collection</a><a href="/tags/collections/" style="font-size: 10px;">collections</a><a href="/tags/exception/" style="font-size: 11.67px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 18.33px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 13.33px;">linux</a><a href="/tags/memory/" style="font-size: 11.67px;">memory</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/thread/" style="font-size: 10px;">thread</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 13.33px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 11.67px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/aop/" style="font-size: 10px;">aop</a><a href="/tags/collection/" style="font-size: 10px;">collection</a><a href="/tags/exception/" style="font-size: 11.67px;">exception</a><a href="/tags/groupby/" style="font-size: 10px;">groupby</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/idea/" style="font-size: 10px;">idea</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/index/" style="font-size: 10px;">index</a><a href="/tags/j2se/" style="font-size: 18.33px;">j2se</a><a href="/tags/jdbc/" style="font-size: 10px;">jdbc</a><a href="/tags/jdk/" style="font-size: 10px;">jdk</a><a href="/tags/linux/" style="font-size: 13.33px;">linux</a><a href="/tags/memory/" style="font-size: 11.67px;">memory</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a><a href="/tags/mysql/" style="font-size: 10px;">mysql</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/oralce/" style="font-size: 10px;">oralce</a><a href="/tags/plan/" style="font-size: 10px;">plan</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/string/" style="font-size: 10px;">string</a><a href="/tags/thread/" style="font-size: 10px;">thread</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/tx/" style="font-size: 13.33px;">tx</a><a href="/tags/列式/" style="font-size: 10px;">列式</a><a href="/tags/字符串替换/" style="font-size: 10px;">字符串替换</a><a href="/tags/存储/" style="font-size: 10px;">存储</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/源码/" style="font-size: 11.67px;">源码</a><a href="/tags/环境变量/" style="font-size: 10px;">环境变量</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a>
 					</div>
 				</section>
 				
@@ -210,11 +204,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2014/collections-uml" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-core" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/05/2014/collections-uml/" class="article-date">
-  	<time datetime="2015-05-05T11:21:50.000Z" itemprop="datePublished">5月 5 2015</time>
+      <a href="/2015/05/17/2015/java-core/" class="article-date">
+  	<time datetime="2015-05-17T07:13:23.000Z" itemprop="datePublished">5月 17 2015</time>
 </a>
     </div>
   
@@ -227,7 +221,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      集合UML图
+      java核心系列
     </h1>
   
 
@@ -236,7 +230,7 @@ var _hmt = _hmt || [];
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/collections/">collections</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/j2se/">j2se</a></li></ul>
 	</div>
 
         
@@ -251,11 +245,12 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本文只展现java.util下的集合类，供以后自己查看，不废话上图：</p>
-<h2 id="集合大图模式">集合大图模式</h2><p><img src="/img/2014/collections uml.png" alt="集合大图模式"></p>
-<h2 id="集合方法">集合方法</h2><p><img src="/img/2014/collection uml Method.png" alt="方法展现"></p>
-<h2 id="并发集合大图模式">并发集合大图模式</h2><p><img src="/img/2014/concurrent uml.png" alt="并发集合大图模式"></p>
-<h2 id="并发集合方法">并发集合方法</h2><p><img src="/img/2014/concurrent uml Method.png" alt="并发集合方法"></p>
+        <p><img src="/img/2015/Java核心.png" alt="图1"></p>
+<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
+<p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
+<p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
+<h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
+<h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
 
       
     </div>
@@ -265,18 +260,9 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2015/05/10/2015/jmm/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          java内存模型
-        
-      </div>
-    </a>
   
-  
-    <a href="/2015/04/29/2014/linux-command/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
+    <a href="/2015/05/10/2015/java-object-size/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java对象大小</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -305,7 +291,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2014/collections-uml" data-title="集合UML图" data-url="http://sqtds.github.io/2015/05/05/2014/collections-uml/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-core" data-title="java核心系列" data-url="http://sqtds.github.io/2015/05/17/2015/java-core/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
