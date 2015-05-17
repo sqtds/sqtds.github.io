@@ -196,6 +196,93 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -629,69 +716,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/linux环境变量加载顺序" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/02/2014/linux环境变量加载顺序/" class="article-date">
-  	<time datetime="2014-06-02T15:17:33.000Z" itemprop="datePublished">6月 2 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/02/2014/linux环境变量加载顺序/">linux环境变量的加载顺序</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>当使用export设置环境变量的时候，注意前面的环境变量会覆盖后面设置的环境变量。<br>例如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME/usr/java1.<span class="number">7</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br></pre></td></tr></table></figure></p>
-<p>当在/etc/profile中设置这2个选项的时候，如果PATH中已经包含了java的运行时环境，那么此设置会失败。</p>
-<p>要想使自定义设置生效，最好将自定义的path设置在前面，如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME/usr/java1.<span class="number">7</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/linux/">linux</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/06/02/2014/linux环境变量加载顺序/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
