@@ -4,7 +4,7 @@
   <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-05-17T07:52:13.000Z</updated>
+  <updated>2015-05-17T08:07:41.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -15,16 +15,35 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[linux常用技巧]]></title>
+    <link href="http://sqtds.github.io/2015/05/17/2014/linux-command/"/>
+    <id>http://sqtds.github.io/2015/05/17/2014/linux-command/</id>
+    <published>2015-05-17T11:02:11.000Z</published>
+    <updated>2015-05-17T08:07:41.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，]]>
+    </summary>
+    
+      <category term="linux" scheme="http://sqtds.github.io/tags/linux/"/>
+    
+      <category term="linux" scheme="http://sqtds.github.io/categories/linux/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[java核心系列]]></title>
     <link href="http://sqtds.github.io/2015/05/17/2015/java-core/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-core/</id>
     <published>2015-05-17T07:13:23.000Z</published>
-    <updated>2015-05-17T07:52:13.000Z</updated>
+    <updated>2015-05-17T07:55:35.000Z</updated>
     <content type="html"><![CDATA[<p><img src="/img/2015/Java核心.png" alt="图1"></p>
 <h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
 <p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
 <p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
 <h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
+<h2 id="三，适用人群">三，适用人群</h2><p>java爱好者</p>
 <h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
 ]]></content>
     <summary type="html">
@@ -32,7 +51,7 @@
 <h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -43,7 +62,7 @@
     <link href="http://sqtds.github.io/2015/05/10/2015/java-object-size/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-object-size/</id>
     <published>2015-05-10T12:57:27.000Z</published>
-    <updated>2015-05-10T13:42:01.000Z</updated>
+    <updated>2015-05-17T07:58:37.000Z</updated>
     <content type="html"><![CDATA[<h2 id="对象大小">对象大小</h2><p><img src="/img/2015/java_object_size.png" alt=""></p>
 <h3 id="1，64位系统">1，64位系统</h3><p>new java.lang.Object() 占用了 16 bytes<br>new byte[0] 占用了 24 bytes</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -60,9 +79,7 @@
 <h3 id="1，64位系统">1，64位系统</h3><p>new java.lang.Object() 占用了 1]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
-    
-      <category term="memory" scheme="http://sqtds.github.io/tags/memory/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -73,7 +90,7 @@
     <link href="http://sqtds.github.io/2015/05/10/2015/java-queue/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-queue/</id>
     <published>2015-05-10T12:31:10.000Z</published>
-    <updated>2015-05-17T05:23:18.000Z</updated>
+    <updated>2015-05-17T07:58:06.000Z</updated>
     <content type="html"><![CDATA[<h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
 <h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
 <li>ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小</li>
@@ -110,7 +127,7 @@
 <li>ArrayBlockingQueu]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -121,7 +138,7 @@
     <link href="http://sqtds.github.io/2015/05/10/2015/java-thread/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-thread/</id>
     <published>2015-05-10T10:01:58.000Z</published>
-    <updated>2015-05-10T13:01:03.000Z</updated>
+    <updated>2015-05-17T07:58:49.000Z</updated>
     <content type="html"><![CDATA[<h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
 <h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
 <p>轻量级锁（Lightweight Locking）本意是为了减少多线程进入互斥的几率，并不是要替代互斥。</p>
@@ -150,9 +167,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 <h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
-    
-      <category term="thread" scheme="http://sqtds.github.io/tags/thread/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -163,7 +178,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     <link href="http://sqtds.github.io/2015/05/10/2015/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/并发编程/</id>
     <published>2015-05-10T08:13:15.000Z</published>
-    <updated>2015-05-10T10:15:28.000Z</updated>
+    <updated>2015-05-17T07:59:11.000Z</updated>
     <content type="html"><![CDATA[<h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
 <h3 id="1,容器">1,容器</h3><p>略</p>
 <h3 id="2，协作">2，协作</h3><p>略</p>
@@ -189,7 +204,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 ]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -200,7 +215,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     <link href="http://sqtds.github.io/2015/05/10/2015/jmm/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/jmm/</id>
     <published>2015-05-10T00:10:03.000Z</published>
-    <updated>2015-05-10T13:41:48.000Z</updated>
+    <updated>2015-05-17T07:59:01.000Z</updated>
     <content type="html"><![CDATA[<h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
 <h3 id="参考资料">参考资料</h3><ul>
 <li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
@@ -218,25 +233,9 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 <li><a href="http://www.importnew.com/1]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
-    
-      <category term="memory" scheme="http://sqtds.github.io/tags/memory/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title></title>
-    <link href="http://sqtds.github.io/2015/04/29/2014/linux-command/"/>
-    <id>http://sqtds.github.io/2015/04/29/2014/linux-command/</id>
-    <published>2015-04-29T08:35:07.000Z</published>
-    <updated>2015-04-29T08:36:40.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，]]>
-    </summary>
     
   </entry>
   
@@ -245,7 +244,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     <link href="http://sqtds.github.io/2015/04/27/2014/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E6%80%BB%E7%BB%93/"/>
     <id>http://sqtds.github.io/2015/04/27/2014/性能调优总结/</id>
     <published>2015-04-27T03:38:06.000Z</published>
-    <updated>2015-05-09T04:12:09.000Z</updated>
+    <updated>2015-05-17T08:03:41.000Z</updated>
     <content type="html"><![CDATA[<p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
 <h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
 <p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
@@ -272,7 +271,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     
       <category term="性能" scheme="http://sqtds.github.io/tags/%E6%80%A7%E8%83%BD/"/>
     
-      <category term="性能" scheme="http://sqtds.github.io/categories/%E6%80%A7%E8%83%BD/"/>
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
   </entry>
   
@@ -281,7 +280,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     <link href="http://sqtds.github.io/2015/04/26/2014/java-string/"/>
     <id>http://sqtds.github.io/2015/04/26/2014/java-string/</id>
     <published>2015-04-26T04:02:33.000Z</published>
-    <updated>2015-04-26T10:13:41.000Z</updated>
+    <updated>2015-05-17T08:10:40.000Z</updated>
     <content type="html"><![CDATA[<p>String可以说是java编程中最常用的对象。用了这么久，大家对它的印象有多深呢？下面我就谈谈我自己对它的一些认知吧。</p>
 <h2 id="不可变对象">不可变对象</h2><p>我们可以看到，String被声明成了final,这样我们可以得到String是不可继承的对象，也是线程安全的对象。</p>
 <pre><code><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">String</span>
@@ -481,9 +480,9 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <h2 id="不可变对象">不可变对象</h2><p>我们可以看到，String被声明成了final,这样我们可以得到String是不可继承的]]>
     </summary>
     
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
-      <category term="string" scheme="http://sqtds.github.io/tags/string/"/>
+      <category term="java源码阅读" scheme="http://sqtds.github.io/tags/java%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -494,7 +493,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     <link href="http://sqtds.github.io/2015/04/25/2014/collection-total/"/>
     <id>http://sqtds.github.io/2015/04/25/2014/collection-total/</id>
     <published>2015-04-25T08:37:30.000Z</published>
-    <updated>2015-05-09T04:12:09.000Z</updated>
+    <updated>2015-05-17T08:00:11.000Z</updated>
     <content type="html"><![CDATA[<p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
 <h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
 <p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
@@ -545,9 +544,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，li]]>
     </summary>
     
-      <category term="collection" scheme="http://sqtds.github.io/tags/collection/"/>
-    
-      <category term="j2se" scheme="http://sqtds.github.io/tags/j2se/"/>
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
@@ -558,7 +555,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     <link href="http://sqtds.github.io/2015/04/25/2014/mysql-index/"/>
     <id>http://sqtds.github.io/2015/04/25/2014/mysql-index/</id>
     <published>2015-04-25T08:26:28.000Z</published>
-    <updated>2015-04-26T03:55:48.000Z</updated>
+    <updated>2015-05-17T08:06:47.000Z</updated>
     <content type="html"><![CDATA[<p>索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。</p>
 <h2 id="索引分类">索引分类</h2><h3 id="B-Tree索引">B-Tree索引</h3><p>MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。<br>MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。<br>可以使用B-Tree索引的查询类型：</p>
 <ul>
@@ -630,9 +627,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
 <h2 id="索引分类">索引分类</h2><h3 id="B-Tree索引">B-Tree索引</h3><p>MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。<br>MyISA]]>
     </summary>
     
-      <category term="index" scheme="http://sqtds.github.io/tags/index/"/>
-    
-      <category term="mysql" scheme="http://sqtds.github.io/tags/mysql/"/>
+      <category term="数据库" scheme="http://sqtds.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
       <category term="数据库" scheme="http://sqtds.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
@@ -701,7 +696,7 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
     <link href="http://sqtds.github.io/2015/04/05/2014/mongodb-biji/"/>
     <id>http://sqtds.github.io/2015/04/05/2014/mongodb-biji/</id>
     <published>2015-04-05T04:06:03.000Z</published>
-    <updated>2015-05-09T04:12:09.000Z</updated>
+    <updated>2015-05-17T08:06:04.000Z</updated>
     <content type="html"><![CDATA[<h2 id="特点">特点</h2><p>MongoDB是它是一个面向集合的,模式自由的文档型数据库。那么什么是文档性数据库呢？它与其他的数据库的差别在哪里？</p>
 <ol>
 <li><p>面向集合的存储（ Collenction-Orented）：适合存储对象及JSON形式的数据。</p>
@@ -777,8 +772,6 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 <ol>
 <li><p>面向集合的存储（ Collenction-Orented）：适合存储对象及JSON形式]]>
     </summary>
-    
-      <category term="mongodb" scheme="http://sqtds.github.io/tags/mongodb/"/>
     
       <category term="nosql" scheme="http://sqtds.github.io/tags/nosql/"/>
     
@@ -967,7 +960,7 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
     <link href="http://sqtds.github.io/2015/03/31/2014/oracle-group-by/"/>
     <id>http://sqtds.github.io/2015/03/31/2014/oracle-group-by/</id>
     <published>2015-03-31T09:45:27.000Z</published>
-    <updated>2015-04-04T10:10:45.000Z</updated>
+    <updated>2015-05-17T08:06:34.000Z</updated>
     <content type="html"><![CDATA[<p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
 <h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用group by rollup(A,B,C)，首先会对(A、B、C)进行GROUP BY，然后对(A、B)进行GROUP BY，然后是(A)进行GROUP BY，最后对全表进行GROUP BY操作。roll up的意思是“卷起”，这也可以帮助我们理解group by rollup就是对选择的列从右到左以一次少一列的方式进行grouping直到所有列都去掉后的grouping(也就是全表grouping)，对于n个参数的rollup，有n+1次的grouping。以下2个sql的结果集是一样的：</p>
 <p><code>Select A,B,C,sum(E) from test group by rollup(A,B,C)</code><br>与</p>
@@ -1040,9 +1033,7 @@ order by 4, 5, 6;</code></p>
 <h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用grou]]>
     </summary>
     
-      <category term="groupby" scheme="http://sqtds.github.io/tags/groupby/"/>
-    
-      <category term="oralce" scheme="http://sqtds.github.io/tags/oralce/"/>
+      <category term="数据库" scheme="http://sqtds.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
       <category term="数据库" scheme="http://sqtds.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
