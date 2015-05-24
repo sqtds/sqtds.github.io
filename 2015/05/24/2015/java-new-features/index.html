@@ -241,8 +241,9 @@ var _hmt = _hmt || [];
       
         <h2 id="一，概述">一，概述</h2><p><img src="/img/2015/新特性.png" alt=""></p>
 <h2 id="二，泛型">二，泛型</h2><h3 id="2-1_协变">2.1 协变</h3><p>数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List<integer> 不是 List<number> 的子类型，试图在要求 List<number> 的位置提供 List<integer> 是一个类型错误。这不算很严重的问题 — 也不是所有人都认为的错误 — 但泛型和数组的不同行为的确引起了许多混乱。</integer></number></number></integer></p>
-<h3 id="2-2_类型推断">2.2 类型推断</h3><p>当解析一个泛型方法的调用时，编译器将设法推断类型参数它能达到的最具体类型。 例如，对于下面这个泛型方法：<br><figure class="highlight"><figcaption><span>static<t> T identity(T arg) &#123; return arg &#125;;```</t></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#21644;&#23427;&#30340;&#35843;&#29992;&#65306;</span><br></pre></td></tr></table></figure></p>
-<p>Integer i = 3;<br>System.out.println(identity(i));<br>```<br>编译器能够推断 T 是 Integer、Number、 Serializable 或 Object，但它选择 Integer 作为满足约束的最具体类型。</p>
+<h3 id="2-2_类型推断">2.2 类型推断</h3><p>当解析一个泛型方法的调用时，编译器将设法推断类型参数它能达到的最具体类型。 例如，对于下面这个泛型方法：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span>&lt;T&gt; <span class="function">T <span class="title">identity</span><span class="params">(T arg)</span> </span>&#123; <span class="keyword">return</span> arg &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>和它的调用：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> i = <span class="number">3</span>;</span><br><span class="line">System.<span class="type">out</span>.println(identity(i));</span><br></pre></td></tr></table></figure></p>
+<p>编译器能够推断 T 是 Integer、Number、 Serializable 或 Object，但它选择 Integer 作为满足约束的最具体类型。</p>
 <h2 id="三，注解">三，注解</h2><p>注解早在J2SE1.5就被引入到Java中，主要提供一种机制，这种机制允许程序员在编写代码的同时可以直接编写元数据。<br>注解基本上可以在Java程序的每一个元素上使用：类，域，方法，包，变量，等等。</p>
 <h3 id="3-1_@Retention">3.1 @Retention</h3><p>这个注解注在其他注解上，并用来说明如何存储已被标记的注解。这是一种元注解，用来标记注解并提供注解的信息。可能的值是：</p>
 <ul>
