@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 11.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,65 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
+  	<time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
+<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
+<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -920,124 +979,9 @@ STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')
 
 
   
-    <article id="post-2014/antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-iterator-example/" class="article-date">
-  	<time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
-<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
-<pre><code><span class="comment">//语法</span>
-grammar PropertyFile;
-file : prop+ ;
-prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
-ID   : [a-z]+ ;
-<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
-
-<span class="comment">//文件</span>
-user=<span class="string">"parrt"</span>
-machine=<span class="string">"maniac"</span>
-</code></pre><p><img src="/img/2014/QQ图片20140830154441.jpg" alt="解析树"></p>
-<p><img src="/img/2014/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
-<p><img src="/img/2014/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
-<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
-    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
-    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
-        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="built_in">String</span> value = ctx.STRING().getText();
-        props.put(id, value);
-    }
-}
-</code></pre><p>下面的类的依赖图，我就不解释了：</p>
-<p><img src="/img/2014/QQ图片20140830155248.jpg" alt=""></p>
-<p>最后直接看结果吧，so easy:</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
-    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
-    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
-    ParseTree tree = parser.file();
-
-    <span class="comment">// create a standard ANTLR parse tree walker</span>
-    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-    <span class="comment">// create listener then feed to walker</span>
-    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
-    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
-    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
-    <span class="comment">//print {machine="maniac", user="parrt"}</span>
-}
-</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
-<p><img src="/img/2014/QQ图片20140830160030.jpg" alt=""></p>
-<p><img src="/img/2014/QQ图片20140830160122.jpg" alt=""></p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
-</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
-{
-    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
-    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
-        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
-        props.put(id, value);
-        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
-    }
-}
-</code></pre><p><img src="/img/2014/QQ图片20140830160343.jpg" alt=""></p>
-<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
     </nav>
   
 </div>

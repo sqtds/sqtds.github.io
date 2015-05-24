@@ -52,6 +52,25 @@
   </entry>
   
   <entry>
+    <title><![CDATA[GPU基础知识普及]]></title>
+    <link href="http://sqtds.github.io/2015/05/24/2015/gpu-base-konwledge/"/>
+    <id>http://sqtds.github.io/2015/05/24/2015/gpu-base-konwledge/</id>
+    <published>2015-05-24T07:35:38.000Z</published>
+    <updated>2015-05-24T07:41:57.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="/info/从显卡历史说起.pptx" title="从显卡历史说起">/info/从显卡历史说起.pptx</a><br>本ppt用于部门内部的演讲，主要讲述了显卡的渲染机制，由于本人水平有限，难免存在瑕疵，有需要的同学可以拿去看看。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="/info/从显卡历史说起.pptx" title="从显卡历史说起">/info/从显卡历史说起.pptx</a><br>本ppt用于部门内部的演讲，主要讲述了显卡的渲染机制，由于本人水平有限，难免存在瑕疵，有需要的同学可以拿去看看。</p>
+]]>
+    </summary>
+    
+      <category term="计算机原理" scheme="http://sqtds.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/"/>
+    
+      <category term="计算机原理" scheme="http://sqtds.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[java核心系列（十二）-java对象大小]]></title>
     <link href="http://sqtds.github.io/2015/05/23/2015/java-object-size/"/>
     <id>http://sqtds.github.io/2015/05/23/2015/java-object-size/</id>
@@ -1249,25 +1268,6 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       <category term="数据库" scheme="http://sqtds.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
       <category term="数据库" scheme="http://sqtds.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[tomcat架构]]></title>
-    <link href="http://sqtds.github.io/2015/04/06/2014/tomcat-artic/"/>
-    <id>http://sqtds.github.io/2015/04/06/2014/tomcat-artic/</id>
-    <published>2015-04-06T04:35:21.000Z</published>
-    <updated>2015-04-06T07:02:32.000Z</updated>
-    <content type="html"><![CDATA[<p>tomcat虽然比较复杂，但是结构优良，下面让我们看看其良好的架构设计。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>tomcat虽然比较复杂，但是结构优良，下面让我们看看其良好的架构设计。</p>
-]]>
-    </summary>
-    
-      <category term="tomcat" scheme="http://sqtds.github.io/tags/tomcat/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
   </entry>
   

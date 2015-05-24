@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 11.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,245 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/java-int" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/09/2014/java-int/" class="article-date">
+  	<time datetime="2014-08-09T07:30:12.000Z" itemprop="datePublished">8月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/09/2014/java-int/">int源码赏析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概要">概要</h3><p>今天突发好奇，想不明白string是如何转换为int的，于是翻开jdk的源码，收货挺大的。</p>
+<h3 id="parseInt(String_s)">parseInt(String s)</h3><p>首先我们看parseInt这个方法，看下图，它又调用了parseInt(String s, int radix)，这个方法才是String转换成int的主要过程。这个方法比较有趣，我们来一一分析它的实现机制。</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s) throws <span class="type">NumberFormatException</span> {
+        //此处表示s默认为<span class="number">10</span>进制
+        <span class="keyword">return</span> parseInt(s,<span class="number">10</span>);
+}
+
+//radix为s的进制格式，不能大于<span class="number">36</span>也不能小于<span class="number">2</span>，即最小为<span class="number">2</span>进制，最大为<span class="number">36</span>进制，<span class="number">36</span>进制的得来是<span class="number">10</span>个数字加<span class="number">26</span>个字母
+//例如，parseInt(<span class="string">"Kona"</span>, <span class="number">27</span>) returns <span class="number">411787</span>
+public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s, <span class="type">int</span> radix)
+            throws <span class="type">NumberFormatException</span>
+{
+    /*
+     * <span class="type">WARNING</span>: <span class="type">This</span> <span class="keyword">method</span> may be invoked early during <span class="type">VM</span> initialization
+     * before <span class="type">IntegerCache</span> <span class="keyword">is</span> initialized. <span class="type">Care</span> must be taken to <span class="keyword">not</span> use
+     * the valueOf <span class="keyword">method</span>.
+     */
+
+    <span class="keyword">if</span> (s == null) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"null"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &lt; <span class="type">Character</span>.<span class="type">MIN_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" less than Character.MIN_RADIX"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &gt; <span class="type">Character</span>.<span class="type">MAX_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" greater than Character.MAX_RADIX"</span>);
+    }
+
+    <span class="type">int</span> <span class="literal">result</span> = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">int</span> i = <span class="number">0</span>, len = s.length();
+    //统一转成负号进行处理，不会出现溢出现象
+    <span class="type">int</span> limit = -<span class="type">Integer</span>.<span class="type">MAX_VALUE</span>;
+    <span class="type">int</span> multmin;
+    <span class="type">int</span> digit;
+
+    <span class="keyword">if</span> (len &gt; <span class="number">0</span>) {
+        <span class="type">char</span> firstChar = s.charAt(<span class="number">0</span>);
+        <span class="keyword">if</span> (firstChar &lt; '<span class="number">0</span>') { // <span class="type">Possible</span> leading <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+            <span class="keyword">if</span> (firstChar == '-') {
+                negative = <span class="literal">true</span>;
+                limit = <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>;
+            } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar != '+')
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+
+            <span class="keyword">if</span> (len == <span class="number">1</span>) // <span class="type">Cannot</span> have lone <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            i++;
+        }
+        multmin = limit / radix;
+        <span class="keyword">while</span> (i &lt; len) {
+            // <span class="type">Accumulating</span> negatively avoids surprises near <span class="type">MAX_VALUE</span>
+            //拿到第i个数字并且格式化成<span class="number">10</span>进制
+            digit = <span class="type">Character</span>.digit(s.charAt(i++),radix);
+            <span class="keyword">if</span> (digit &lt; <span class="number">0</span>) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; multmin) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="literal">result</span> *= radix;
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; limit + digit) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            //使用负号进行计算 , -<span class="number">20</span>-<span class="number">3</span>=-<span class="number">23</span>
+            <span class="literal">result</span> -= digit;
+        }
+    } <span class="keyword">else</span> {
+        throw <span class="type">NumberFormatException</span>.forInputString(s);
+    }
+    <span class="keyword">return</span> negative ? <span class="literal">result</span> : -<span class="literal">result</span>;
+}
+</code></pre><hr>
+<h3 id="Integer_decode(String_nm)">Integer decode(String nm)</h3><p>转换8进制，16进制，10进制到10进制</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">Integer</span> decode(<span class="type">String</span> nm) throws <span class="type">NumberFormatException</span> {
+    <span class="type">int</span> radix = <span class="number">10</span>;
+    <span class="type">int</span> index = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">Integer</span> <span class="literal">result</span>;
+
+    <span class="keyword">if</span> (nm.length() == <span class="number">0</span>)
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Zero length string"</span>);
+    <span class="type">char</span> firstChar = nm.charAt(<span class="number">0</span>);
+    // <span class="type">Handle</span> sign, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (firstChar == '-') {
+        negative = <span class="literal">true</span>;
+        index++;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar == '+')
+        index++;
+
+    // <span class="type">Handle</span> radix specifier, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"0x"</span>, index) || nm.startsWith(<span class="string">"0X"</span>, index)) {
+        index += <span class="number">2</span>;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"#"</span>, index)) {
+        index ++;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"0"</span>, index) &amp;&amp; nm.length() &gt; <span class="number">1</span> + index) {
+        index ++;
+        radix = <span class="number">8</span>;
+    }
+
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"-"</span>, index) || nm.startsWith(<span class="string">"+"</span>, index))
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Sign character in wrong position"</span>);
+
+    <span class="keyword">try</span> {
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(nm.substring(index), radix);
+        <span class="literal">result</span> = negative ? <span class="type">Integer</span>.valueOf(-<span class="literal">result</span>.intValue()) : <span class="literal">result</span>;
+    } catch (<span class="type">NumberFormatException</span> e) {
+        // <span class="type">If</span> number <span class="keyword">is</span> <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>, we'll <span class="keyword">end</span> up here. <span class="type">The</span> next line
+        // handles this <span class="keyword">case</span>, <span class="keyword">and</span> causes <span class="type">any</span> genuine format error to be
+        // rethrown.
+        <span class="type">String</span> constant = negative ? (<span class="string">"-"</span> + nm.substring(index))
+                                   : nm.substring(index);
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(constant, radix);
+    }
+    <span class="keyword">return</span> <span class="literal">result</span>;
+}
+</code></pre><h3 id="String_toString(int_i,_int_radix)">String toString(int i, int radix)</h3><pre><code><span class="keyword">public</span> static String toString(<span class="built_in">int</span> i, <span class="built_in">int</span> <span class="built_in">radix</span>) {
+
+    <span class="keyword">if</span> (<span class="built_in">radix</span> &lt; <span class="type">Character</span>.MIN_RADIX || <span class="built_in">radix</span> &gt; <span class="type">Character</span>.MAX_RADIX)
+        <span class="built_in">radix</span> = <span class="number">10</span>;
+
+    /* <span class="keyword">Use</span> the faster version */
+    <span class="keyword">if</span> (<span class="built_in">radix</span> == <span class="number">10</span>) {
+        <span class="keyword">return</span> toString(i);
+    }
+
+    <span class="built_in">char</span> buf[] = new <span class="built_in">char</span>[<span class="number">33</span>];
+    boolean negative = (i &lt; <span class="number">0</span>);
+    <span class="built_in">int</span> charPos = <span class="number">32</span>;
+
+    //如果非负数，转成负数
+    <span class="keyword">if</span> (<span class="comment">!negative) {</span>
+        i = -i;
+    }
+
+    /**  <span class="number">12</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">6</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">3</span>|<span class="number">2</span> ..<span class="number">.1</span>
+    *     <span class="number">1</span>|<span class="number">2</span> ..<span class="number">.1</span>      
+    *    类似这种除法...
+     **/
+    <span class="keyword">while</span> (i &lt;= -<span class="built_in">radix</span>) {
+        buf[charPos--] = <span class="built_in">digits</span>[-(i % <span class="built_in">radix</span>)];
+        i = i / <span class="built_in">radix</span>;
+    }
+    buf[charPos] = <span class="built_in">digits</span>[-i];
+
+    <span class="keyword">if</span> (negative) {
+        buf[--charPos] = <span class="string">'-'</span>;
+    }
+
+    <span class="keyword">return</span> new String(buf, charPos, (<span class="number">33</span> - charPos));
+}
+</code></pre><hr>
+<h3 id="Integer_valueOf(String_s)">Integer valueOf(String s)</h3><p>valueOf有点特殊，他缓存了-128到127的值，所以数字在此范围内都是取的同一个对象。<br>与其类似的还有</p>
+<ul>
+<li>Boolean：(全部缓存)</li>
+<li>Byte：(全部缓存)</li>
+<li>Character(&lt;= 127缓存)</li>
+<li>Short(-128 — 127缓存)</li>
+<li>Integer(-128 — 127缓存)</li>
+<li>Long(-128 — 127缓存)</li>
+<li>Float(没有缓存)</li>
+<li>Doulbe(没有缓存)</li>
+</ul>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException </span>{
+    <span class="keyword">return</span> Integer.valueOf(parseInt(s, <span class="number">10</span>));
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>{
+    <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;
+    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
+        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];
+    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);
+}
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java源码阅读/">java源码阅读</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/linux-command" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -586,108 +825,9 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 
 
   
-    <article id="post-2014/2014plan" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/08/2014/2014plan/" class="article-date">
-  	<time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/08/2014/2014plan/">2014年下半年计划</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2014年已经过去一半了,感觉什么事也没做。<br>上半年买的书都还有大半没看完，进度太慢了。发现再这样下去还是不行的，必须要给自己一点压力，让自己成长起来。so,so,so制定下下半年的计划，不能再这样继续荒废时间了：</p>
-<h3 id="plan1：_读书">plan1： 读书</h3><ul>
-<li><p>《java性能优化》</p>
-<p> 根据书上的性能优化措施,看完了至少能将公司的项目提升一个层次。</p>
-</li>
-<li><p>《android4高级编程》</p>
-<p>希望能上架自己的1,2个小应用，暂时还没想好做什么。</p>
-</li>
-<li><p>《数据挖掘》《深入浅出数据分析》《大数据》《大规模分布式存储系统》</p>
-<p>想办法做好公司的BI系统吧。</p>
-</li>
-<li><p>《大型网站系统与java中间件架构实践》《大型网站技术架构》《软件架构设计》</p>
-<p>要多练练架构才好，不过这些书讲的太过空泛了。</p>
-</li>
-<li><p>《深入理解计算机系统》《计算机程序的构造和解释》《代码大全》</p>
-<p>底层也要多了解了解才好。</p>
-</li>
-</ul>
-<h3 id="plan2：_分析开源框架">plan2： 分析开源框架</h3><ul>
-<li>spring</li>
-</ul>
-<p>感觉对spring的理解还是比较欠缺，下半年努力把spring的方方面面都理解清楚吧。</p>
-<ul>
-<li>网络，并发</li>
-</ul>
-<p>netty，concurrent包，这两部分也是需要继续研究的。</p>
-<ul>
-<li>大数据</li>
-</ul>
-<p>如果还有精力的话，就研究hadoop的代码吧。</p>
-<h3 id="plan3：_锻炼">plan3： 锻炼</h3><ul>
-<li><p>每周必须要跑一次步</p>
-</li>
-<li><p>计划一次爬山</p>
-</li>
-<li><p>每天至少3分钟平板支撑</p>
-</li>
-</ul>
-<h3 id="plan4：_赚钱">plan4： 赚钱</h3><p>没钱的屌丝，要想办法赚钱呀。</p>
-<ul>
-<li>炒股</li>
-</ul>
-<p>炒股就是博弈，人生要敢于冒风险。希望自己的资产能够在过年的时候上涨10%。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/其他/">其他</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
     </nav>
   
 </div>

@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 11.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,72 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/android事件处理机制" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/05/23/2014/android事件处理机制/" class="article-date">
+  	<time datetime="2014-05-23T13:44:43.000Z" itemprop="datePublished">5月 23 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/23/2014/android事件处理机制/">android 事件机制</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>android提供了2中事件处理方式:基于回调的事件处理和基于监听器的事件处理。</p>
+<h3 id="基于监听的事件处理">基于监听的事件处理</h3><p>在事件监听处理的处理模型中，主要涉及如下3种类型：</p>
+<ul>
+<li>Event Source（事件源）：事件发生的各个场所，通常是各个组件，例如按钮，窗口，菜单等。</li>
+<li>Event（事件）：事件封装了界面组件上发生的特定事件（通常就是一次用户操作）。</li>
+<li>Event Listener（事件监听器）：监听事件源发生的事件，对各个事件做出响应。</li>
+</ul>
+<p>Android的事件处理机制是一种委派式事件处理方式：普通组件（事件源）将整个事件处理委托给特定的对象（事件监听器）；当该事件源发生特定的事件时，就通知所委托的事件监听器，由事件监听器来处理这个事件。<br><img src="/img/2014/QQ图片20140524151941.jpg" alt=""></p>
+<h2 id="基于回调的事件处理">基于回调的事件处理</h2><p>如果说事件监听机制是一种委托的事件处理，那么回调机制正好相反：对于基于回调的时间爱你处理模型来说，事件源与事件监听器是统一的，或者说事件监听器完全消失了。当用户在gui组件上激发某个事件的时候，组件自己特定的方法将会负责处理该事件。</p>
+<h2 id="比较">比较</h2><p>对于基于监听的事件处理模型来说，事件源和事件监听器是分离的，当事件源上发生特定的事件后，该事件交给事件监听器处理；对于基于回调的事件处理模型来说，事件源和事件监听器是统一的，当事件源发生特定的事件后，该事件还是由事件源本身负责处理。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/linux-replace" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -543,66 +609,9 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-2014/列式存储机制" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/11/2014/列式存储机制/" class="article-date">
-  	<time datetime="2014-05-11T12:17:33.000Z" itemprop="datePublished">5月 11 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/11/2014/列式存储机制/">列式存储机制</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="引言">引言</h3><hr>
-<p>由于大数据的发展，越来越多的企业利用大数据来挖掘数据更多的价值，关系型数据库受到了越来越严重的挑战。人们迫切需要找到一个新的突破口来处理大数据。在这样的环境下，列式存储孕育而出。
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/05/11/2014/列式存储机制/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span>
+      <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
     </nav>
   
 </div>
