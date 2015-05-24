@@ -3,27 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>java核心系列（一）—介绍 | 蜻蜓点水</title>
+  <title>java核心系列（十）-java新特性 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
-本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
-当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
-二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
+  <meta name="description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java核心系列（一）—介绍">
-<meta property="og:url" content="http://sqtds.github.io/2015/05/17/2015/java-core/index.html">
+<meta property="og:title" content="java核心系列（十）-java新特性">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/17/2015/java-new-features/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
-本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
-当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
-二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
-<meta property="og:image" content="/img/2015/Java核心.png">
+<meta property="og:description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
+<meta property="og:image" content="/img/2015/新特性.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java核心系列（一）—介绍">
-<meta name="twitter:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
-本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
-当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
-二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
+<meta name="twitter:title" content="java核心系列（十）-java新特性">
+<meta name="twitter:description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -204,11 +198,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2015/java-core" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-new-features" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/17/2015/java-core/" class="article-date">
-  	<time datetime="2015-05-17T07:13:23.000Z" itemprop="datePublished">5月 17 2015</time>
+      <a href="/2015/05/17/2015/java-new-features/" class="article-date">
+  	<time datetime="2015-05-17T03:41:32.000Z" itemprop="datePublished">5月 17 2015</time>
 </a>
     </div>
   
@@ -221,7 +215,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      java核心系列（一）—介绍
+      java核心系列（十）-java新特性
     </h1>
   
 
@@ -245,13 +239,41 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="/img/2015/Java核心.png" alt="图1"></p>
-<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
-<p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
-<p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
-<h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
-<h2 id="三，适用人群">三，适用人群</h2><p>java爱好者</p>
-<h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
+        <h2 id="一，概述">一，概述</h2><p><img src="/img/2015/新特性.png" alt=""></p>
+<h2 id="二，泛型">二，泛型</h2><h3 id="2-1_协变">2.1 协变</h3><p>数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List<integer> 不是 List<number> 的子类型，试图在要求 List<number> 的位置提供 List<integer> 是一个类型错误。这不算很严重的问题 — 也不是所有人都认为的错误 — 但泛型和数组的不同行为的确引起了许多混乱。</integer></number></number></integer></p>
+<h3 id="2-2_类型推断">2.2 类型推断</h3><p>当解析一个泛型方法的调用时，编译器将设法推断类型参数它能达到的最具体类型。 例如，对于下面这个泛型方法：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span>&lt;T&gt; <span class="function">T <span class="title">identity</span><span class="params">(T arg)</span> </span>&#123; <span class="keyword">return</span> arg &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>和它的调用：<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> i = <span class="number">3</span>;</span><br><span class="line">System.<span class="type">out</span>.println(identity(i));</span><br></pre></td></tr></table></figure></p>
+<p>编译器能够推断 T 是 Integer、Number、 Serializable 或 Object，但它选择 Integer 作为满足约束的最具体类型。</p>
+<h2 id="三，注解">三，注解</h2><p>注解早在J2SE1.5就被引入到Java中，主要提供一种机制，这种机制允许程序员在编写代码的同时可以直接编写元数据。<br>注解基本上可以在Java程序的每一个元素上使用：类，域，方法，包，变量，等等。</p>
+<h3 id="3-1_@Retention">3.1 @Retention</h3><p>这个注解注在其他注解上，并用来说明如何存储已被标记的注解。这是一种元注解，用来标记注解并提供注解的信息。可能的值是：</p>
+<ul>
+<li>SOURCE：表明这个注解会被编译器忽略，并只会保留在源代码中。</li>
+<li>CLASS:表明这个注解会通过编译驻留在CLASS文件，但会被JVM在运行时忽略,正因为如此,其在运行时不可见。</li>
+<li>RUNTIME：表示这个注解会被JVM获取，并在运行时通过反射获取。</li>
+</ul>
+<h3 id="3-2_@Target">3.2 @Target</h3><p>这个注解用于限制某个元素可以被注解的类型。例如：</p>
+<ul>
+<li>ANNOTATION_TYPE 表示该注解可以应用到其他注解上</li>
+<li>CONSTRUCTOR 表示可以使用到构造器上</li>
+<li>FIELD 表示可以使用到域或属性上</li>
+<li>LOCAL_VARIABLE表示可以使用到局部变量上。</li>
+<li>METHOD可以使用到方法级别的注解上。</li>
+<li>PACKAGE可以使用到包声明上。</li>
+<li>PARAMETER可以使用到方法的参数上</li>
+<li>TYPE可以使用到一个类的任何元素上。</li>
+</ul>
+<h3 id="3-3_@Documented">3.3 @Documented</h3><p>被注解的元素将会作为Javadoc产生的文档中的内容。注解都默认不会成为成为文档中的内容。这个注解可以对其它注解使用。</p>
+<h3 id="3-4_@Inherited">3.4 @Inherited</h3><p>在默认情况下，注解不会被子类继承。被此注解标记的注解会被所有子类继承。这个注解可以对类使用。</p>
+<h3 id="3-5_@Repeatable">3.5 @Repeatable</h3><p>说明该注解标识的注解可以多次使用到同一个元素的声明上。</p>
+<h3 id="3-6_@FunctionalInterface">3.6 @FunctionalInterface</h3><p>这个注解表示一个函数式接口元素。函数式接口是一种只有一个抽象方法（非默认）的接口。编译器会检查被注解元素，如果不符，就会产生错误。</p>
+<h2 id="四，lambada表达式">四，lambada表达式</h2><h2 id="五，参考资料">五，参考资料</h2><ol>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp04298.html" target="_blank" rel="external">Java 理论与实践: 使用通配符简化泛型使用</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp01255.html" target="_blank" rel="external">Java 理论和实践: 了解泛型</a></li>
+<li><a href="http://www.cnblogs.com/panjun-Donet/archive/2008/09/27/1300609.html" target="_blank" rel="external">java泛型</a></li>
+<li><a href="http://www.importnew.com/14227.html" target="_blank" rel="external">Java 注解指导手册 – 终极向导</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-annotation/" target="_blank" rel="external">Java深度历险（六）——Java注解</a></li>
+<li><a href="http://www.cnblogs.com/figure9/archive/2014/10/24/4048421.html" target="_blank" rel="external">深入理解Java 8 Lambda（语言篇——lambda，方法引用，目标类型和默认方法）</a></li>
+</ol>
 
       
     </div>
@@ -261,18 +283,18 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2015/05/17/2015/java-classloader/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/05/17/2015/java-exception/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          java核心系列（三）—java类加载器
+          java核心系列（九）—java异常
         
       </div>
     </a>
   
   
-    <a href="/2015/05/10/2015/java-object-size/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">java核心系列（十二）-java对象大小</div>
+    <a href="/2015/05/15/2015/java-queue/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java核心系列（八）—java队列</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -301,7 +323,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2015/java-core" data-title="java核心系列（一）—介绍" data-url="http://sqtds.github.io/2015/05/17/2015/java-core/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-new-features" data-title="java核心系列（十）-java新特性" data-url="http://sqtds.github.io/2015/05/17/2015/java-new-features/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

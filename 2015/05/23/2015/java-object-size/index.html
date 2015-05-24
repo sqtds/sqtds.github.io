@@ -3,54 +3,30 @@
 <head>
   <meta charset="utf-8">
   
-  <title>java核心系列（十三）—java并发编程 | 蜻蜓点水</title>
+  <title>java核心系列（十二）-java对象大小 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="并发编程概览
-1,容器略
-2，协作略
-3，变量同步略
-4，内存模型略
-5，参考资料
-《java 并发编程实践》
-深入理解Java内存模型（一）——基础
-深入理解Java内存模型（二）——重排序
-深入理解Java内存模型（三）——顺序一致性
-聊聊并发（一）——深入分析Volatile的实现原理
-聊聊并发（二）——Java SE1.6中的Synchronized
-聊聊并发（三）——JAVA线程池的分析">
+  <meta name="description" content="对象大小
+1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
+123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
+new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
+1">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java核心系列（十三）—java并发编程">
-<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/java-concurrent/index.html">
+<meta property="og:title" content="java核心系列（十二）-java对象大小">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/23/2015/java-object-size/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="并发编程概览
-1,容器略
-2，协作略
-3，变量同步略
-4，内存模型略
-5，参考资料
-《java 并发编程实践》
-深入理解Java内存模型（一）——基础
-深入理解Java内存模型（二）——重排序
-深入理解Java内存模型（三）——顺序一致性
-聊聊并发（一）——深入分析Volatile的实现原理
-聊聊并发（二）——Java SE1.6中的Synchronized
-聊聊并发（三）——JAVA线程池的分析">
-<meta property="og:image" content="/img/2015/并发编程.png">
+<meta property="og:description" content="对象大小
+1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
+123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
+new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
+1">
+<meta property="og:image" content="/img/2015/java_object_size.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java核心系列（十三）—java并发编程">
-<meta name="twitter:description" content="并发编程概览
-1,容器略
-2，协作略
-3，变量同步略
-4，内存模型略
-5，参考资料
-《java 并发编程实践》
-深入理解Java内存模型（一）——基础
-深入理解Java内存模型（二）——重排序
-深入理解Java内存模型（三）——顺序一致性
-聊聊并发（一）——深入分析Volatile的实现原理
-聊聊并发（二）——Java SE1.6中的Synchronized
-聊聊并发（三）——JAVA线程池的分析">
+<meta name="twitter:title" content="java核心系列（十二）-java对象大小">
+<meta name="twitter:description" content="对象大小
+1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
+123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
+new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
+1">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -231,11 +207,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2015/java-concurrent" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-object-size" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-concurrent/" class="article-date">
-  	<time datetime="2015-05-10T08:13:15.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/23/2015/java-object-size/" class="article-date">
+  	<time datetime="2015-05-23T12:57:27.000Z" itemprop="datePublished">5月 23 2015</time>
 </a>
     </div>
   
@@ -248,7 +224,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      java核心系列（十三）—java并发编程
+      java核心系列（十二）-java对象大小
     </h1>
   
 
@@ -272,22 +248,15 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
-<h3 id="1,容器">1,容器</h3><p>略</p>
-<h3 id="2，协作">2，协作</h3><p>略</p>
-<h3 id="3，变量同步">3，变量同步</h3><p>略</p>
-<h3 id="4，内存模型">4，内存模型</h3><p>略</p>
-<h3 id="5，参考资料">5，参考资料</h3><ul>
-<li>《java 并发编程实践》</li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-1?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（一）——基础</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-2?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（二）——重排序</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-3?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（三）——顺序一致性</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ftf-java-volatile?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（一）——深入分析Volatile的实现原理</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-se-16-synchronized" target="_blank" rel="external">聊聊并发（二）——Java SE1.6中的Synchronized</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-threadPool" target="_blank" rel="external">聊聊并发（三）——JAVA线程池的分析和使用</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ConcurrentHashMap?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（四）——深入分析ConcurrentHashMap</a></li>
-<li><a href="http://www.infoq.com/cn/articles/atomic-operation?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（五）——原子操作的实现原理</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ConcurrentLinkedQueue?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（六）——ConcurrentLinkedQueue的实现原理分析</a></li>
+        <h2 id="对象大小">对象大小</h2><p><img src="/img/2015/java_object_size.png" alt=""></p>
+<h3 id="1，64位系统">1，64位系统</h3><p>new java.lang.Object() 占用了 16 bytes<br>new byte[0] 占用了 24 bytes</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>new A() 占用了 24 bytes<br>new B() 占用了 32 bytes= 24+pad A(8)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;</span><br><span class="line"> Object obj = <span class="keyword">new</span> Object();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>new C() takes 40 bytes= obj+obj ref +C = 16+8+16</p>
+<h3 id="2，参考资料">2，参考资料</h3><ul>
+<li><a href="http://www.importnew.com/14948.html" target="_blank" rel="external">一个Java对象到底占多大内存？</a></li>
+<li><a href="http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter" target="_blank" rel="external">everything-i-ever-learned-about-jvm-performance-tuning-twitter</a></li>
 </ul>
 
       
@@ -298,18 +267,18 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2015/05/10/2015/java-thread/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/05/24/2015/java-concurrent/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          java核心系列（七）—java线程
+          java核心系列（十三）—java并发编程
         
       </div>
     </a>
   
   
-    <a href="/2015/05/10/2015/java-jmm/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">java核心系列（十一）-java内存模型</div>
+    <a href="/2015/05/23/2015/分布式-一致性协议/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">分布式一致性协议</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -338,7 +307,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2015/java-concurrent" data-title="java核心系列（十三）—java并发编程" data-url="http://sqtds.github.io/2015/05/10/2015/java-concurrent/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-object-size" data-title="java核心系列（十二）-java对象大小" data-url="http://sqtds.github.io/2015/05/23/2015/java-object-size/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

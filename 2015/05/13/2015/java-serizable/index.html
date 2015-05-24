@@ -3,36 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>java核心系列（十一）-java内存模型 | 蜻蜓点水</title>
+  <title>java核心系列（四）—java序列化 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="JMM内存概览
-参考资料
-成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
-成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
-成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
-成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
-成为Java GC专家（5）—Java性能">
+  <meta name="description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java核心系列（十一）-java内存模型">
-<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/java-jmm/index.html">
+<meta property="og:title" content="java核心系列（四）—java序列化">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/13/2015/java-serizable/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="JMM内存概览
-参考资料
-成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
-成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
-成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
-成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
-成为Java GC专家（5）—Java性能">
-<meta property="og:image" content="/img/2015/JMM.png">
+<meta property="og:description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
+<meta property="og:image" content="/img/2015/序列化.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java核心系列（十一）-java内存模型">
-<meta name="twitter:description" content="JMM内存概览
-参考资料
-成为JavaGC专家Part I — 深入浅出Java垃圾回收机制
-成为JavaGC专家Part II — 如何监控Java垃圾回收机制 
-成为Java GC专家系列Part III–如何优化Java垃圾回收机制 
-成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响
-成为Java GC专家（5）—Java性能">
+<meta name="twitter:title" content="java核心系列（四）—java序列化">
+<meta name="twitter:description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -213,11 +204,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2015/java-jmm" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-serizable" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-jmm/" class="article-date">
-  	<time datetime="2015-05-10T00:10:03.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/13/2015/java-serizable/" class="article-date">
+  	<time datetime="2015-05-13T00:32:49.000Z" itemprop="datePublished">5月 13 2015</time>
 </a>
     </div>
   
@@ -230,7 +221,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      java核心系列（十一）-java内存模型
+      java核心系列（四）—java序列化
     </h1>
   
 
@@ -254,16 +245,63 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
-<h3 id="参考资料">参考资料</h3><ul>
-<li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
-<li><a href="&quot;http://www.importnew.com/2057.html&quot;">成为JavaGC专家Part II — 如何监控Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3146.html" target="_blank" rel="external">成为Java GC专家系列Part III–如何优化Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3151.html" target="_blank" rel="external">成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响</a></li>
-<li><a href="http://www.importnew.com/13954.html" target="_blank" rel="external">成为Java GC专家（5）—Java性能调优原则</a></li>
-<li><a href="http://ju.outofmemory.cn/entry/65368" target="_blank" rel="external">G1垃圾收集器</a></li>
-<li><a href="http://ifeve.com/jvm-permgen-where-art-thou/" target="_blank" rel="external">JVM的持久代——何去何从？</a></li>
+        <h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
+<h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
+<h4 id="1-3writeObject和readObject">1.3writeObject和readObject</h4><p>通过实现这2个方法来生成自己的自定义序列化方式。</p>
+<h4 id="1-4readObjectNoData">1.4readObjectNoData</h4><p>当没有获取到对象数据时，默认的初始化行为。</p>
+<h4 id="1-5writeReplace和readResolve">1.5writeReplace和readResolve</h4><p>控制实例化对象的写入写出，可以指定任意对象。可通过此接口来禁止单例对象的多态化。</p>
+<h3 id="2，ObjectOutputStream和ObjectInputStream">2，ObjectOutputStream和ObjectInputStream</h3><p>实际的序列化和反序列化工作是通过ObjectOuputStream和ObjectInputStream来完成的。</p>
+<p>ObjectInputStream：</p>
+<ul>
+<li>readObject ： 从流中读取一个Java对象</li>
+<li>defaultWriteObject：默认的写入方法，注意这不是说默认会调用，而是采用默认的算法。</li>
 </ul>
+<p>ObjectOutputStream：</p>
+<ul>
+<li>writeObject：把一个Java对象写入到流中</li>
+<li>defaultReadObject： 默认的读取算法。</li>
+</ul>
+<h3 id="3，Externalizable接口">3，Externalizable接口</h3><p>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口—Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。</p>
+<ul>
+<li>writeExternal：把一个Java对象写入到流中</li>
+<li>readExternal：从流中读取一个Java对象</li>
+</ul>
+<h2 id="三，其他序列化器">三，其他序列化器</h2><h3 id="1，json">1，json</h3><p>json的序列化框架有fastjson,jackson,gson等。</p>
+<p>适用性：</p>
+<ul>
+<li>公司之间传输数据量相对小，实时性要求相对低（例如秒级别）的服务。</li>
+<li>基于Web browser的Ajax请求。</li>
+<li>由于JSON具有非常强的前后兼容性，对于接口经常发生变化，并对可调式性要求高的场景，例如Mobile app与服务端的通讯。</li>
+</ul>
+<h3 id="2,xml">2,xml</h3><p>xml的序列化框架有XStream。</p>
+<p>XML的序列化和反序列化的空间和时间开销都比较大，对于对性能要求在ms级别的服务，不推荐使用。</p>
+<h3 id="3,hessian">3,hessian</h3><p>hessian主要用于java序列化。它的实现机制是着重于数据，附带简单的类型信息的方法：</p>
+<ol>
+<li>对于简单的数据类型。就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。</li>
+<li>对于复杂对象，通过Java的反射机制，<strong>hessian把对象所有的属性当成一个Map来序列化</strong>，产生类似M className propertyName1 I 1 propertyName S stringValue</li>
+<li>对于引用对象，在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。</li>
+</ol>
+<h3 id="4,thift">4,thift</h3><p>Thrift是Facebook开源提供的一个高性能，轻量级RPC服务框架，其产生正是为了满足当前大数据量、分布式、跨语言、跨平台数据通讯的需求。 但是，Thrift并不仅仅是序列化协议，而是一个RPC框架。相对于JSON和XML而言，Thrift在空间开销和解析性能上有了比较大的提升，对于对性能要求比较高的分布式系统，它是一个优秀的RPC解决方案；但是由于Thrift的序列化被嵌入到Thrift框架里面，Thrift框架本身并没有透出序列化和反序列化接口，这导致其很难和其他传输层协议共同使用（例如HTTP）。</p>
+<h3 id="5,protobuf">5,protobuf</h3><ul>
+<li>序列化数据非常简洁，紧凑.</li>
+<li>解析速度非常快</li>
+<li>提供了非常友好的动态库，使用非常简介，反序列化只需要一行代码。</li>
+</ul>
+<h3 id="6,avro">6,avro</h3><p>Avro的产生解决了JSON的冗长和没有IDL的问题。 Avro提供两种序列化格式：JSON格式或者Binary格式。Binary格式在空间开销和解析性能方面可以和Protobuf媲美，JSON格式方便测试阶段的调试。 </p>
+<ul>
+<li>动态类型：Avro并不需要生成代码，模式和数据存放在一起，而模式使得整个数据的处理过程并不生成代码、静态数据类型等等。这方便了数据处理系统和语言的构造。</li>
+<li>未标记的数据：由于读取数据的时候模式是已知的，那么需要和数据一起编码的类型信息就很少了，这样序列化的规模也就小了。</li>
+<li>不需要用户指定字段号：即使模式改变，处理数据时新旧模式都是已知的，所以通过使用字段名称可以解决差异问题。</li>
+</ul>
+<h2 id="四，参考资料">四，参考资料</h2><ol>
+<li>序列化的秘密.pdf —-liujia</li>
+<li><a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="external">jvm-serializers</a></li>
+<li><a href="http://www.infoq.com/cn/articles/serialization-and-deserialization" target="_blank" rel="external">序列化和反序列化</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-object-serialization-rmi" target="_blank" rel="external">Java对象序列化与RMI</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-gpb/" target="_blank" rel="external">Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://www.biaodianfu.com/avro.html" target="_blank" rel="external">Avro：大数据的二进制传输中间件</a></li>
+</ol>
 
       
     </div>
@@ -273,18 +311,18 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2015/05/10/2015/java-concurrent/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/05/13/2015/java-io/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          java核心系列（十三）—java并发编程
+          java核心系列（五）——java I/O
         
       </div>
     </a>
   
   
-    <a href="/2015/04/27/2014/性能调优总结/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">性能调优总结</div>
+    <a href="/2015/05/10/2015/java-classloader/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java核心系列（三）—java类加载器</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -313,7 +351,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2015/java-jmm" data-title="java核心系列（十一）-java内存模型" data-url="http://sqtds.github.io/2015/05/10/2015/java-jmm/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-serizable" data-title="java核心系列（四）—java序列化" data-url="http://sqtds.github.io/2015/05/13/2015/java-serizable/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

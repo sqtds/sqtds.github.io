@@ -196,11 +196,11 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2015/java-thread" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2015/java-serizable" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-thread/" class="article-date">
-  	<time datetime="2015-05-10T10:01:58.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/13/2015/java-serizable/" class="article-date">
+  	<time datetime="2015-05-13T00:32:49.000Z" itemprop="datePublished">5月 13 2015</time>
 </a>
     </div>
   
@@ -213,7 +213,7 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/10/2015/java-thread/">java核心系列（七）—java线程</a>
+      <a class="article-title" href="/2015/05/13/2015/java-serizable/">java核心系列（四）—java序列化</a>
     </h1>
   
 
@@ -222,28 +222,63 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
-<h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
-<p>轻量级锁（Lightweight Locking）本意是为了减少多线程进入互斥的几率，并不是要替代互斥。</p>
-<p>轻量级锁也是一种多线程优化，它与偏向锁的区别在于，轻量级锁是通过CAS来避免进入开销较大的互斥操作，而偏向锁是在无竞争场景下完全消除同步，连CAS也不执行（CAS本身仍旧是一种操作系统同步原语，始终要在JVM与OS之间来回，有一定的开销）。</p>
-<h3 id="2，同步">2，同步</h3><p>wait:方法使当前线程暂停执行并释放对象锁标示，让其他线程可以进入synchronized数据块，当前线程被放入对象等待池中。</p>
-<p>notify:将从对象的等待池中移走一个任意的线程并放到锁标志等待池中，只有锁标志等待池中线程能够获取锁标志；如果锁标志等待池中没有线程，则notify()不起作用。</p>
-<p>notifyAll:从对象等待池中移走所有等待那个对象的线程并放到锁标志等待池中。</p>
-<p><strong>注意 这三个方法都是java.lang.Object的方法,调用时需要获取锁</strong></p>
-<h3 id="3，实例方法">3，实例方法</h3><p>join:主要是让调用改方法的thread完成run方法里面的东西后， 在执行join()方法后面的代码。</p>
-<pre><code class="java">t1.start();  
-t1.join(); <span class="comment">// wait t1 to be finished  </span>
-t2.start();  
-t2.join(); <span class="comment">// in this program, this may be removed</span>
-</code></pre>
-<p>interupt:中断是一种协作机制。当一个线程中断另一个线程时，被中断的线程不一定要立即停止正在做的事情。相反，中断是礼貌地请求另一个线程在它愿意并且方便的时候停止它正在做的事情。</p>
-<h3 id="4，静态方法">4，静态方法</h3><p>sleep：在指定的毫秒数内让当前正在执行的线程休眠（暂停执行），此操作受到系统计时器和调度程序精度和准确性的影响。该线程不丢失任何监视器的所属权。 通过调用sleep使任务进入休眠状态，在这种情况下，任务在指定的时间内不会运行。调用sleep的时候锁并没有被释放。</p>
-<p>yield：线程调用yield()方法后，表明自己做的事已经完成，让出自己的cpu时间给其他线程使用。让出后，该线程可以重新获得cpu分配的权利，状态变为了可执行状态。（yield并不意味着退出和暂停，只是，告诉线程调度如果有人需要，可以先拿去，我过会再执行，没人需要，我继续执行）调用yield的时候锁并没有被释放。</p>
-<h3 id="5，参考资料">5，参考资料</h3><ul>
-<li><a href="http://blog.csdn.net/hsuxu/article/details/9472371" target="_blank" rel="external">java中的Synchronized 实现</a></li>
-<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp05236.html" target="_blank" rel="external">Java 理论与实践: 处理 InterruptedException</a></li>
-<li><a href="http://ifeve.com/java-concurrency-constructs/" target="_blank" rel="external">Java并发结构</a></li>
+        <h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
+<h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
+<h4 id="1-3writeObject和readObject">1.3writeObject和readObject</h4><p>通过实现这2个方法来生成自己的自定义序列化方式。</p>
+<h4 id="1-4readObjectNoData">1.4readObjectNoData</h4><p>当没有获取到对象数据时，默认的初始化行为。</p>
+<h4 id="1-5writeReplace和readResolve">1.5writeReplace和readResolve</h4><p>控制实例化对象的写入写出，可以指定任意对象。可通过此接口来禁止单例对象的多态化。</p>
+<h3 id="2，ObjectOutputStream和ObjectInputStream">2，ObjectOutputStream和ObjectInputStream</h3><p>实际的序列化和反序列化工作是通过ObjectOuputStream和ObjectInputStream来完成的。</p>
+<p>ObjectInputStream：</p>
+<ul>
+<li>readObject ： 从流中读取一个Java对象</li>
+<li>defaultWriteObject：默认的写入方法，注意这不是说默认会调用，而是采用默认的算法。</li>
 </ul>
+<p>ObjectOutputStream：</p>
+<ul>
+<li>writeObject：把一个Java对象写入到流中</li>
+<li>defaultReadObject： 默认的读取算法。</li>
+</ul>
+<h3 id="3，Externalizable接口">3，Externalizable接口</h3><p>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口—Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。</p>
+<ul>
+<li>writeExternal：把一个Java对象写入到流中</li>
+<li>readExternal：从流中读取一个Java对象</li>
+</ul>
+<h2 id="三，其他序列化器">三，其他序列化器</h2><h3 id="1，json">1，json</h3><p>json的序列化框架有fastjson,jackson,gson等。</p>
+<p>适用性：</p>
+<ul>
+<li>公司之间传输数据量相对小，实时性要求相对低（例如秒级别）的服务。</li>
+<li>基于Web browser的Ajax请求。</li>
+<li>由于JSON具有非常强的前后兼容性，对于接口经常发生变化，并对可调式性要求高的场景，例如Mobile app与服务端的通讯。</li>
+</ul>
+<h3 id="2,xml">2,xml</h3><p>xml的序列化框架有XStream。</p>
+<p>XML的序列化和反序列化的空间和时间开销都比较大，对于对性能要求在ms级别的服务，不推荐使用。</p>
+<h3 id="3,hessian">3,hessian</h3><p>hessian主要用于java序列化。它的实现机制是着重于数据，附带简单的类型信息的方法：</p>
+<ol>
+<li>对于简单的数据类型。就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。</li>
+<li>对于复杂对象，通过Java的反射机制，<strong>hessian把对象所有的属性当成一个Map来序列化</strong>，产生类似M className propertyName1 I 1 propertyName S stringValue</li>
+<li>对于引用对象，在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。</li>
+</ol>
+<h3 id="4,thift">4,thift</h3><p>Thrift是Facebook开源提供的一个高性能，轻量级RPC服务框架，其产生正是为了满足当前大数据量、分布式、跨语言、跨平台数据通讯的需求。 但是，Thrift并不仅仅是序列化协议，而是一个RPC框架。相对于JSON和XML而言，Thrift在空间开销和解析性能上有了比较大的提升，对于对性能要求比较高的分布式系统，它是一个优秀的RPC解决方案；但是由于Thrift的序列化被嵌入到Thrift框架里面，Thrift框架本身并没有透出序列化和反序列化接口，这导致其很难和其他传输层协议共同使用（例如HTTP）。</p>
+<h3 id="5,protobuf">5,protobuf</h3><ul>
+<li>序列化数据非常简洁，紧凑.</li>
+<li>解析速度非常快</li>
+<li>提供了非常友好的动态库，使用非常简介，反序列化只需要一行代码。</li>
+</ul>
+<h3 id="6,avro">6,avro</h3><p>Avro的产生解决了JSON的冗长和没有IDL的问题。 Avro提供两种序列化格式：JSON格式或者Binary格式。Binary格式在空间开销和解析性能方面可以和Protobuf媲美，JSON格式方便测试阶段的调试。 </p>
+<ul>
+<li>动态类型：Avro并不需要生成代码，模式和数据存放在一起，而模式使得整个数据的处理过程并不生成代码、静态数据类型等等。这方便了数据处理系统和语言的构造。</li>
+<li>未标记的数据：由于读取数据的时候模式是已知的，那么需要和数据一起编码的类型信息就很少了，这样序列化的规模也就小了。</li>
+<li>不需要用户指定字段号：即使模式改变，处理数据时新旧模式都是已知的，所以通过使用字段名称可以解决差异问题。</li>
+</ul>
+<h2 id="四，参考资料">四，参考资料</h2><ol>
+<li>序列化的秘密.pdf —-liujia</li>
+<li><a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="external">jvm-serializers</a></li>
+<li><a href="http://www.infoq.com/cn/articles/serialization-and-deserialization" target="_blank" rel="external">序列化和反序列化</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-object-serialization-rmi" target="_blank" rel="external">Java对象序列化与RMI</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-gpb/" target="_blank" rel="external">Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://www.biaodianfu.com/avro.html" target="_blank" rel="external">Avro：大数据的二进制传输中间件</a></li>
+</ol>
 
       
     </div>
@@ -274,11 +309,11 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 
 
   
-    <article id="post-2015/java-concurrent" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2015/java-classloader" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-concurrent/" class="article-date">
-  	<time datetime="2015-05-10T08:13:15.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/10/2015/java-classloader/" class="article-date">
+  	<time datetime="2015-05-10T12:42:41.000Z" itemprop="datePublished">5月 10 2015</time>
 </a>
     </div>
   
@@ -291,7 +326,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/10/2015/java-concurrent/">java核心系列（十三）—java并发编程</a>
+      <a class="article-title" href="/2015/05/10/2015/java-classloader/">java核心系列（三）—java类加载器</a>
     </h1>
   
 
@@ -300,23 +335,66 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
-<h3 id="1,容器">1,容器</h3><p>略</p>
-<h3 id="2，协作">2，协作</h3><p>略</p>
-<h3 id="3，变量同步">3，变量同步</h3><p>略</p>
-<h3 id="4，内存模型">4，内存模型</h3><p>略</p>
-<h3 id="5，参考资料">5，参考资料</h3><ul>
-<li>《java 并发编程实践》</li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-1?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（一）——基础</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-2?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（二）——重排序</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-memory-model-3?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（三）——顺序一致性</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ftf-java-volatile?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（一）——深入分析Volatile的实现原理</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-se-16-synchronized" target="_blank" rel="external">聊聊并发（二）——Java SE1.6中的Synchronized</a></li>
-<li><a href="http://www.infoq.com/cn/articles/java-threadPool" target="_blank" rel="external">聊聊并发（三）——JAVA线程池的分析和使用</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ConcurrentHashMap?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（四）——深入分析ConcurrentHashMap</a></li>
-<li><a href="http://www.infoq.com/cn/articles/atomic-operation?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（五）——原子操作的实现原理</a></li>
-<li><a href="http://www.infoq.com/cn/articles/ConcurrentLinkedQueue?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（六）——ConcurrentLinkedQueue的实现原理分析</a></li>
+        <h2 id="一，概览">一，概览</h2><p><img src="/img/2015/类加载.png" alt="类加载"></p>
+<h3 id="1，类的生命周期">1，类的生命周期</h3><p>一个java类的完整的生命周期会经历<strong>加载、连接、初始化、使用、和卸载</strong>五个阶段，当然也有在加载或者连接之后没有被初始化就直接被使用的情况，如图所示：<br><img src="/img/2015/classloaderprocess.png" alt=""></p>
+<h3 id="2，连接">2，连接</h3><p>链接过程：验证、准备和解析。</p>
+<ol>
+<li>验证：当一个类被加载之后，必须要验证一下这个类是否合法，比如这个类是不是符合字节码的格式、变量与方法是不是有重复、数据类型是不是有效、继承与实现是否合乎标准等等。总之，这个阶段的目的就是保证加载的类是能够被jvm所运行。</li>
+<li>准备：准备阶段的工作就是为类的静态变量分配内存并设为jvm默认的初值，对于非静态的变量，则不会为它们分配内存。有一点需要注意，这时候，静态变量的初值为jvm默认的初值，而不是我们在程序中设定的初值。</li>
+<li>解析：这一阶段的任务就是把常量池中的符号引用转换为直接引用。</li>
+</ol>
+<h3 id="3，类的使用">3，类的使用</h3><p>类的使用包括主动引用和被动引用。</p>
+<h4 id="a，主动引用">a，主动引用</h4><p>通过new关键字实例化对象、读取或设置类的静态变量、调用类的静态方法。<br>通过反射方式执行以上三种行为。<br>初始化子类的时候，会触发父类的初始化。<br>作为程序入口直接运行时（也就是直接调用main方法）。</p>
+<h4 id="b,被动引用">b,被动引用</h4><p>引用父类的静态字段，只会引起父类的初始化，而不会引起子类的初始化。<br>定义类数组，不会引起类的初始化。<br>引用类的常量，不会引起类的初始化。</p>
+<h3 id="4，卸载">4，卸载</h3><p>如果满足下面的情况，类就会被卸载：</p>
+<ul>
+<li>该类所有的实例都已经被回收，也就是java堆中不存在该类的任何实例。</li>
+<li>加载该类的ClassLoader已经被回收。</li>
+<li>该类对应的java.lang.Class对象没有任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
 </ul>
+<h2 id="二，问答">二，问答</h2><h3 id="1,什么是双亲委派？">1,什么是双亲委派？</h3><p>某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
+<h3 id="2，由不同的类加载器加载的指定类还是相同的类型吗？">2，由不同的类加载器加载的指定类还是相同的类型吗？</h3><p>在JVM中一个类用其全名和一个加载类ClassLoader的实例作为唯一标识，不同类加载器加载的类将被置于不同的命名空间。</p>
+<h3 id="3,在代码中直接调用Class-forName(String_name)方法，到底会触发那个类加载器进行类加载行为？">3,在代码中直接调用Class.forName(String name)方法，到底会触发那个类加载器进行类加载行为？</h3><p>Class.forName(String name)默认会使用调用类的类加载器来进行类加载。</p>
+<h3 id="4,自定义类的默认父加载器是谁？">4,自定义类的默认父加载器是谁？</h3><p>AppClassLoder</p>
+<h3 id="5，线程上下文类加载器">5，线程上下文类加载器</h3><p>使用线程上下文类加载器，可以在执行线程中抛弃双亲委派加载链模式，使用线程上下文里的类加载器加载类。</p>
+<h3 id="6，SPI">6，SPI</h3><p>SPI（Service Provider Interface） 是 Java 核心库的一部分，是由引导类加载器来加载的；SPI 实现的 Java 类一般是由系统类加载器来加载的。引导类加载器是无法找到 SPI 的实现类的，因为它只加载 Java 的核心库。它也不能代理给系统类加载器，因为它是系统类加载器的祖先类加载器。也就是说，类加载器的代理模式无法解决这个问题。</p>
+<p>线程上下文类加载器正好解决了这个问题。如果不做任何的设置，Java 应用的线程的上下文类加载器默认就是系统上下文类加载器。在 SPI 接口的代码中使用线程上下文类加载器，就可以成功的加载到 SPI 实现的类。线程上下文类加载器在很多 SPI 的实现中都会用到。</p>
+<h3 id="7,如何在系统或程序的类加载器、当前类加载器、以及当前线程的上下文类加载器中选择？">7,如何在系统或程序的类加载器、当前类加载器、以及当前线程的上下文类加载器中选择？</h3><ol>
+<li>系统类加载器通常不会使用。此类加载器处理启动应用程序时classpath指定的类，可以通过ClassLoader.getSystemClassLoader()来获得。所有的ClassLoader.getSystemXXX()接口也是通过这个类加载器加载的。一般不要显式调用这些方法，应该让其他类加载器代理到系统类加载器上。</li>
+<li>上下文类加载器要比当前类加载器更适合于框架编程。</li>
+<li>当前类加载器则更适合于业务逻辑编程。</li>
+</ol>
+<h3 id="8，java中使用的类加载器">8，java中使用的类加载器</h3><ol>
+<li>JNDI使用线程上下文类加载器。</li>
+<li>Class.getResource()和Class.forName()使用当前类加载器。</li>
+<li>JAXP使用上下文类加载器。</li>
+<li>java.util.ResourceBundle使用调用者的当前类加载器。</li>
+<li>URL协议处理器使用java.protocol.handler.pkgs系统属性并只使用系统类加载器。</li>
+<li>Java序列化API缺省使用调用者当前的类加载器。</li>
+</ol>
+<h3 id="9，getResourceAsStream辨析">9，getResourceAsStream辨析</h3><ol>
+<li>Class.getResourceAsStream(String path) ： path 不以’/‘开头时默认是从此类所在的包下取资源，以’/‘开头则是从<br>ClassPath根下获取。其只是通过path构造一个绝对路径，最终还是由ClassLoader获取资源。</li>
+<li>Class.getClassLoader.getResourceAsStream(String path) ：默认则是从ClassPath根下获取，path不能以’/‘开头，最终是由ClassLoader获取资源。</li>
+<li>ServletContext.getResourceAsStream(String path)：默认从WebAPP根目录下取资源，Tomcat下path是否以’/‘开头无所谓，当然这和具体的容器实现有关。</li>
+</ol>
+<h3 id="10，Web容器设计原则">10，Web容器设计原则</h3><ol>
+<li>每个 Web 应用自己的 Java 类文件和使用的库的 jar 包，分别放在 WEB-INF/classes和 WEB-INF/lib目录下面。</li>
+<li>多个应用共享的 Java 类文件和 jar 包，分别放在 Web 容器指定的由所有 Web 应用共享的目录下面。</li>
+<li>当出现找不到类的错误时，检查当前类的类加载器和当前线程的上下文类加载器是否正确。 </li>
+</ol>
+<h3 id="11，tomcat的类加载规则">11，tomcat的类加载规则</h3><ol>
+<li>查找本地缓存</li>
+<li>使用系统类加载器加载系统类</li>
+<li>使用本地类加载器加载类</li>
+<li>如果没有找到，使用父类加载器加载类</li>
+</ol>
+<h3 id="12，OSGi">12，OSGi</h3><p>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。</p>
+<h2 id="三，参考资料">三，参考资料</h2><ol>
+<li><a href="http://www.importnew.com/15435.html" target="_blank" rel="external">详解java类的生命周期</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-classloader/#author1" target="_blank" rel="external">深入探讨 Java 类加载器</a></li>
+<li><a href="http://blog.csdn.net/zhoudaxia/article/details/35824249" target="_blank" rel="external">深入理解Java类加载器(1)：Java类加载原理解析</a></li>
+<li><a href="http://lengyun3566.iteye.com/blog/1683972" target="_blank" rel="external">Tomcat源码解读系列（四）——Tomcat类加载机制概述</a></li>
+</ol>
 
       
     </div>
@@ -347,11 +425,11 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 
 
   
-    <article id="post-2015/java-jmm" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2015/java-reflection" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-jmm/" class="article-date">
-  	<time datetime="2015-05-10T00:10:03.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/10/2015/java-reflection/" class="article-date">
+  	<time datetime="2015-05-10T10:42:41.000Z" itemprop="datePublished">5月 10 2015</time>
 </a>
     </div>
   
@@ -364,7 +442,7 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/10/2015/java-jmm/">java核心系列（十一）-java内存模型</a>
+      <a class="article-title" href="/2015/05/10/2015/java-reflection/">java核心系列（二）—java反射</a>
     </h1>
   
 
@@ -373,16 +451,122 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
-<h3 id="参考资料">参考资料</h3><ul>
-<li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
-<li><a href="&quot;http://www.importnew.com/2057.html&quot;">成为JavaGC专家Part II — 如何监控Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3146.html" target="_blank" rel="external">成为Java GC专家系列Part III–如何优化Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3151.html" target="_blank" rel="external">成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响</a></li>
-<li><a href="http://www.importnew.com/13954.html" target="_blank" rel="external">成为Java GC专家（5）—Java性能调优原则</a></li>
-<li><a href="http://ju.outofmemory.cn/entry/65368" target="_blank" rel="external">G1垃圾收集器</a></li>
-<li><a href="http://ifeve.com/jvm-permgen-where-art-thou/" target="_blank" rel="external">JVM的持久代——何去何从？</a></li>
+        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
+<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
+<p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
+<h3 id="1,Methods">1,Methods</h3><ul>
+<li><p>public Method[] getMethods()<br>返回某个类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法。</p>
+</li>
+<li><p>public Method[] getDeclaredMethods()<br>返回某个类的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法。</p>
+</li>
 </ul>
+<h3 id="2,Constructors">2,Constructors</h3><ul>
+<li>public Constructor<t> getConstructor(Class&lt;?&gt;… parameterTypes)<br>根据参数返回公共构造方法。</t></li>
+<li>public Constructor&lt;?&gt;[] getConstructors()<br>得到所有的公共构造方法</li>
+<li>public Constructor&lt;?&gt;[] getDeclaredConstructors()<br>得到声明的构造方法</li>
+</ul>
+<h3 id="3,Fields">3,Fields</h3><p>同上</p>
+<h3 id="4,Annotations">4,Annotations</h3><p>同上，只能获取注解集合，暂时不能获取指定参数注解。</p>
+<h2 id="三，AccessibleObject">三，AccessibleObject</h2><p><img src="/img/2015/AccessibleObject.png" alt=""><br>从图中我们可以看到Methods，Constructors，Fields继承了这个类。<br>我们看这个类的方法：<br><img src="/img/2015/AccessibleObjectMethod.png" alt=""><br>从图中可以看出，这个对象主要包含了2类方法：</p>
+<ul>
+<li>第一类是获取对象注解，getAnnotations()。</li>
+<li>第二类是设置对象是否可访问，setAccessible(boolean flag),通过设置访问标志来访问非public对象（方法，构造方法，属性）。</li>
+</ul>
+<h2 id="五-Modifiers">五.Modifiers</h2><p>我们可以看到修饰符使用的是二进制来表示的，访问修饰符用01,10,100，1000来表示的，总共容纳32个修饰符，每一位使用mod&amp;修饰符来判断当前值是否包含修饰符。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PUBLIC</span>           = <span class="number">0</span>x00000001;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PRIVATE</span>          = <span class="number">0</span>x00000002;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PROTECTED</span>        = <span class="number">0</span>x00000004;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">STATIC</span>           = <span class="number">0</span>x00000008;
+...
+Modifier.isAbstract(<span class="keyword">int</span> modifiers)
+Modifier.isFinal(<span class="keyword">int</span> modifiers)
+Modifier.isInterface(<span class="keyword">int</span> modifiers)
+Modifier.isNative(<span class="keyword">int</span> modifiers)
+Modifier.isPrivate(<span class="keyword">int</span> modifiers)
+Modifier.isProtected(<span class="keyword">int</span> modifiers)
+Modifier.isPublic(<span class="keyword">int</span> modifiers)
+Modifier.isStatic(<span class="keyword">int</span> modifiers)
+Modifier.isStrict(<span class="keyword">int</span> modifiers)
+Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
+Modifier.isTransient(<span class="keyword">int</span> modifiers)
+Modifier.isVolatile(<span class="keyword">int</span> modifiers)
+</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
+<h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
+<h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
+</code></pre><p>创建一个大小为3，类型为int的数组。</p>
+<h3 id="2，访问数组">2，访问数组</h3><pre><code><span class="keyword">Array</span>.<span class="keyword">set</span>(intArray, <span class="number">0</span>, <span class="number">123</span>);
+</code></pre><p>设置数组的第一个值为123。</p>
+<h3 id="3，从数组中获取类对象">3，从数组中获取类对象</h3><pre><code><span class="keyword">Class</span> stringArrayClass = <span class="built_in">String</span>[].<span class="keyword">class</span>;
+<span class="keyword">Class</span> intArray = <span class="keyword">Class</span>.forName(<span class="string">"[I"</span>);
+<span class="keyword">Class</span> stringArrayClass = <span class="keyword">Class</span>.forName(<span class="string">"[Ljava.lang.String;"</span>);
+</code></pre><h2 id="八，jdk8改进">八，jdk8改进</h2><p>反射异常ClassNotFoundException、NoSuchMethodException、IllegalAccessException，InvocationTargetExcetpion等有一个父类异常叫ReflectiveOperationExcetpion。</p>
+<p>旧版JDK，还有个很莫名其妙的地方，就是所有反射，都拿不到参数名，无论名字叫啥，都返回arg0，arg1，所以在CXF，SpringMVC里，你都要把参数名字用annotation再写一遍：<br>    Person getEmployee(@PathParam(“dept”) Long dept, @QueryParam(“id”) Long id)<br>现在，JDK8新提供的类java.lang.reflect.Parameter可以反射参数名了，编译时要加参数，如 javac -parameters xxx.java，或者Eclipse里设置。然后就可以写成:<br>    Person getEmployee(@PathParam Long dept, @QueryParam Long id)</p>
+<h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/java-core" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/10/2015/java-core/" class="article-date">
+  	<time datetime="2015-05-10T07:13:23.000Z" itemprop="datePublished">5月 10 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/10/2015/java-core/">java核心系列（一）—介绍</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/img/2015/Java核心.png" alt="图1"></p>
+<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
+<p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
+<p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
+<h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
+<h2 id="三，适用人群">三，适用人群</h2><p>java爱好者</p>
+<h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
 
       
     </div>
@@ -714,106 +898,6 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java源码阅读/">java源码阅读</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-collection" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/04/25/2015/java-collection/" class="article-date">
-  	<time datetime="2015-04-25T08:37:30.000Z" itemprop="datePublished">4月 25 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/25/2015/java-collection/">java核心系列（六）-java集合小结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
-<h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
-<p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
-<p>了解了Collection后，我们发现JDK中还有个Collections，它是什么鬼东西？查看源码，我们发现它是包含了对Collection的基本静态方法，例如排序，创建，复制等。同理，Arrays是对数组的操作，Executors是对Executor的操作。有没有一种感觉写jdk的人喜欢用名称加s来代表一个utils。</p>
-<h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/2014/collection-set.png" alt="set"></p>
-<h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/2014/collection-list.png" alt="list"></p>
-<h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/2014/collection-queue.png" alt="queue"></p>
-<h2 id="二，功能特性">二，功能特性</h2><p>以下比较基于ArrayList，linkedList，Vector，Stack,HashSet,TreeSet,HashMap,TreeMap</p>
-<h3 id="1，添加元素">1，添加元素</h3><p>在添加元素上，ArrayList，Vector的性能相对较差，原因是ArrayList在容量不够时需要扩充。</p>
-<h3 id="2，查找元素">2，查找元素</h3><p>在查找元素上，ArrayList，linkedList，Vector，Stack的性能略差一点点，这是由于他们在查找时需要遍历整个集合。而Set，Map类型的都是通过hash后再在链表上查找，因此速度比较快。</p>
-<h3 id="3，删除元素">3，删除元素</h3><p>在删除元素上，除了TreeMap和TreeSet外，其他集合类型的性能基本无差异，TreeSet基于TreeMap实现，TreeMap之所以性能相对较差的原因是它在删除时需要排序。<br>List适用于允许重复元素的单个对象集合场景，Set适用于不允许重复元素的单个对象集合场景，Map适合key-value结构的集合场景。</p>
-<h2 id="三，并发结构">三，并发结构</h2><h3 id="1，ConcurrentHashMap">1，ConcurrentHashMap</h3><p>线程安全的haspmap，默认采用16个Segment存储对象。每个Segment一把锁，可允许16个线程同时并发的操作集合对象。</p>
-<h3 id="2，CopyOnWriteArrayList">2，CopyOnWriteArrayList</h3><p>CopyOnWriteArrayList是一个线程安全的，并且在读操作时无需加锁的ArrayList。</p>
-<h3 id="3，ArrayBlockingQueue">3，ArrayBlockingQueue</h3><p>ArrayBlockingQueue是一个基于数组，先进先出的，线程安全的集合类，其特色为指定时间的阻塞读写，并且容量是可限制的。</p>
-<blockquote>
-<p>offer(E,long,TimeUnit) 插入元素到数组的尾部，如果数组已满，则等待。poll(E,long,TimeUnit)获取数组中的第一个元素，如果数组中没有元素，则等待。</p>
-</blockquote>
-<h3 id="4,LinkedBlockingQueue">4,LinkedBlockingQueue</h3><p>LinkedBlockingQueue采用链表的方式存储对象。</p>
-<blockquote>
-<p>对于读操作take和poll，采用一把锁，对于写操作put和poll，采用另一把锁。因此在高并发读写操作多的情况下，性能好于ArrayBlockingQueue。但在遍历和删除元素时，需要2把锁同时锁住。</p>
-</blockquote>
-<h3 id="5,IndentityHashMap">5,IndentityHashMap</h3><p>简单说IdentityHashMap与常用的HashMap的区别是：前者比较key时是“引用相等”而后者是“对象相等”，即对于k1和k2，当k1==k2时，IdentityHashMap认为两个key相等，而HashMap只有在k1.equals(k2) == true 时才会认为两个key相等。</p>
-<h3 id="6,ConcurrentSkipListMap">6,ConcurrentSkipListMap</h3><p>SkipList是红黑树的一种简化替代方案，是个流行的有序集合算法。在4线程1.6万数据的条件下，ConcurrentHashMap 存取速度是ConcurrentSkipListMap 的4倍左右。<br>但ConcurrentSkipListMap有几个ConcurrentHashMap 不能比拟的优点：</p>
-<ol>
-<li>ConcurrentSkipListMap 的key是有序的。</li>
-<li>ConcurrentSkipListMap 支持更高的并发。ConcurrentSkipListMap 的存取时间是log（N），和线程数几乎无关。也就是说在数据量一定的情况下，并发的线程越多，ConcurrentSkipListMap越能体现出他的优势。 </li>
-</ol>
-<h2 id="四，其他特性">四，其他特性</h2><h3 id="算法">算法</h3><ol>
-<li>Colletions.sort(list) 与 Arrays.sort(T[]) </li>
-</ol>
-<p>Colletions.sort()实际会将list转为数组，然后调用Arrays.sort()，排完了再转回List。<br>PS. JDK8里，List有自己的sort()方法了，像ArrayList就直接用自己内部的数组来排，而LinkedList, CopyOnWriteArrayList还是要复制出一份数组。<br>而Arrays.sort()，对原始类型(int[],double[],char[],byte[])，JDK6里用的是快速排序，对于对象类型(Object[])，JDK6则使用归并排序。为什么要用不同的算法呢？</p>
-<ol>
-<li>JDK7的进步</li>
-</ol>
-<p>到了JDK7，快速排序升级为双基准快排(双基准快排 vs 三路快排)；归并排序升级为归并排序的改进版TimSort，一个JDK的自我进化。</p>
-<ol>
-<li>JDK8的进步</li>
-</ol>
-<p>再到了JDK8， 对大集合增加了Arrays.parallelSort()函数，使用fork-Join框架，充分利用多核，对大的集合进行切分然后再归并排序，而在小的连续片段里，依然使用TimSort与DualPivotQuickSort。</p>
-<h3 id="五，参考资料">五，参考资料</h3><ol>
-<li>《分布式JAVA应用 基础与实践》—-林昊</li>
-<li><a href="http://calvin1978.blogcn.com/articles/jdk.html" target="_blank" rel="external">JDK78数则</a></li>
-<li><a href="http://www.bysocket.com/?p=162" target="_blank" rel="external">Java 容器 &amp; 泛型（1）：认识容器</a></li>
-</ol>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
 	</div>
 
       

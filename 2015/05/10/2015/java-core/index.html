@@ -3,30 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>java核心系列（十二）-java对象大小 | 蜻蜓点水</title>
+  <title>java核心系列（一）—介绍 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="对象大小
-1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
-123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
-new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
-1">
+  <meta name="description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java核心系列（十二）-java对象大小">
-<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/java-object-size/index.html">
+<meta property="og:title" content="java核心系列（一）—介绍">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/10/2015/java-core/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="对象大小
-1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
-123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
-new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
-1">
-<meta property="og:image" content="/img/2015/java_object_size.png">
+<meta property="og:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
+<meta property="og:image" content="/img/2015/Java核心.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java核心系列（十二）-java对象大小">
-<meta name="twitter:description" content="对象大小
-1，64位系统new java.lang.Object() 占用了 16 bytesnew byte[0] 占用了 24 bytes
-123456class A &amp;#123; byte x;&amp;#125;class B extends A &amp;#123; byte y;&amp;#125;
-new A() 占用了 24 bytesnew B() 占用了 32 bytes= 24+pad A(8)
-1">
+<meta name="twitter:title" content="java核心系列（一）—介绍">
+<meta name="twitter:description" content="一，概述俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。
+本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。
+当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。
+二，目标本系列主要从图1中绘制的几大主线来讲解java核心。初步">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -207,11 +204,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2015/java-object-size" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-core" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/05/10/2015/java-object-size/" class="article-date">
-  	<time datetime="2015-05-10T12:57:27.000Z" itemprop="datePublished">5月 10 2015</time>
+      <a href="/2015/05/10/2015/java-core/" class="article-date">
+  	<time datetime="2015-05-10T07:13:23.000Z" itemprop="datePublished">5月 10 2015</time>
 </a>
     </div>
   
@@ -224,7 +221,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      java核心系列（十二）-java对象大小
+      java核心系列（一）—介绍
     </h1>
   
 
@@ -248,16 +245,13 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="对象大小">对象大小</h2><p><img src="/img/2015/java_object_size.png" alt=""></p>
-<h3 id="1，64位系统">1，64位系统</h3><p>new java.lang.Object() 占用了 16 bytes<br>new byte[0] 占用了 24 bytes</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>new A() 占用了 24 bytes<br>new B() 占用了 32 bytes= 24+pad A(8)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;</span><br><span class="line"> Object obj = <span class="keyword">new</span> Object();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>new C() takes 40 bytes= obj+obj ref +C = 16+8+16</p>
-<h3 id="2，参考资料">2，参考资料</h3><ul>
-<li><a href="http://www.importnew.com/14948.html" target="_blank" rel="external">一个Java对象到底占多大内存？</a></li>
-<li><a href="http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter" target="_blank" rel="external">everything-i-ever-learned-about-jvm-performance-tuning-twitter</a></li>
-</ul>
+        <p><img src="/img/2015/Java核心.png" alt="图1"></p>
+<h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
+<p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
+<p>当然，本系列暂时不涉及计算机基础知识，这些知识也需要程序员去理解。</p>
+<h2 id="二，目标">二，目标</h2><p>本系列主要从图1中绘制的几大主线来讲解java核心。<br>初步设计采用问答式和总结式来介绍各个组件的特性，以加深读者对java核心的理解。<br>本系列只是个引子，更深入的内容请参考文中的参考资料。</p>
+<h2 id="三，适用人群">三，适用人群</h2><p>java爱好者</p>
+<h2 id="三，总结">三，总结</h2><p>暂时没有了，就这么点，如果大家有好的意见可以提出来。</p>
 
       
     </div>
@@ -267,18 +261,18 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2015/05/17/2015/java-core/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/05/10/2015/java-reflection/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          java核心系列（一）—介绍
+          java核心系列（二）—java反射
         
       </div>
     </a>
   
   
-    <a href="/2015/05/10/2015/java-queue/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">java核心系列（八）—java队列</div>
+    <a href="/2015/04/27/2014/性能调优总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">性能调优总结</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -307,7 +301,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2015/java-object-size" data-title="java核心系列（十二）-java对象大小" data-url="http://sqtds.github.io/2015/05/10/2015/java-object-size/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-core" data-title="java核心系列（一）—介绍" data-url="http://sqtds.github.io/2015/05/10/2015/java-core/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
