@@ -4,7 +4,7 @@
   <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-05-24T04:42:56.000Z</updated>
+  <updated>2015-05-24T06:54:18.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -15,11 +15,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[java新特性]]></title>
+    <title><![CDATA[java核心系列（十）——java新特性]]></title>
     <link href="http://sqtds.github.io/2015/05/24/2015/java-new-features/"/>
     <id>http://sqtds.github.io/2015/05/24/2015/java-new-features/</id>
     <published>2015-05-24T03:41:32.000Z</published>
-    <updated>2015-05-24T04:42:56.000Z</updated>
+    <updated>2015-05-24T06:54:18.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p><img src="/img/2015/新特性.png" alt=""></p>
 <h2 id="二，泛型">二，泛型</h2><h3 id="2-1_协变">2.1 协变</h3><p>数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List<integer> 不是 List<number> 的子类型，试图在要求 List<number> 的位置提供 List<integer> 是一个类型错误。这不算很严重的问题 — 也不是所有人都认为的错误 — 但泛型和数组的不同行为的确引起了许多混乱。</integer></number></number></integer></p>
 <h3 id="2-2_类型推断">2.2 类型推断</h3><p>当解析一个泛型方法的调用时，编译器将设法推断类型参数它能达到的最具体类型。 例如，对于下面这个泛型方法：<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span>&lt;T&gt; <span class="function">T <span class="title">identity</span><span class="params">(T arg)</span> </span>&#123; <span class="keyword">return</span> arg &#125;;</span><br></pre></td></tr></table></figure></p>
@@ -133,11 +133,11 @@
   </entry>
   
   <entry>
-    <title><![CDATA[java异常]]></title>
+    <title><![CDATA[java核心系列（九）——java异常]]></title>
     <link href="http://sqtds.github.io/2015/05/23/2015/java-exception/"/>
     <id>http://sqtds.github.io/2015/05/23/2015/java-exception/</id>
     <published>2015-05-23T04:32:38.000Z</published>
-    <updated>2015-05-24T03:38:27.000Z</updated>
+    <updated>2015-05-24T06:54:10.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p><img src="/img/2015/异常.png" alt="异常"></p>
 <h2 id="二，参考资料">二，参考资料</h2><ol>
 <li>《effective java》</li>
@@ -158,11 +158,11 @@
   </entry>
   
   <entry>
-    <title><![CDATA[java I/O]]></title>
+    <title><![CDATA[java核心系列（五）——java I/O]]></title>
     <link href="http://sqtds.github.io/2015/05/23/2015/java-io/"/>
     <id>http://sqtds.github.io/2015/05/23/2015/java-io/</id>
     <published>2015-05-23T02:06:38.000Z</published>
-    <updated>2015-05-23T04:29:31.000Z</updated>
+    <updated>2015-05-24T06:52:09.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p><img src="/img/2015/I.O.png" alt=""></p>
 <h2 id="二，BIO">二，BIO</h2><p>java I/O主要分为下面这几类：</p>
 <ul>
@@ -297,11 +297,11 @@ GatheringByteChannel
   </entry>
   
   <entry>
-    <title><![CDATA[java序列化]]></title>
+    <title><![CDATA[java核心系列（四）——java序列化]]></title>
     <link href="http://sqtds.github.io/2015/05/23/2015/java-serizable/"/>
     <id>http://sqtds.github.io/2015/05/23/2015/java-serizable/</id>
     <published>2015-05-23T00:32:49.000Z</published>
-    <updated>2015-05-23T02:19:15.000Z</updated>
+    <updated>2015-05-24T06:51:57.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
 <h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
 <h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
@@ -505,11 +505,11 @@ $ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
   </entry>
   
   <entry>
-    <title><![CDATA[java反射]]></title>
+    <title><![CDATA[java核心系列（二）——java反射]]></title>
     <link href="http://sqtds.github.io/2015/05/17/2015/java-reflection/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-reflection/</id>
     <published>2015-05-17T10:42:41.000Z</published>
-    <updated>2015-05-23T02:12:57.000Z</updated>
+    <updated>2015-05-24T06:51:22.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
 <h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
 <p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
@@ -576,11 +576,11 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
   </entry>
   
   <entry>
-    <title><![CDATA[java类加载器]]></title>
+    <title><![CDATA[java核心系列（三）——java类加载器]]></title>
     <link href="http://sqtds.github.io/2015/05/17/2015/java-classloader/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-classloader/</id>
     <published>2015-05-17T08:21:51.000Z</published>
-    <updated>2015-05-23T02:18:35.000Z</updated>
+    <updated>2015-05-24T06:51:44.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概览">一，概览</h2><p><img src="/img/2015/类加载.png" alt="类加载"></p>
 <h3 id="1，类的生命周期">1，类的生命周期</h3><p>一个java类的完整的生命周期会经历<strong>加载、连接、初始化、使用、和卸载</strong>五个阶段，当然也有在加载或者连接之后没有被初始化就直接被使用的情况，如图所示：<br><img src="/img/2015/classloaderprocess.png" alt=""></p>
 <h3 id="2，连接">2，连接</h3><p>链接过程：验证、准备和解析。</p>
@@ -654,11 +654,11 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
   </entry>
   
   <entry>
-    <title><![CDATA[java核心系列]]></title>
+    <title><![CDATA[java核心系列（一）——介绍]]></title>
     <link href="http://sqtds.github.io/2015/05/17/2015/java-core/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-core/</id>
     <published>2015-05-17T07:13:23.000Z</published>
-    <updated>2015-05-17T07:55:35.000Z</updated>
+    <updated>2015-05-24T06:53:30.000Z</updated>
     <content type="html"><![CDATA[<p><img src="/img/2015/Java核心.png" alt="图1"></p>
 <h2 id="一，概述">一，概述</h2><p>俗话说，只有地基打的好，楼层才能盖得高。对于程序员来说，也是一样。我们也需要不断反复的理解以前的东西，打好自己的基础，才能在技术上又更大的进步。</p>
 <p>本系列主要介绍j2se的核心部分，希望对大家梳理自己的知识体系有所帮助。本系列并不完善，以后会逐步添加新的东西。</p>
@@ -679,11 +679,11 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
   </entry>
   
   <entry>
-    <title><![CDATA[java对象大小]]></title>
+    <title><![CDATA[java核心系列（十二）——java对象大小]]></title>
     <link href="http://sqtds.github.io/2015/05/10/2015/java-object-size/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-object-size/</id>
     <published>2015-05-10T12:57:27.000Z</published>
-    <updated>2015-05-17T07:58:37.000Z</updated>
+    <updated>2015-05-24T06:54:29.000Z</updated>
     <content type="html"><![CDATA[<h2 id="对象大小">对象大小</h2><p><img src="/img/2015/java_object_size.png" alt=""></p>
 <h3 id="1，64位系统">1，64位系统</h3><p>new java.lang.Object() 占用了 16 bytes<br>new byte[0] 占用了 24 bytes</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</span><br><span class="line"> <span class="keyword">byte</span> y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -707,11 +707,11 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
   </entry>
   
   <entry>
-    <title><![CDATA[java队列]]></title>
+    <title><![CDATA[java核心系列（八）——java队列]]></title>
     <link href="http://sqtds.github.io/2015/05/10/2015/java-queue/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-queue/</id>
     <published>2015-05-10T12:31:10.000Z</published>
-    <updated>2015-05-17T07:58:06.000Z</updated>
+    <updated>2015-05-24T06:54:02.000Z</updated>
     <content type="html"><![CDATA[<h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
 <h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
 <li>ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小</li>
@@ -755,11 +755,11 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
   </entry>
   
   <entry>
-    <title><![CDATA[java线程]]></title>
+    <title><![CDATA[java核心系列（七）——java线程]]></title>
     <link href="http://sqtds.github.io/2015/05/10/2015/java-thread/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-thread/</id>
     <published>2015-05-10T10:01:58.000Z</published>
-    <updated>2015-05-17T07:58:49.000Z</updated>
+    <updated>2015-05-24T06:53:49.000Z</updated>
     <content type="html"><![CDATA[<h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
 <h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
 <p>轻量级锁（Lightweight Locking）本意是为了减少多线程进入互斥的几率，并不是要替代互斥。</p>
@@ -795,11 +795,11 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
   </entry>
   
   <entry>
-    <title><![CDATA[java并发编程]]></title>
+    <title><![CDATA[java核心系列（五）——java并发编程]]></title>
     <link href="http://sqtds.github.io/2015/05/10/2015/java-concurrent/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-concurrent/</id>
     <published>2015-05-10T08:13:15.000Z</published>
-    <updated>2015-05-17T07:59:11.000Z</updated>
+    <updated>2015-05-24T06:54:45.000Z</updated>
     <content type="html"><![CDATA[<h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
 <h3 id="1,容器">1,容器</h3><p>略</p>
 <h3 id="2，协作">2，协作</h3><p>略</p>
@@ -832,11 +832,11 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
   </entry>
   
   <entry>
-    <title><![CDATA[java内存模型]]></title>
+    <title><![CDATA[java核心系列（十一）——java内存模型]]></title>
     <link href="http://sqtds.github.io/2015/05/10/2015/java-jmm/"/>
     <id>http://sqtds.github.io/2015/05/10/2015/java-jmm/</id>
     <published>2015-05-10T00:10:03.000Z</published>
-    <updated>2015-05-17T07:59:01.000Z</updated>
+    <updated>2015-05-24T06:54:22.000Z</updated>
     <content type="html"><![CDATA[<h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
 <h3 id="参考资料">参考资料</h3><ul>
 <li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
@@ -1110,11 +1110,11 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
   </entry>
   
   <entry>
-    <title><![CDATA[java集合小结]]></title>
-    <link href="http://sqtds.github.io/2015/04/25/2014/collection-total/"/>
-    <id>http://sqtds.github.io/2015/04/25/2014/collection-total/</id>
+    <title><![CDATA[java核心系列（六）——java集合小结]]></title>
+    <link href="http://sqtds.github.io/2015/04/25/2015/collection-total/"/>
+    <id>http://sqtds.github.io/2015/04/25/2015/collection-total/</id>
     <published>2015-04-25T08:37:30.000Z</published>
-    <updated>2015-05-17T08:00:11.000Z</updated>
+    <updated>2015-05-24T06:53:37.000Z</updated>
     <content type="html"><![CDATA[<p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
 <h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
 <p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
