@@ -3,22 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>spring事务原理1-事务的抽象 | 蜻蜓点水</title>
+  <title>java新特性 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概要spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。
-Pla">
+  <meta name="description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
 <meta property="og:type" content="article">
-<meta property="og:title" content="spring事务原理1-事务的抽象">
-<meta property="og:url" content="http://sqtds.github.io/2014/06/09/2014/spring-tx1/index.html">
+<meta property="og:title" content="java新特性">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/24/2015/java-new-features/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="概要spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。
-Pla">
-<meta property="og:image" content="/img/2014/QQ图片20140609221319.jpg">
-<meta property="og:image" content="/img/2014/QQ图片20140609221008.jpg">
+<meta property="og:description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
+<meta property="og:image" content="/img/2015/新特性.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="spring事务原理1-事务的抽象">
-<meta name="twitter:description" content="概要spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。
-Pla">
+<meta name="twitter:title" content="java新特性">
+<meta name="twitter:description" content="一，概述
+二，泛型2.1 协变数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List 不是 List 的子类型，试图在要求 List 的位置提供 List 是一个类型错误。这不算很严重的问题 — 也不是所有人都">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -199,11 +198,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2014/spring-tx1" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2015/java-new-features" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx1/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+      <a href="/2015/05/24/2015/java-new-features/" class="article-date">
+  	<time datetime="2015-05-24T03:41:32.000Z" itemprop="datePublished">5月 24 2015</time>
 </a>
     </div>
   
@@ -216,7 +215,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      spring事务原理1-事务的抽象
+      java新特性
     </h1>
   
 
@@ -225,7 +224,7 @@ var _hmt = _hmt || [];
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
 	</div>
 
         
@@ -240,51 +239,40 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="概要">概要</h3><p>spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，<br>TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。</p>
-<h3 id="PlatformTransactionManager">PlatformTransactionManager</h3><p>PlatformTransactionManager 的整个抽象体系基于Strategy 模式，由PlatformTransactionManager 对事务界定进行统一抽象，而具体的界定策略的实现则交由具体的实现类。</p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>{
-
-  <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(TransactionDefinition definition)</span>
-    <span class="keyword">throws</span> TransactionException</span>;
-
-  <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
-
-  <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
-}
-</code></pre><h3 id="TransactionDefinition">TransactionDefinition</h3><p>TransactionDefinition定义了事务的相关属性：隔离级别，传播性，超时，只读状态。<br><img src="/img/2014/QQ图片20140609221319.jpg" alt=""></p>
+        <h2 id="一，概述">一，概述</h2><p><img src="/img/2015/新特性.png" alt=""></p>
+<h2 id="二，泛型">二，泛型</h2><h3 id="2-1_协变">2.1 协变</h3><p>数组是协变的，因为 Integer 是 Number 的子类型，数组类型 Integer[] 是 Number[] 的子类型，因此在任何需要 Number[] 值的地方都可以提供一个 Integer[] 值。另一方面，泛型不是协变的， List<integer> 不是 List<number> 的子类型，试图在要求 List<number> 的位置提供 List<integer> 是一个类型错误。这不算很严重的问题 — 也不是所有人都认为的错误 — 但泛型和数组的不同行为的确引起了许多混乱。</integer></number></number></integer></p>
+<h3 id="2-2_类型推断">2.2 类型推断</h3><p>当解析一个泛型方法的调用时，编译器将设法推断类型参数它能达到的最具体类型。 例如，对于下面这个泛型方法：<br><figure class="highlight"><figcaption><span>static<t> T identity(T arg) &#123; return arg &#125;;```</t></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#21644;&#23427;&#30340;&#35843;&#29992;&#65306;</span><br></pre></td></tr></table></figure></p>
+<p>Integer i = 3;<br>System.out.println(identity(i));<br>```<br>编译器能够推断 T 是 Integer、Number、 Serializable 或 Object，但它选择 Integer 作为满足约束的最具体类型。</p>
+<h2 id="三，注解">三，注解</h2><p>注解早在J2SE1.5就被引入到Java中，主要提供一种机制，这种机制允许程序员在编写代码的同时可以直接编写元数据。<br>注解基本上可以在Java程序的每一个元素上使用：类，域，方法，包，变量，等等。</p>
+<h3 id="3-1_@Retention">3.1 @Retention</h3><p>这个注解注在其他注解上，并用来说明如何存储已被标记的注解。这是一种元注解，用来标记注解并提供注解的信息。可能的值是：</p>
 <ul>
-<li><p>Isolation: The degree to which this transaction is isolated from the work of other transactions. For example, can this transaction see uncommitted writes from other transactions?</p>
-</li>
-<li><p>Propagation: Typically, all code executed within a transaction scope will run in that transaction. However, you have the option of specifying the behavior in the event that a transactional method is executed when a transaction context already exists. For example, code can continue running in the existing transaction (the common case); or the existing transaction can be suspended and a new transaction created. Spring offers all of the transaction propagation options familiar from EJB CMT. To read about the semantics of transaction propagation in Spring, see Section 10.5.7, “Transaction propagation”.</p>
-</li>
-<li><p>Timeout: How long this transaction runs before timing out and being rolled back automatically by the underlying transaction infrastructure.</p>
-</li>
-<li><p>Read-only status: A read-only transaction can be used when your code reads but does not modify data. Read-only transactions can be a useful optimization in some cases, such as when you are using Hibernate.</p>
-</li>
+<li>SOURCE：表明这个注解会被编译器忽略，并只会保留在源代码中。</li>
+<li>CLASS:表明这个注解会通过编译驻留在CLASS文件，但会被JVM在运行时忽略,正因为如此,其在运行时不可见。</li>
+<li>RUNTIME：表示这个注解会被JVM获取，并在运行时通过反射获取。</li>
 </ul>
-<h3 id="TransactionStatus">TransactionStatus</h3><p>org.springframework.transaction.TransactionStatus 接口定义表示整个事务处理过程中的事务状态，更多时候，我们将在编程式事务中使用该接口。 </p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span> <span class="keyword">extends</span> <span class="title">SavepointManager</span> </span>{
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isCompleted</span><span class="params">()</span></span>;
-
-}
-</code></pre><p><img src="/img/2014/QQ图片20140609221008.jpg" alt=""></p>
-<p>在事务处理过程中，我们可以使用TransactionStatus 进行如下工作。 </p>
+<h3 id="3-2_@Target">3.2 @Target</h3><p>这个注解用于限制某个元素可以被注解的类型。例如：</p>
 <ul>
-<li>使用TransactionStatus 提供的相应方法查询事务状态。 </li>
-<li>通过setRollbackOnly() 方法标记当前事务以使其回滚。</li>
-<li>如果相应的PlatformTransactionManager支持Savepoint，可以通过TransactionStatus 在当前事务中创建内部嵌套事务。</li>
+<li>ANNOTATION_TYPE 表示该注解可以应用到其他注解上</li>
+<li>CONSTRUCTOR 表示可以使用到构造器上</li>
+<li>FIELD 表示可以使用到域或属性上</li>
+<li>LOCAL_VARIABLE表示可以使用到局部变量上。</li>
+<li>METHOD可以使用到方法级别的注解上。</li>
+<li>PACKAGE可以使用到包声明上。</li>
+<li>PARAMETER可以使用到方法的参数上</li>
+<li>TYPE可以使用到一个类的任何元素上。</li>
 </ul>
+<h3 id="3-3_@Documented">3.3 @Documented</h3><p>被注解的元素将会作为Javadoc产生的文档中的内容。注解都默认不会成为成为文档中的内容。这个注解可以对其它注解使用。</p>
+<h3 id="3-4_@Inherited">3.4 @Inherited</h3><p>在默认情况下，注解不会被子类继承。被此注解标记的注解会被所有子类继承。这个注解可以对类使用。</p>
+<h3 id="3-5_@Repeatable">3.5 @Repeatable</h3><p>说明该注解标识的注解可以多次使用到同一个元素的声明上。</p>
+<h3 id="3-6_@FunctionalInterface">3.6 @FunctionalInterface</h3><p>这个注解表示一个函数式接口元素。函数式接口是一种只有一个抽象方法（非默认）的接口。编译器会检查被注解元素，如果不符，就会产生错误。</p>
+<h2 id="四，lambada表达式">四，lambada表达式</h2><h2 id="五，参考资料">五，参考资料</h2><ol>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp04298.html" target="_blank" rel="external">Java 理论与实践: 使用通配符简化泛型使用</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp01255.html" target="_blank" rel="external">Java 理论和实践: 了解泛型</a></li>
+<li><a href="http://www.cnblogs.com/panjun-Donet/archive/2008/09/27/1300609.html" target="_blank" rel="external">java泛型</a></li>
+<li><a href="http://www.importnew.com/14227.html" target="_blank" rel="external">Java 注解指导手册 – 终极向导</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-annotation/" target="_blank" rel="external">Java深度历险（六）——Java注解</a></li>
+<li><a href="http://www.cnblogs.com/figure9/archive/2014/10/24/4048421.html" target="_blank" rel="external">深入理解Java 8 Lambda（语言篇——lambda，方法引用，目标类型和默认方法）</a></li>
+</ol>
 
       
     </div>
@@ -294,18 +282,9 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2014/06/14/2014/linuxcommand/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          linux常用命令
-        
-      </div>
-    </a>
   
-  
-    <a href="/2014/06/09/2014/spring-aop1/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">spring aop</div>
+    <a href="/2015/05/23/2015/分布式-一致性协议/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">分布式-一致性协议</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -334,7 +313,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2014/spring-tx1" data-title="spring事务原理1-事务的抽象" data-url="http://sqtds.github.io/2014/06/09/2014/spring-tx1/"></div>
+	<div class="ds-thread" data-thread-key="2015/java-new-features" data-title="java新特性" data-url="http://sqtds.github.io/2015/05/24/2015/java-new-features/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

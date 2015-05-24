@@ -196,6 +196,69 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/linux-command" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/17/2014/linux-command/" class="article-date">
+  	<time datetime="2015-05-17T11:02:11.000Z" itemprop="datePublished">5月 17 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/17/2014/linux-command/">linux常用技巧</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一，TOP命令">一，TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+<h3 id="二，进程启动">二，进程启动</h3><ol>
+<li><strong>&amp;</strong> 在后台启动进程，如果关闭会话，进程也会终止</li>
+<li><strong>nohup</strong> 在后台启动进程，如果关闭会话，进程不会终止</li>
+<li><strong>at</strong> 定时启动命令   <code>$ at -f backup.sh 10 am tomorrow</code></li>
+<li><strong>watch</strong> 间隔启动   <code>$ watch df -h</code></li>
+</ol>
+<h3 id="三，">三，</h3>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/linux/">linux</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2015/java-reflection" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -605,84 +668,6 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 </ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">\\Stack定义</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addFirst(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> removeFirst();</span><br><span class="line">    &#125;</span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> E <span class="title">peek</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
 <h3 id="4,参考资料">4,参考资料</h3><p><a href="http://www.infoq.com/cn/articles/java-blocking-queue" target="_blank" rel="external">聊聊并发（七）——Java中的阻塞队列</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278350" target="_blank" rel="external"> Java多线程（五）之BlockingQueue深入分析</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278355" target="_blank" rel="external">Java多线程（六）之Deque与LinkedBlockingDeque深入分析</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-thread" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/10/2015/java-thread/" class="article-date">
-  	<time datetime="2015-05-10T10:01:58.000Z" itemprop="datePublished">5月 10 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/10/2015/java-thread/">java线程</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
-<h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
-<p>轻量级锁（Lightweight Locking）本意是为了减少多线程进入互斥的几率，并不是要替代互斥。</p>
-<p>轻量级锁也是一种多线程优化，它与偏向锁的区别在于，轻量级锁是通过CAS来避免进入开销较大的互斥操作，而偏向锁是在无竞争场景下完全消除同步，连CAS也不执行（CAS本身仍旧是一种操作系统同步原语，始终要在JVM与OS之间来回，有一定的开销）。</p>
-<h3 id="2，同步">2，同步</h3><p>wait:方法使当前线程暂停执行并释放对象锁标示，让其他线程可以进入synchronized数据块，当前线程被放入对象等待池中。</p>
-<p>notify:将从对象的等待池中移走一个任意的线程并放到锁标志等待池中，只有锁标志等待池中线程能够获取锁标志；如果锁标志等待池中没有线程，则notify()不起作用。</p>
-<p>notifyAll:从对象等待池中移走所有等待那个对象的线程并放到锁标志等待池中。</p>
-<p><strong>注意 这三个方法都是java.lang.Object的方法,调用时需要获取锁</strong></p>
-<h3 id="3，实例方法">3，实例方法</h3><p>join:主要是让调用改方法的thread完成run方法里面的东西后， 在执行join()方法后面的代码。</p>
-<pre><code class="java">t1.start();  
-t1.join(); <span class="comment">// wait t1 to be finished  </span>
-t2.start();  
-t2.join(); <span class="comment">// in this program, this may be removed</span>
-</code></pre>
-<p>interupt:中断是一种协作机制。当一个线程中断另一个线程时，被中断的线程不一定要立即停止正在做的事情。相反，中断是礼貌地请求另一个线程在它愿意并且方便的时候停止它正在做的事情。</p>
-<h3 id="4，静态方法">4，静态方法</h3><p>sleep：在指定的毫秒数内让当前正在执行的线程休眠（暂停执行），此操作受到系统计时器和调度程序精度和准确性的影响。该线程不丢失任何监视器的所属权。 通过调用sleep使任务进入休眠状态，在这种情况下，任务在指定的时间内不会运行。调用sleep的时候锁并没有被释放。</p>
-<p>yield：线程调用yield()方法后，表明自己做的事已经完成，让出自己的cpu时间给其他线程使用。让出后，该线程可以重新获得cpu分配的权利，状态变为了可执行状态。（yield并不意味着退出和暂停，只是，告诉线程调度如果有人需要，可以先拿去，我过会再执行，没人需要，我继续执行）调用yield的时候锁并没有被释放。</p>
-<h3 id="5，参考资料">5，参考资料</h3><ul>
-<li><a href="http://blog.csdn.net/hsuxu/article/details/9472371" target="_blank" rel="external">java中的Synchronized 实现</a></li>
-<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp05236.html" target="_blank" rel="external">Java 理论与实践: 处理 InterruptedException</a></li>
-<li><a href="http://ifeve.com/java-concurrency-constructs/" target="_blank" rel="external">Java并发结构</a></li>
-</ul>
 
       
     </div>

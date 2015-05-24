@@ -196,6 +196,242 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/01/2014/antlr4-use-problem/" class="article-date">
+  	<time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/01/2014/antlr4-use-problem/">antlr4-使用小结(续)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文主要记录在使用antlr4中中遇到的一些问题。</p>
+<p>一，标明了fragment的词法是不会被parser识别的，它只会在当前词法中可用。</p>
+<p>二，当未标明fragment的词法似乎是有包含关系的。当前面的词法包含了后面的词法时，后面的词法将不被parser解析出来。（可以看第9小节关系词法包含关系）。</p>
+<p>三，antlr的ieda插件只支持4.4以上的版本，所以如果需要生成4.4一下的版本的话，可以使用maven插件，或者手工生成。</p>
+<p>四，当一个词法中出现了2个同名的tokens名称时，另一个需要命名一个别名，不然会引起冲突。</p>
+<pre><code><span class="comment">//tokens1</span>
+term4  returns [Exp <span class="built_in">exp</span>]
+: term3 {
+    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
+}
+|   NOT  term4 {
+    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4.<span class="built_in">exp</span>}); <span class="comment">//$term4.exp取的是第一行的term4的内容</span>
+}
+;
+
+
+<span class="comment">//tokens2</span>
+term4  returns [Exp <span class="built_in">exp</span>]
+: term3 {
+    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
+}
+|   NOT  term4alias = term4 {
+    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
+}
+;
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/01/2014/antlr4-exception/" class="article-date">
+  	<time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/01/2014/antlr4-exception/">antlr4-异常处理（八）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>antlr4的异常处理机制很简单，下面我们来具体看看</p>
+<h2 id="修改和重定向错误">修改和重定向错误</h2><p>默认情况下， antlr发送所有的错误到标准错误中，但是我们可以提供ANTERErrorListener接口的实现来改变错误的内容和目的地。<br>这个接口有一个syntaxError方法适用于词法和解析器。方法接收所有已排序的本地错误和消息错误。它也可以接收一个parser的引用，所以我们能够查询状态的识别。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> class UnderlineListener extends BaseErrorListener {
+<span class="keyword">public</span> <span class="keyword">void</span> syntaxError(Recognizer&lt;?, ?&gt; recognizer,
+            <span class="keyword">Object</span> offendingSymbol,
+            <span class="built_in">int</span> <span class="built_in">line</span>, <span class="built_in">int</span> charPositionInLine,
+            <span class="keyword">String</span> msg,
+            RecognitionException e)
+{
+    System.err.<span class="built_in">println</span>(<span class="string">"line "</span>+<span class="built_in">line</span>+<span class="string">":"</span>+charPositionInLine+<span class="string">" "</span>+msg);
+    underlineError(recognizer,(Token)offendingSymbol,
+                   <span class="built_in">line</span>, charPositionInLine);
+}
+
+<span class="keyword">protected</span> <span class="keyword">void</span> underlineError(Recognizer recognizer,
+                              Token offendingToken, <span class="built_in">int</span> <span class="built_in">line</span>,
+                              <span class="built_in">int</span> charPositionInLine) {
+    CommonTokenStream tokens =
+        (CommonTokenStream)recognizer.getInputStream();
+    <span class="keyword">String</span> input = tokens.getTokenSource().getInputStream().toString();
+    <span class="keyword">String</span>[] lines = input.<span class="built_in">split</span>(<span class="string">"\n"</span>);
+    <span class="keyword">String</span> errorLine = lines[<span class="built_in">line</span> - <span class="number">1</span>];
+    System.err.<span class="built_in">println</span>(errorLine);
+    <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;charPositionInLine; i++) System.err.<span class="built_in">print</span>(<span class="string">" "</span>);
+    <span class="built_in">int</span> start = offendingToken.getStartIndex();
+    <span class="built_in">int</span> stop = offendingToken.getStopIndex();
+    <span class="keyword">if</span> ( start&gt;=<span class="number">0</span> &amp;&amp; stop&gt;=<span class="number">0</span> ) {
+        <span class="keyword">for</span> (<span class="built_in">int</span> i=start; i&lt;=stop; i++) System.err.<span class="built_in">print</span>(<span class="string">"^"</span>);
+        }
+    System.err.<span class="built_in">println</span>();
+    }
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception {
+    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(System.in);
+    SimpleLexer lexer = <span class="keyword">new</span> SimpleLexer(input);
+    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+    SimpleParser parser = <span class="keyword">new</span> SimpleParser(tokens);
+    parser.removeErrorListeners(); <span class="comment">// remove ConsoleErrorListener</span>
+    parser.addErrorListener(<span class="keyword">new</span> UnderlineListener());
+    parser.prog();
+}
+</code></pre><h2 id="自动错误恢复">自动错误恢复</h2><p>错误恢复就是运行解析器在发现了一个词法错误后可以继续执行。原则上，最佳的错误恢复应该是我们手写的递归下沿的解析器。解析器执行单个token插入和单个token删除直到不符合的token错误被修正。如果没有，解析器吞掉tokens知道他发现一个token能够可理解的跟着当前的规则然后返回，继续直到所有的解析完。</p>
+<h3 id="捕获失败的语义预测">捕获失败的语义预测</h3><p>so easy!  当预测失败时，你可以使用这样的函数{…}?<fail={failed()}>来执行某些动作。</fail={failed()}></p>
+<pre><code><span class="attribute">vec4</span>: <span class="string">  '[' ints[4] ']' ;</span>
+
+<span class="mel">ints[<span class="keyword">int</span> <span class="keyword">max</span>]
+locals [<span class="keyword">int</span> i=<span class="number">1</span>]
+:   INT ( <span class="string">','</span> {<span class="variable">$i</span>++;} {<span class="variable">$i</span>&lt;=<span class="variable">$max</span>}?&lt;fail={<span class="string">"exceeded max "</span>+<span class="variable">$max</span>}&gt; INT )*
+;
+
+INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
+WS  :   [ \t\r\n]+ -&gt; skip ;</span>
+</code></pre><h2 id="错误的替代选择">错误的替代选择</h2><p>同样不解释了.</p>
+<pre><code>fcall
+:   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span>
+|   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span> <span class="string">')'</span> {notifyErrorListeners(<span class="string">"Too many parentheses"</span>);}
+|   ID <span class="string">'('</span> <span class="keyword">expr</span>         {notifyErrorListeners(<span class="string">"Missing closing ')'"</span>);}
+;
+</code></pre><h2 id="另一个可选的错误策略">另一个可选的错误策略</h2><p>有时候我们不想用默认的错误处理策略。第一，在运行期的时候，我们可能想要禁用一些内部的错误处理。第二，我们可能想要提示最开始的语法错误。<br>要查看错误处理策略，我们可以看一下ANTLRErrorStrategy接口的默认具体实现DefaultErrorStrategy。这个类处理了antlr4所有的错误处理行为。<br>从antlr生成的代码中我们也可以看到：</p>
+<pre><code>_errHandler.reportError(<span class="keyword">this</span>, re);
+_errHandler.recover(<span class="keyword">this</span>, re);
+</code></pre><p>另一种错误处理就是BailErrorStrategy处理策略，即遇到异常后自动抛出。我们只需要告诉parser使用这种策略即可。当然，我们也可以用我们自己的错误处理方式，只需要继承DefaultErrorStrategy即可。</p>
+<blockquote>
+<p>parser.setErrorHandler( new BailErrorStrategy());</p>
+</blockquote>
+<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">BailErrorStrategy</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">DefaultErrorStrategy</span> {</span>
+<span class="comment">/** Instead of recovering from exception {@code e}, re-throw it wrapped
+ *  in a {@link ParseCancellationException} so it is not caught by the
+ *  rule function catches.  Use {@link Exception#getCause()} to get the
+ *  original {@link RecognitionException}.
+ */</span>
+<span class="annotation">@Override</span>
+public void recover(<span class="type">Parser</span> recognizer, <span class="type">RecognitionException</span> e) {
+    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
+        context.exception = e;
+    }
+
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
+}
+
+<span class="comment">/** Make sure we don't attempt to recover inline; if the parser
+ *  successfully recovers, it won't throw an exception.
+ */</span>
+<span class="annotation">@Override</span>
+public <span class="type">Token</span> recoverInline(<span class="type">Parser</span> recognizer)
+    <span class="keyword">throws</span> <span class="type">RecognitionException</span>
+{
+    <span class="type">InputMismatchException</span> e = <span class="keyword">new</span> <span class="type">InputMismatchException</span>(recognizer);
+    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
+        context.exception = e;
+    }
+
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
+}
+
+<span class="comment">/** Make sure we don't attempt to recover from problems in subrules. */</span>
+<span class="annotation">@Override</span>
+public void sync(<span class="type">Parser</span> recognizer) { }
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/antlr4-embedd-action" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -770,156 +1006,6 @@ machine=<span class="string">"maniac"</span>
 </code></pre><p><img src="/img/2014/QQ图片20140830160343.jpg" alt=""></p>
 <p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4_iterator" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4_iterator/" class="article-date">
-  	<time datetime="2014-08-30T06:36:50.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4_iterator/">antlr4-遍历机制概念(三)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="antlr4如何遍历树?">antlr4如何遍历树?</h2><p>antlr4提供了2种树遍历方式。在默认情况下，antlr生成了一个解析树监听接口，它用内置的树遍历器响应事件触发。这个监听器正如SAX文档处理xml解析对象一样。SAX监听器接收通知事件，例如startDocument()和endDocumnet()。他们在监听器中仅仅被回调。</p>
-<h2 id="解析树监听器(Parse-Tree_Listeners)">解析树监听器(Parse-Tree Listeners)</h2><p>为了在遍历树的时候触发对监听器的调用，antlr的运行时包提供类ParseTreeWalker。</p>
-<p>antlr生成了一个ParerTreeListener的子类，这个类会对每个语法规则指定一个enter和exit方法。当遍历器遇到节点规则assign时，会触发enterAssign()方法然后传递给他解析树节点的AssignConext。在遍历器访问了assign的所有子节点后，会触发exitAssign()方法。下面的树状图显示了ParseTreeWalker执行了深度优先的遍历:</p>
-<p><img src="/img/2014/QQ图片20140830150257.jpg" alt=""></p>
-<p>接下来的图片显示了一个更完整的ParseTreeWalker调用：<br><img src="/img/2014/QQ图片20140830150508.jpg" alt=""></p>
-<h2 id="解析树访问器(Parse-Tree_Visitors)">解析树访问器(Parse-Tree Visitors)</h2><p>有这样一种情形，就是我们想自己控制遍历方式，明确的调用方法去访问子节点。可选的 -visitor 命令让ANTLR生产了一个访问器接口，这个接口的每个规则都对应一个visit方法。下图是的访问器模式：<br><img src="/img/2014/QQ图片20140830151050.jpg" alt=""></p>
-<p>为了实例化一个遍历树，应用代码需要创建vistor的实现类并且调用visit()方法。</p>
-<pre><code><span class="type">ParseTree</span> tree = ...;//tree <span class="keyword">is</span> <span class="literal">result</span> <span class="keyword">of</span> parsing
-<span class="type">MyVisitor</span> v = new <span class="type">MyVisitor</span>();
-v.visit(tree);
-</code></pre><p>antlr访问器支持编码调用visitStat()方法当遇到根节点的时候。visitStat（）方法的时候将带着子节点参数调用visit()方法以便继续遍历。或者,visitMethod()也可以明确的调用visitAssian（）方法，等等。</p>
-<h2 id="比较">比较</h2><p>监听器和遍历器的最大不同在于，监听方法并不为明确的嗲用方法区遍历他们的子节点负责。在另一方面，访问器必须明确的触发访问子节点，以便保持遍历的继续运行。</p>
-<p>访问器控制了遍历的顺序，由于明确的调用了子节点，也控制的树是否会被 遍历。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/24/2014/antlr4-core-notation/" class="article-date">
-  	<time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/24/2014/antlr4-core-notation/">antlr4-核心符号（二）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/2014/QQ截图20140824182207.png" alt=""></p>
-<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
-<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
-<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
-</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
-<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
-(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
-</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
-<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
-( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
-<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
-stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
-</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
-<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
-<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
-<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
-<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
-</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
-<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
-ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
-<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
-<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
-</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
-<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
-classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
-</code></pre>
       
     </div>
     

@@ -196,6 +196,80 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/04/27/2014/性能调优总结/" class="article-date">
+  	<time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
+<h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
+<p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
+<p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
+<ol>
+<li>挂起一个进程，将这个进程在 CPU 中的状态（上下文）存储于内存中的某处，</li>
+<li>在内存中检索下一个进程的上下文并 将其在 CPU 的寄存器中恢复，</li>
+<li>跳转到程序计数器所指向的位置（即跳转到进程被中断时的代码行），以恢复该进程。</li>
+</ol>
+<p>上下文切换的消耗</p>
+<p>上下文切换通常是计算密集型的。也就是说，它需要相当可观的处理器时间，在每秒几十上百次的切换中，每次切换都需要纳秒量级的时间。所以，上下文切换对系统来说意味着消耗大量的 CPU 时间，事实上，可能是操作系统中时间消耗最大的操作。<br>Linux 号称的相比于其他的操作系统（包括其他类 Unix 系统）的很多优点中，有一项就是，其上下文切换和模式切换的时间消耗非常少。</p>
+<h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
+<h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
+<h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
+<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/2014/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
+<h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
+<h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
+<p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/java-string" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -843,93 +917,6 @@ Predicates: <span class="variable">Year=</span><span class="number">1997</span>,
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="article-date">
-  	<time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
-<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
-<ul>
-<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
-<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
-</li>
-<li><p>第二，轴上的计算器(Calc)的创建。</p>
-<p>  主要是针对各个轴如何创建计算器。</p>
-</li>
-</ul>
-<p>下面是的resolve()方法解释：</p>
-<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
-    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
-    resolve(validator); <span class="comment">// resolve self and children ,2</span>
-    <span class="comment">// Create a dummy result so we can use its evaluator</span>
-    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
-    ExpCompiler compiler =
-            createCompiler(
-                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
-    compile(compiler);  <span class="comment">//5</span>
-}
-</code></pre><ol>
-<li>第1行创建校验器(Validator)。</li>
-<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
-<li>第3行针对当前Query创建求值器(Evaluator)。</li>
-<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
-<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
-</ol>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/11/13/2014/mondrian-ext-function执行机制/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
