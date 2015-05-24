@@ -196,10 +196,10 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
-    <article id="post-2014/spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-aop1/" class="article-date">
+      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
   	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
 </a>
     </div>
@@ -213,7 +213,7 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-aop1/">spring aop</a>
+      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
     </h1>
   
 
@@ -222,22 +222,38 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
-<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
-<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
 
-}
-
-public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
-    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-
-}
-
-public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
-    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-}
-</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
-<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
       
     </div>
     
@@ -253,10 +269,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 	</div>
 
 
-      
-        <p class="article-more-link">
-          <a  href="/2014/06/09/2014/spring-aop1/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>

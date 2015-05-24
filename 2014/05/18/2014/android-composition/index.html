@@ -3,38 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Intent和Broadcast Receiver | 蜻蜓点水</title>
+  <title>Android 应用程序的组成部分 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Intent简介Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：
-
-使用类名显示启动一个特定的Service或Activity
-启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。
-广播某个事件的发生。
-
-使用Intent来启动Activity显示：
-12Intent intent">
+  <meta name="description" content="android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Intent和Broadcast Receiver">
-<meta property="og:url" content="http://sqtds.github.io/2014/05/25/2014/intent/index.html">
+<meta property="og:title" content="Android 应用程序的组成部分">
+<meta property="og:url" content="http://sqtds.github.io/2014/05/18/2014/android-composition/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="Intent简介Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：
-
-使用类名显示启动一个特定的Service或Activity
-启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。
-广播某个事件的发生。
-
-使用Intent来启动Activity显示：
-12Intent intent">
+<meta property="og:description" content="android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Intent和Broadcast Receiver">
-<meta name="twitter:description" content="Intent简介Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：
-
-使用类名显示启动一个特定的Service或Activity
-启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。
-广播某个事件的发生。
-
-使用Intent来启动Activity显示：
-12Intent intent">
+<meta name="twitter:title" content="Android 应用程序的组成部分">
+<meta name="twitter:description" content="android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -215,11 +194,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-2014/intent" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-2014/android-composition" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/05/25/2014/intent/" class="article-date">
-  	<time datetime="2014-05-25T10:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
+      <a href="/2014/05/18/2014/android-composition/" class="article-date">
+  	<time datetime="2014-05-18T14:59:53.000Z" itemprop="datePublished">5月 18 2014</time>
 </a>
     </div>
   
@@ -232,7 +211,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      Intent和Broadcast Receiver
+      Android 应用程序的组成部分
     </h1>
   
 
@@ -256,29 +235,14 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Intent简介">Intent简介</h2><p>Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：</p>
-<ul>
-<li>使用类名显示启动一个特定的Service或Activity</li>
-<li>启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。</li>
-<li>广播某个事件的发生。</li>
-</ul>
-<h3 id="使用Intent来启动Activity">使用Intent来启动Activity</h3><p>显示：</p>
-<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Intent</span> <span class="type">intent</span> = new <span class="type">Intent</span>(MyActivity.this, MyOtherActivity.<span class="keyword">class</span>);</span><br><span class="line">startActivity(<span class="type">intent</span>);</span><br></pre></td></tr></table></figure>
-<p>隐式：<br>隐式的Intent提供了一种机制，可以让匿名的应用程序组件响应动作请求。这意味着可以要求系统启动一个可执行给定动作的Activity，而不必知道需要启动哪个应用程序或Activity。</p>
-<p>例如：如果希望用户从应用程序中打电话，可以实现一个新的拨号程序，也可以使用一个隐式的Intent来请求一个在电话号码（表示为一个URI）上执行动作（拨号）。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(somethingWeird&amp;&amp;itDontLookGood)&#123;</span><br><span class="line">	<span class="type">Intent</span> <span class="type">intent</span> = </span><br><span class="line">      new <span class="type">Intent</span> (<span class="type">Intent</span>.Action_DLL,Uri.parse(<span class="string">"tel:555-2368"</span>));</span><br><span class="line">	startActivity(<span class="type">intent</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Android就会解析这个Intent，并启动一个新的Activity，该Activity会提供对这个电话号码进行拨号的动作—-在这种情况下，通常是Phone Dialer.</p>
-<h2 id="Linfify简介">Linfify简介</h2><p>Linkify是一个辅助类，它会自动地在TextView类（或者TextView的派生类）中通过RegEx模型匹配来创建超链接。</p>
-<p>那些匹配一个指定的RegEx模式的文本都将会被转换为一个可以单击的超链接，这些超链接可以隐式使用匹配的文本作为目标URI来触发startActivity（new Intent(Intent.ACTION_VIEW，uri)）。</p>
-<h3 id="原生Linkify链接类型">原生Linkify链接类型</h3><p>Linkify类有一些预设值可以检测到Web URL，电子邮件地址和电话号码，并把他们转换为链接。要应用一个预设值，需要使用静态的Linkify.addLinks方法，并传入要建立的链接的视图，以及以下的一个活更多个自描述的Linkify类常量的位掩码:WEB_URLS，EMAIL_ADDRESS,PHONE_NUMBERS和ALL。</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextView textView = (TextView)findViewById(R.id.myTextView);</span><br><span class="line">Linkify.addLinks(textView,Linkify.WEB_URLS<span class="string">|Linkify.EMAIL_ADDRESSES);</span></span><br></pre></td></tr></table></figure>
-<p>也可以使用Android:autoLink属性来在一个布局内部链接视图。<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	android:<span class="variable">layout_width =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">layout_height =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">text =</span> <span class="string">"@string/linkify_name"</span></span><br><span class="line">	android:<span class="variable">autoLink =</span> <span class="string">"phone|email"</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
-<h3 id="创建定制的链接字符串">创建定制的链接字符串</h3><h3 id="使用Match_Filter">使用Match Filter</h3><h3 id="使用Transform_Filter">使用Transform Filter</h3><p>Transform Filter 允许修改匹配的链接文本生成的隐式URI。把链接文本和目标URI分离开，你能够更自由的决定如何把数据字符串显示给用户。</p>
-<h2 id="使用Intent广播事件">使用Intent广播事件</h2><p>作为一个系统级的消息传递机制，Intent可以在进程之间发送结构化的消息。因此，可以通过实现Broadcast Receiver来监听和响应应用程序内的这些Broadcast Intent。</p>
-<p>Broadcast Intent 用于向监听器通知系统的应用程序或应用事件，从而可以扩展应用程序间的事件驱动的编程模型。</p>
-<p>Broadcast Intent 可以是应用程序更加开发：通过使用Intent来广播一个事件，可以在不用修改原始应用程序的情况下，让你和第三方开发人员对事件做出反应。在应用程序中，可以通过监听Broadcast Intent来对设备状态变化和第三方应用程序事件做出反应。</p>
-<h3 id="使用_Intent广播事件">使用 Intent广播事件</h3><p>在应用程序组件中，可以构建希望广播的Intent，然后使用sendBroadcast方法来发送它。</p>
-<p>可以对Intent的动作，数据和分类进行设置，从而使Broadcast Receiver能够精确的确定他们的需求。</p>
-<h3 id="使用Broadcast_Receiver来监听广播">使用Broadcast Receiver来监听广播</h3><p>Broadcast Receiver可以用来监听Broadcast Intent。要使Broadcast Receiver 能够接受广播，就需要对其进行注册，即可以使用代码，也可以在应用程序的manifest文件中注册。无论怎么注册，都要使用一个Intent Filter来指定它要监听哪些Intent和数据。</p>
+        <p>android应用程序由松散耦合的组件组成，并使用应用程序Manifest绑定到一起；应用程序Manifest描述了每一个组件和他们之间的交互方式，还用于指定应用程序元数据，硬件和平台要求。<a id="more"></a></p>
+<h2 id="Activity">Activity</h2><p>应用程序的表示层。应用程序的每一个ui都是通过Activity类的一个或者多个扩展实现的。Activity使用Fragment和视图来布局和显示信息，以及响应用户动作。</p>
+<h2 id="Service">Service</h2><p>应用程序中不可见的工作者。Service组件在运行时没有UI，他们可以更新数据源和Activity，触发通知和广播Intent。他们被用来执行一些运行时间长的任务，或者不需要用户交互的任务。</p>
+<h2 id="Content_Provider">Content Provider</h2><p>一个可以共享的持久数据库存储器。</p>
+<h2 id="Intent">Intent</h2><p>一个强大的应用程序间的消息传递框架。Android中大量使用了Intent。Intent可以用来启动和停止Activity和Service，在系统范围内向目标Activity，service或Broadcast Receiver广播消息，以及请求对特定的一条数据执行操作。</p>
+<h2 id="Broadcast_Receiver">Broadcast Receiver</h2><p>Intent侦听器。BroadCast Receiver使应用程序可以监听到那些匹配指定的过滤标准的Intent 广播。BroadCast  Receiver会自动的启动应用程序来响应某个收到的Intent，这个特点是他们成为了事件驱动的应用程序的最佳选择。</p>
+<h2 id="Widget">Widget</h2><p>通常添加到设备主屏幕的可视化应用程序组件。Widget是BroadCast Receiver的特殊变体，用于创建动态的交互式应用程序组件，用户可以把这些组件添加到他们的主屏幕上。</p>
+<h2 id="Notification">Notification</h2><p>Notification 允许向用户发送信号，但却不会过分吸引他们的注意力或者打断他们当前的Activity。他们是应用程序不可见或者不活动时（特别是Service 或者BroadCast Receiver）吸引用户注意的首选方法。</p>
 
       
     </div>
@@ -288,18 +252,18 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2014/05/25/2014/Activity生命周期/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2014/05/19/2014/hadoop2/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          理解Android Activity
+          hadoop配置信息处理（2）
         
       </div>
     </a>
   
   
-    <a href="/2014/05/23/2014/android事件处理2/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">android 特殊事件处理</div>
+    <a href="/2014/05/11/2014/列式存储机制/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">列式存储机制</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -328,7 +292,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="2014/intent" data-title="Intent和Broadcast Receiver" data-url="http://sqtds.github.io/2014/05/25/2014/intent/"></div>
+	<div class="ds-thread" data-thread-key="2014/android-composition" data-title="Android 应用程序的组成部分" data-url="http://sqtds.github.io/2014/05/18/2014/android-composition/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
