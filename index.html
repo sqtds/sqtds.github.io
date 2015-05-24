@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,109 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/分布式-一致性协议" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/23/2015/分布式-一致性协议/" class="article-date">
+  	<time datetime="2015-05-23T08:38:14.000Z" itemprop="datePublished">5月 23 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2015/分布式-一致性协议/">分布式-一致性协议</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，概述">一，概述</h2><p>为了解决分布式一致性问题，出现了大量的一致性协议和算法，本文主要介绍2pc，3pc，paxos和zab算法。</p>
+<h2 id="二，二阶段提交（2pc）">二，二阶段提交（2pc）</h2><p>参与者将操作成败通知协调者，再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</p>
+<h3 id="2-1_基本算法">2.1 基本算法</h3><ul>
+<li><p>a,第一阶段(请求阶段)<br>在请求阶段，协调者通知事务参与者准备提交或者取消事务，然后进入表决过程。在表决过程中，参与者将报告协调者自己的决策：同意或者取消。</p>
+</li>
+<li><p>b,第二阶段(提交阶段)<br>在提交阶段，协调者将基于第一个阶段的投票进行决策：提交或取消。当所有的参与者同意提交事务时，协调者才通知所有的参与者提交事务，否者通知所有的参与者取消事务。</p>
+</li>
+</ul>
+<h3 id="2-2缺点">2.2缺点</h3><ul>
+<li>同步阻塞，所有参与该事务的逻辑都将进入阻塞状态</li>
+<li>单点问题，协调者故障</li>
+<li>数据不一致，网络原因只有部分参与者收到commit请求</li>
+</ul>
+<h2 id="三，三阶段提交(3pc)">三，三阶段提交(3pc)</h2><p>2pc的改进版本，将请求阶段一分为二，形成能否提交，预提交，提交三个阶段。</p>
+<h3 id="3-1基本算法">3.1基本算法</h3><ul>
+<li><p>a,第一阶段（能否提交阶段）<br>协调者询问参与者事务能否执行，参与者在正常情况下返回Yes状态，否者返回No。</p>
+</li>
+<li><p>b,第二阶段（预提交阶段）<br>协调者根据反馈情况选择执行的预提交操作。</p>
+</li>
+<li><p>c,第三阶段（提交阶段）<br>协调者发送提交请求，通知所有的参与者进行提交或者回滚。</p>
+</li>
+</ul>
+<h3 id="3-2_改进">3.2 改进</h3><p>3pc相对与2pc最大的优点就是减少了参与者的阻塞范围。</p>
+<h2 id="四，Paxos协议">四，Paxos协议</h2><p>paxos用于解决多个节点间的一致性问题。2pc与3pc用于保证属于多个数据分片上的操作的原子性。</p>
+<h3 id="4-1_基本算法">4.1 基本算法</h3><h4 id="4-1-1情况一">4.1.1情况一</h4><p>在大多数情况下，proposer只有一个,它的步骤如下：</p>
+<ol>
+<li>批准(accpet):Proposer发送accept消息要求所有其他节点接受某个提议值，acceptor可以接受或者拒绝。</li>
+<li>确认（acknowledge）：如果超过一半的acceptor接受，意味着提议值已经生效，proposer发送acknowledge消息通知所有的acceptor提议生效。</li>
+</ol>
+<h4 id="4-2-1情况二">4.2.1情况二</h4><p>如果系统中出现了多个proposer的时候，他们各自发送不同的提议。如果proposer第一次发起的accept请求没有被acceptor中的多数派批准，那么，需要进行一轮完整的paxos协议：</p>
+<ol>
+<li>准备（prepare）: proposer首先选择一个提议号n给其他的acceptor节点发送prepare消息。acceptor接受消息后，如果提议号大于它已经回复的所有prepare消息，则acceptor将自己的上次接受的提议回复给proposer，并且不再回复小与n的提议。</li>
+<li>批准（accept）：Proposer收到了acceptor中的多数派对prepare的回复后，就进入批准阶段。如果之前的prepare阶段acceptor回复了上次接受的提议，那么，proposer选择其中一个最大的提议值发给acceptor批准：否者，proposer生成一个新的提议值发给acceptor批准。acceptor在不违背它之前prepare阶段的承诺下，接受这个请求。</li>
+<li>确认（acknowledge）： 如果超过一半的acceptor接受，提议值生效。proposer发送acknowledge消息通知给所有的acceptor。</li>
+</ol>
+<h3 id="4-2缺点">4.2缺点</h3><p>当有多个 proposer交错提交时，有可能互相排斥导致没有一个proposer能提交成功。</p>
+<h2 id="五，ZAP协议">五，ZAP协议</h2><p>构建高可用的分布式主备系统。</p>
+<h3 id="5-1_基本算法">5.1 基本算法</h3><ol>
+<li>选举Leader<br> a,Leader要具有最高的zxid<br> b,集群中大多数的机器得到响应并follow选出的Leader</li>
+<li>同步数据<br> a,发送数据同步指令<br> b,follow事务回退</li>
+<li>广播</li>
+</ol>
+<h2 id="六，参考资料">六，参考资料</h2><ol>
+<li>《从Paxos到Zookeeper-分布式一致性原理与实践》-倪超</li>
+<li>《大规模分布式存储系统-原理解析与架构实践》-杨传辉</li>
+<li><a href="http://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95" target="_blank" rel="external">Paxos算法</a></li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/分布式/">分布式</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/java-exception" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -730,115 +833,6 @@ $ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/linux/">linux</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-reflection" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/17/2015/java-reflection/" class="article-date">
-  	<time datetime="2015-05-17T10:42:41.000Z" itemprop="datePublished">5月 17 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/17/2015/java-reflection/">java反射</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
-<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
-<p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
-<h3 id="1,Methods">1,Methods</h3><ul>
-<li><p>public Method[] getMethods()<br>返回某个类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法。</p>
-</li>
-<li><p>public Method[] getDeclaredMethods()<br>返回某个类的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法。</p>
-</li>
-</ul>
-<h3 id="2,Constructors">2,Constructors</h3><ul>
-<li>public Constructor<t> getConstructor(Class&lt;?&gt;… parameterTypes)<br>根据参数返回公共构造方法。</t></li>
-<li>public Constructor&lt;?&gt;[] getConstructors()<br>得到所有的公共构造方法</li>
-<li>public Constructor&lt;?&gt;[] getDeclaredConstructors()<br>得到声明的构造方法</li>
-</ul>
-<h3 id="3,Fields">3,Fields</h3><p>同上</p>
-<h3 id="4,Annotations">4,Annotations</h3><p>同上，只能获取注解集合，暂时不能获取指定参数注解。</p>
-<h2 id="三，AccessibleObject">三，AccessibleObject</h2><p><img src="/img/2015/AccessibleObject.png" alt=""><br>从图中我们可以看到Methods，Constructors，Fields继承了这个类。<br>我们看这个类的方法：<br><img src="/img/2015/AccessibleObjectMethod.png" alt=""><br>从图中可以看出，这个对象主要包含了2类方法：</p>
-<ul>
-<li>第一类是获取对象注解，getAnnotations()。</li>
-<li>第二类是设置对象是否可访问，setAccessible(boolean flag),通过设置访问标志来访问非public对象（方法，构造方法，属性）。</li>
-</ul>
-<h2 id="五-Modifiers">五.Modifiers</h2><p>我们可以看到修饰符使用的是二进制来表示的，访问修饰符用01,10,100，1000来表示的，总共容纳32个修饰符，每一位使用mod&amp;修饰符来判断当前值是否包含修饰符。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PUBLIC</span>           = <span class="number">0</span>x00000001;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PRIVATE</span>          = <span class="number">0</span>x00000002;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PROTECTED</span>        = <span class="number">0</span>x00000004;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">STATIC</span>           = <span class="number">0</span>x00000008;
-...
-Modifier.isAbstract(<span class="keyword">int</span> modifiers)
-Modifier.isFinal(<span class="keyword">int</span> modifiers)
-Modifier.isInterface(<span class="keyword">int</span> modifiers)
-Modifier.isNative(<span class="keyword">int</span> modifiers)
-Modifier.isPrivate(<span class="keyword">int</span> modifiers)
-Modifier.isProtected(<span class="keyword">int</span> modifiers)
-Modifier.isPublic(<span class="keyword">int</span> modifiers)
-Modifier.isStatic(<span class="keyword">int</span> modifiers)
-Modifier.isStrict(<span class="keyword">int</span> modifiers)
-Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
-Modifier.isTransient(<span class="keyword">int</span> modifiers)
-Modifier.isVolatile(<span class="keyword">int</span> modifiers)
-</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
-<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
-<h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
-<h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
-</code></pre><p>创建一个大小为3，类型为int的数组。</p>
-<h3 id="2，访问数组">2，访问数组</h3><pre><code><span class="keyword">Array</span>.<span class="keyword">set</span>(intArray, <span class="number">0</span>, <span class="number">123</span>);
-</code></pre><p>设置数组的第一个值为123。</p>
-<h3 id="3，从数组中获取类对象">3，从数组中获取类对象</h3><pre><code><span class="keyword">Class</span> stringArrayClass = <span class="built_in">String</span>[].<span class="keyword">class</span>;
-<span class="keyword">Class</span> intArray = <span class="keyword">Class</span>.forName(<span class="string">"[I"</span>);
-<span class="keyword">Class</span> stringArrayClass = <span class="keyword">Class</span>.forName(<span class="string">"[Ljava.lang.String;"</span>);
-</code></pre><h2 id="八，jdk8改进">八，jdk8改进</h2><p>反射异常ClassNotFoundException、NoSuchMethodException、IllegalAccessException，InvocationTargetExcetpion等有一个父类异常叫ReflectiveOperationExcetpion。</p>
-<p>旧版JDK，还有个很莫名其妙的地方，就是所有反射，都拿不到参数名，无论名字叫啥，都返回arg0，arg1，所以在CXF，SpringMVC里，你都要把参数名字用annotation再写一遍：<br>    Person getEmployee(@PathParam(“dept”) Long dept, @QueryParam(“id”) Long id)<br>现在，JDK8新提供的类java.lang.reflect.Parameter可以反射参数名了，编译时要加参数，如 javac -parameters xxx.java，或者Eclipse里设置。然后就可以写成:<br>    Person getEmployee(@PathParam Long dept, @QueryParam Long id)</p>
-<h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 

@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,93 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/mondrian-ext-function执行机制" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/13/2014/mondrian-ext-function执行机制/" class="article-date">
+  	<time datetime="2014-11-13T10:07:10.000Z" itemprop="datePublished">11月 13 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/13/2014/mondrian-ext-function执行机制/">mondrian 源码解读（番外篇）-MDX函数的执行过程详解</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
+<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
+<ul>
+<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
+<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
+</li>
+<li><p>第二，轴上的计算器(Calc)的创建。</p>
+<p>  主要是针对各个轴如何创建计算器。</p>
+</li>
+</ul>
+<p>下面是的resolve()方法解释：</p>
+<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
+    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
+    resolve(validator); <span class="comment">// resolve self and children ,2</span>
+    <span class="comment">// Create a dummy result so we can use its evaluator</span>
+    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
+    ExpCompiler compiler =
+            createCompiler(
+                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
+    compile(compiler);  <span class="comment">//5</span>
+}
+</code></pre><ol>
+<li>第1行创建校验器(Validator)。</li>
+<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
+<li>第3行针对当前Query创建求值器(Evaluator)。</li>
+<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
+<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
+</ol>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/11/13/2014/mondrian-ext-function执行机制/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -636,68 +723,6 @@ Table对象..星型模型
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/10/26/2014/mondrian-source-code-2/" class="article-date">
-  	<time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="什么是MDX？">什么是MDX？</h2><p>MDX为MultiDimensional Expressions的缩写，多维表达式，是标准的OLAP查询语言。在多数OLAPServer都提供MDX支持，如Microsoft SQL Server OLAP Services,SAS,Hyperion Essbase等。</p>
-<p>支持多维对象与数据的定义和操作。MDX 在很多方面与结构化查询语言 (SQL) 语法相似，但它不是 SQL 语言的扩展；事实上，MDX 所提供的一些功能也可由 SQL 提供，尽管不是那么有效或直观。<br>如同 SQL 查询一样，每个 MDX 查询都要求有数据请求（SELECT 子句）、起始点（FROM 子句）和筛选（WHERE 子句）。这些关键字以及其它关键字提供了各种工具，用来从多维数据集析取数据的特定部分。</p>
-<p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/10/26/2014/mondrian-source-code-2/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>

@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,91 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/24/2014/antlr4-start/" class="article-date">
+  	<time datetime="2014-08-24T10:04:40.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/2014/antlr4-start/">antlr4快速开始（一）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="antlr是什么？">antlr是什么？</h2><p>ANTLR (ANother Tool for Language Recognition) 是一个强大的解析生成器，它可以读，处理，执行或者转换格式化的文本或者二进制文件。它被广泛的用于构建语言，工具，和框架。从语法上来说，antlr生成了一个能够构建和遍历解析树的解析器。</p>
+<h2 id="快速开始">快速开始</h2><pre><code>Windows
+Download http:<span class="comment">//antlr.org/download/antlr-4.4-complete.jar.</span>
+<span class="keyword">Add</span> antlr4-complete.jar <span class="keyword">to</span> CLASSPATH, either:
+Permanently: <span class="keyword">Using</span> System Properties dialog &gt; Environment variables &gt; <span class="keyword">Create</span> <span class="keyword">or</span> append <span class="keyword">to</span> CLASSPATH variable
+Temporarily, at command line:
+<span class="keyword">SET</span> CLASSPATH=.;C:\Javalib\antlr4-complete.jar;%CLASSPATH%
+<span class="keyword">Create</span> batch commands <span class="keyword">for</span> ANTLR Tool, TestRig <span class="keyword">in</span> dir <span class="keyword">in</span> PATH
+ antlr4.bat: java org.antlr.v4.Tool %*
+ grun.bat:   java org.antlr.v4.runtime.misc.TestRig %*
+</code></pre><h2 id="例子">例子</h2><pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;        
+<span class="rule"><span class="attribute">prog</span>:<span class="value">    (expr NEWLINE)* </span></span>;
+<span class="rule"><span class="attribute">expr</span>:<span class="value">    expr (<span class="string">'*'</span>|<span class="string">'/'</span>) expr
+    |    expr (<span class="string">'+'</span>|<span class="string">'-'</span>) expr
+    |    INT
+    |    <span class="string">'('</span> expr <span class="string">')'</span>
+    </span></span>;
+<span class="rule"><span class="attribute">NEWLINE </span>:<span class="value"> [\r\n]+ </span></span>;
+<span class="rule"><span class="attribute">INT     </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+
+
+$ <span class="tag">antlr4</span> <span class="tag">Expr</span><span class="class">.g4</span>
+$ <span class="tag">javac</span> <span class="tag">Expr</span>*<span class="class">.java</span>
+$ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">prog</span> <span class="tag">-gui</span>
+100+2*34
+^<span class="tag">D</span>
+</code></pre><p><img src="http://pic.browser.360.cn/t012e3d32f2057cb701.png" alt=""></p>
+<p>注意：(That ^D means EOF on unix; it’s ^Z in Windows.) The -tree option prints the parse tree in LISP notation.</p>
+<p>更多请参考：<a href="https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4" target="_blank" rel="external">https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/branch_prdeiction" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -611,107 +696,6 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
         <p class="article-more-link">
           <a  href="/2014/06/14/2014/linuxcommand/#more">more >></a>
         </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/spring-tx1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx1/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-tx1/">spring事务原理1-事务的抽象</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="概要">概要</h3><p>spring事务包含3个最主要的接口PlatformTransactionManager，TransactionStatus，TransactionDefinition 。其中PlatformTransactionManager负责管理事务的边界，<br>TransactionStatus负责描述事务的状态，TransactionDefinition定义事务相关属性，例如隔离级别，传播行为等。</p>
-<h3 id="PlatformTransactionManager">PlatformTransactionManager</h3><p>PlatformTransactionManager 的整个抽象体系基于Strategy 模式，由PlatformTransactionManager 对事务界定进行统一抽象，而具体的界定策略的实现则交由具体的实现类。</p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>{
-
-  <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(TransactionDefinition definition)</span>
-    <span class="keyword">throws</span> TransactionException</span>;
-
-  <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
-
-  <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus status)</span> <span class="keyword">throws</span> TransactionException</span>;
-}
-</code></pre><h3 id="TransactionDefinition">TransactionDefinition</h3><p>TransactionDefinition定义了事务的相关属性：隔离级别，传播性，超时，只读状态。<br><img src="/img/2014/QQ图片20140609221319.jpg" alt=""></p>
-<ul>
-<li><p>Isolation: The degree to which this transaction is isolated from the work of other transactions. For example, can this transaction see uncommitted writes from other transactions?</p>
-</li>
-<li><p>Propagation: Typically, all code executed within a transaction scope will run in that transaction. However, you have the option of specifying the behavior in the event that a transactional method is executed when a transaction context already exists. For example, code can continue running in the existing transaction (the common case); or the existing transaction can be suspended and a new transaction created. Spring offers all of the transaction propagation options familiar from EJB CMT. To read about the semantics of transaction propagation in Spring, see Section 10.5.7, “Transaction propagation”.</p>
-</li>
-<li><p>Timeout: How long this transaction runs before timing out and being rolled back automatically by the underlying transaction infrastructure.</p>
-</li>
-<li><p>Read-only status: A read-only transaction can be used when your code reads but does not modify data. Read-only transactions can be a useful optimization in some cases, such as when you are using Hibernate.</p>
-</li>
-</ul>
-<h3 id="TransactionStatus">TransactionStatus</h3><p>org.springframework.transaction.TransactionStatus 接口定义表示整个事务处理过程中的事务状态，更多时候，我们将在编程式事务中使用该接口。 </p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span> <span class="keyword">extends</span> <span class="title">SavepointManager</span> </span>{
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span></span>;
-
-    <span class="function"><span class="keyword">boolean</span> <span class="title">isCompleted</span><span class="params">()</span></span>;
-
-}
-</code></pre><p><img src="/img/2014/QQ图片20140609221008.jpg" alt=""></p>
-<p>在事务处理过程中，我们可以使用TransactionStatus 进行如下工作。 </p>
-<ul>
-<li>使用TransactionStatus 提供的相应方法查询事务状态。 </li>
-<li>通过setRollbackOnly() 方法标记当前事务以使其回滚。</li>
-<li>如果相应的PlatformTransactionManager支持Savepoint，可以通过TransactionStatus 在当前事务中创建内部嵌套事务。</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
       
       <div class="clearfix"></div>
     </div>

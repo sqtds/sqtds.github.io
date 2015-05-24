@@ -4,7 +4,7 @@
   <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-05-23T04:33:36.000Z</updated>
+  <updated>2015-05-24T02:58:40.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -13,6 +13,71 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[分布式-一致性协议]]></title>
+    <link href="http://sqtds.github.io/2015/05/23/2015/%E5%88%86%E5%B8%83%E5%BC%8F-%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE/"/>
+    <id>http://sqtds.github.io/2015/05/23/2015/分布式-一致性协议/</id>
+    <published>2015-05-23T08:38:14.000Z</published>
+    <updated>2015-05-24T02:58:40.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>为了解决分布式一致性问题，出现了大量的一致性协议和算法，本文主要介绍2pc，3pc，paxos和zab算法。</p>
+<h2 id="二，二阶段提交（2pc）">二，二阶段提交（2pc）</h2><p>参与者将操作成败通知协调者，再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</p>
+<h3 id="2-1_基本算法">2.1 基本算法</h3><ul>
+<li><p>a,第一阶段(请求阶段)<br>在请求阶段，协调者通知事务参与者准备提交或者取消事务，然后进入表决过程。在表决过程中，参与者将报告协调者自己的决策：同意或者取消。</p>
+</li>
+<li><p>b,第二阶段(提交阶段)<br>在提交阶段，协调者将基于第一个阶段的投票进行决策：提交或取消。当所有的参与者同意提交事务时，协调者才通知所有的参与者提交事务，否者通知所有的参与者取消事务。</p>
+</li>
+</ul>
+<h3 id="2-2缺点">2.2缺点</h3><ul>
+<li>同步阻塞，所有参与该事务的逻辑都将进入阻塞状态</li>
+<li>单点问题，协调者故障</li>
+<li>数据不一致，网络原因只有部分参与者收到commit请求</li>
+</ul>
+<h2 id="三，三阶段提交(3pc)">三，三阶段提交(3pc)</h2><p>2pc的改进版本，将请求阶段一分为二，形成能否提交，预提交，提交三个阶段。</p>
+<h3 id="3-1基本算法">3.1基本算法</h3><ul>
+<li><p>a,第一阶段（能否提交阶段）<br>协调者询问参与者事务能否执行，参与者在正常情况下返回Yes状态，否者返回No。</p>
+</li>
+<li><p>b,第二阶段（预提交阶段）<br>协调者根据反馈情况选择执行的预提交操作。</p>
+</li>
+<li><p>c,第三阶段（提交阶段）<br>协调者发送提交请求，通知所有的参与者进行提交或者回滚。</p>
+</li>
+</ul>
+<h3 id="3-2_改进">3.2 改进</h3><p>3pc相对与2pc最大的优点就是减少了参与者的阻塞范围。</p>
+<h2 id="四，Paxos协议">四，Paxos协议</h2><p>paxos用于解决多个节点间的一致性问题。2pc与3pc用于保证属于多个数据分片上的操作的原子性。</p>
+<h3 id="4-1_基本算法">4.1 基本算法</h3><h4 id="4-1-1情况一">4.1.1情况一</h4><p>在大多数情况下，proposer只有一个,它的步骤如下：</p>
+<ol>
+<li>批准(accpet):Proposer发送accept消息要求所有其他节点接受某个提议值，acceptor可以接受或者拒绝。</li>
+<li>确认（acknowledge）：如果超过一半的acceptor接受，意味着提议值已经生效，proposer发送acknowledge消息通知所有的acceptor提议生效。</li>
+</ol>
+<h4 id="4-2-1情况二">4.2.1情况二</h4><p>如果系统中出现了多个proposer的时候，他们各自发送不同的提议。如果proposer第一次发起的accept请求没有被acceptor中的多数派批准，那么，需要进行一轮完整的paxos协议：</p>
+<ol>
+<li>准备（prepare）: proposer首先选择一个提议号n给其他的acceptor节点发送prepare消息。acceptor接受消息后，如果提议号大于它已经回复的所有prepare消息，则acceptor将自己的上次接受的提议回复给proposer，并且不再回复小与n的提议。</li>
+<li>批准（accept）：Proposer收到了acceptor中的多数派对prepare的回复后，就进入批准阶段。如果之前的prepare阶段acceptor回复了上次接受的提议，那么，proposer选择其中一个最大的提议值发给acceptor批准：否者，proposer生成一个新的提议值发给acceptor批准。acceptor在不违背它之前prepare阶段的承诺下，接受这个请求。</li>
+<li>确认（acknowledge）： 如果超过一半的acceptor接受，提议值生效。proposer发送acknowledge消息通知给所有的acceptor。</li>
+</ol>
+<h3 id="4-2缺点">4.2缺点</h3><p>当有多个 proposer交错提交时，有可能互相排斥导致没有一个proposer能提交成功。</p>
+<h2 id="五，ZAP协议">五，ZAP协议</h2><p>构建高可用的分布式主备系统。</p>
+<h3 id="5-1_基本算法">5.1 基本算法</h3><ol>
+<li>选举Leader<br> a,Leader要具有最高的zxid<br> b,集群中大多数的机器得到响应并follow选出的Leader</li>
+<li>同步数据<br> a,发送数据同步指令<br> b,follow事务回退</li>
+<li>广播</li>
+</ol>
+<h2 id="六，参考资料">六，参考资料</h2><ol>
+<li>《从Paxos到Zookeeper-分布式一致性原理与实践》-倪超</li>
+<li>《大规模分布式存储系统-原理解析与架构实践》-杨传辉</li>
+<li><a href="http://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95" target="_blank" rel="external">Paxos算法</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，概述">一，概述</h2><p>为了解决分布式一致性问题，出现了大量的一致性协议和算法，本文主要介绍2pc，3pc，paxos和zab算法。</p>
+<h2 id="二，二阶段提交（2pc）">二，二阶段提交（2pc）</h2><p>参与者将操作成败通知协调者]]>
+    </summary>
+    
+      <category term="分布式" scheme="http://sqtds.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+      <category term="分布式" scheme="http://sqtds.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[java异常]]></title>
@@ -670,8 +735,8 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
   
   <entry>
     <title><![CDATA[java并发编程]]></title>
-    <link href="http://sqtds.github.io/2015/05/10/2015/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
-    <id>http://sqtds.github.io/2015/05/10/2015/并发编程/</id>
+    <link href="http://sqtds.github.io/2015/05/10/2015/java-concurrent/"/>
+    <id>http://sqtds.github.io/2015/05/10/2015/java-concurrent/</id>
     <published>2015-05-10T08:13:15.000Z</published>
     <updated>2015-05-17T07:59:11.000Z</updated>
     <content type="html"><![CDATA[<h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
@@ -707,8 +772,8 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
   
   <entry>
     <title><![CDATA[java内存模型]]></title>
-    <link href="http://sqtds.github.io/2015/05/10/2015/jmm/"/>
-    <id>http://sqtds.github.io/2015/05/10/2015/jmm/</id>
+    <link href="http://sqtds.github.io/2015/05/10/2015/java-jmm/"/>
+    <id>http://sqtds.github.io/2015/05/10/2015/java-jmm/</id>
     <published>2015-05-10T00:10:03.000Z</published>
     <updated>2015-05-17T07:59:01.000Z</updated>
     <content type="html"><![CDATA[<h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
@@ -1183,92 +1248,6 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       <category term="nosql" scheme="http://sqtds.github.io/tags/nosql/"/>
     
       <category term="数据库" scheme="http://sqtds.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[MongoDB权威指南笔记]]></title>
-    <link href="http://sqtds.github.io/2015/04/05/2014/mongodb-biji/"/>
-    <id>http://sqtds.github.io/2015/04/05/2014/mongodb-biji/</id>
-    <published>2015-04-05T04:06:03.000Z</published>
-    <updated>2015-05-17T08:06:04.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="特点">特点</h2><p>MongoDB是它是一个面向集合的,模式自由的文档型数据库。那么什么是文档性数据库呢？它与其他的数据库的差别在哪里？</p>
-<ol>
-<li><p>面向集合的存储（ Collenction-Orented）：适合存储对象及JSON形式的数据。</p>
-<p> 意思是数据被分组存储在数据集中， 被称为一个集合（ Collenction)。每个集合在数据库中都有一个唯一的标识名 ，并且可以包含无限数目的文档 。集合的概念类似关系型数据库（ RDBMS）里的表（ table）， 不同的是它不需要定义任何模式（ schema)。</p>
-</li>
-<li><p>模式自由（（ schema-free)</p>
-<p> 意味着对于存储在 MongoDB 数据库中的文件，我们不需要知道它的任何结构定义。提了这么多次”无模式”或”模式自由 “，它到是个什么概念呢？例如，下面两个记录可以存在于同一个集合里面：<br> {“welcome” : “Beijing”}<br> {“age” : 25}</p>
-</li>
-<li><p>文档型</p>
-<p> 意思是我们存储的数据是键-值对的集合,键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档 . 我们把这个数据格式称作 “ BSON ” 即 “ Binary Serialized dOcument Notation.”</p>
-</li>
-</ol>
-<h2 id="适用场景">适用场景</h2><p><strong>网站数据</strong>： MongoDB 非常适合实时的插入，更新与查询，并具备网站实时数据存储所需的复制及高度伸缩性</p>
-<p><strong>缓存</strong>：由于性能很高， MongoDB 也适合作为信息基础设施的缓存层。在系统重启之后，由 MongoDB 搭建的持久化缓存层可以避免下层的数据源过载</p>
-<p><strong>大尺寸，低价值的数据</strong>：使用传统的关系型数据库存储一些数据时可能会比较昂贵，在此之前，很多时候程序员往往会选择传统的文件进行存储</p>
-<p><strong>高伸缩性的场景</strong>： MongoDB 非常适合由数十或数百台服务器组成的数据库。 MongoDB的路线图中已经包含对 MapReduce 引擎的内置支持</p>
-<p><strong>用于对象及 JSON 数据的存储</strong>： MongoDB 的 BSON 数据格式非常适合文档化格式的存储及查询</p>
-<h2 id="数据逻辑结构">数据逻辑结构</h2><p> MongoDB 的文档（ document）， 相当于关系数据库中的一行记录。<br> 多个文档组成一个集合（ collection）， 相当于关系数据库的表。<br> 多个集合（ collection）， 逻辑上组织在一起，就是数据库（ database）。<br> 一个 MongoDB 实例支持多个数据库（ database）。<br><img src="/img/2014/mongodb_luojijiegou.png" alt=""><br>文档(document)、集合(collection)、数据库(database)的层次结构如下图:<br><img src="/img/2014/mongodb_chengci.png" alt=""></p>
-<h2 id="性能篇">性能篇</h2><p>MongoDB 提供了多样性的索引支持，索引信息被保存在 system.indexes 中，且默认总是为_id<br>创建索引 ，它的索引使用基本和 MySQL 等关系型数据库一样。</p>
-<h3 id="基础索引">基础索引</h3><pre><code>在字段 <span class="tag">age</span> 上创建索引， 1(升序);<span class="tag">-1</span>(降序)
-<span class="tag">db</span><span class="class">.t3</span><span class="class">.ensureIndex</span>(<span class="rules">{<span class="rule"><span class="attribute">age</span>:<span class="value"><span class="number">1</span>})</span></span></span>
-</code></pre><h3 id="文档索引">文档索引</h3><pre><code>db.factories.insert( { name: <span class="string">"wwl"</span>, addr: { city: <span class="string">"Beijing"</span>, <span class="keyword">state</span>: <span class="string">"BJ"</span> } } );
-db.factories.ensureIndex( { addr : <span class="number">1</span> } );
-//下面这个查询将会用到我们刚刚建立的索引
-db.factories.find( { addr: { city: <span class="string">"Beijing"</span>, <span class="keyword">state</span>: <span class="string">"BJ"</span> } } );
-//但是下面这个查询将不会用到索引，因为查询的顺序跟索引建立的顺序不一样
-db.factories.find( { addr: { <span class="keyword">state</span>: <span class="string">"BJ"</span> , city: <span class="string">"Beijing"</span>} } );
-</code></pre><h3 id="组合索引">组合索引</h3><pre><code><span class="keyword">db</span>.factories.ensureIndex( { <span class="string">"addr.city"</span> : 1, <span class="string">"addr.state"</span> : 1 } );
-<span class="comment">// 下面的查询都用到了这个索引</span>
-<span class="keyword">db</span>.factories.find( { <span class="string">"addr.city"</span> : <span class="string">"Beijing"</span>, <span class="string">"addr.state"</span> : <span class="string">"BJ"</span> } );
-<span class="keyword">db</span>.factories.find( { <span class="string">"addr.city"</span> : <span class="string">"Beijing"</span> } );
-<span class="keyword">db</span>.factories.find().<span class="keyword">sort</span>( { <span class="string">"addr.city"</span> : 1, <span class="string">"addr.state"</span> : 1 } );
-<span class="keyword">db</span>.factories.find().<span class="keyword">sort</span>( { <span class="string">"addr.city"</span> : 1 } )
-</code></pre><h2 id="架构篇">架构篇</h2><p>MongoDB 支持在多个机器中通过异步复制达到故障转移和实现冗余。多机器中同一时刻只有一台是用于写操作。正是由于这个情况，为 MongoDB 提供了数据一致性的保障。担当Primary 角色的机器能把读操作分发给 slave。</p>
-<h3 id="复制集">复制集</h3><p>MongoDB 高可用可用分两种:</p>
-<ul>
-<li><p>Master-Slave 主从复制：</p>
-<p>  只需要在某一个服务启动时加上–master 参数，而另一个服务加上–slave 与–source 参数，即可实现同步。 MongoDB 的最新版本已不再推荐此方案。</p>
-</li>
-<li><p>Replica Sets 复制集：</p>
-<p>  MongoDB 在 1.6 版本对开发了新功能 replica set，这比之前的 replication 功能要强大一些，增加了故障自动切换和自动修复成员节点，各个 DB 之间数据完全一致，大大降低了维护成功。 auto shard 已经明确说明不支持 replication paris，建议使用 replica set， replica set故障切换完全自动。<br><img src="/img/2014/mongodb_replica.png" alt=""></p>
-</li>
-</ul>
-<h3 id="Sharding_分片">Sharding 分片</h3><p>这是一种将海量的数据水平扩展的数据库集群系统，数据分表存储在 sharding 的各个节点上，使用者通过简单的配置就可以很方便地构建一个分布式 MongoDB 集群。</p>
-<p>要构建一个 MongoDB Sharding Cluster，需要三种角色：</p>
-<ul>
-<li><p>Shard Server</p>
-<p>  即存储实际数据的分片，每个 Shard 可以是一个 mongod 实例，也可以是一组 mongod 实例构成的 Replica Set。为了实现每个 Shard 内部的 auto-failover， MongoDB 官方建议每个 Shard为一组 Replica Set。</p>
-</li>
-<li><p>Config Server</p>
-<p>  为了将一个特定的 collection 存储在多个 shard 中，需要为该 collection 指定一个shard key，例如{age: 1} ，shard key 可以决定该条记录属于哪个 chunk。 Config Servers 就是用来存储：所有 shard 节点的配置信息、每个 chunk 的 shard key 范围、 chunk 在各 shard 的分布情况、该集群中所有 DB 和 collection 的 sharding 配置信息。</p>
-</li>
-<li><p>Route Process</p>
-<p>  这是一个前端路由，客户端由此接入，然后询问 Config Servers 需要到哪个 Shard 上查询或保存记录，再连接相应的 Shard 进行操作，最后将结果返回给客户端。客户端只需要将原本发给 mongod 的查询或更新请求原封不动地发给 Routing Process，而不必关心所操作的记录存储在哪个 Shard 上。<br><img src="/img/2014/mongodb_shard.png" alt=""></p>
-</li>
-</ul>
-<h3 id="Replica_Sets_+_Sharding">Replica Sets + Sharding</h3><p>MongoDB Auto-Sharding 解决了海量存储和动态扩容的问题，但离实际生产环境所需的高可<br>靠、高可用还有些距离，所以有了 ” Replica Sets + Sharding”的解决方案:</p>
-<ul>
-<li><p>Shard:</p>
-<p>  使用 Replica Sets，确保每个数据节点都具有备份、自动容错转移、自动恢复能力。</p>
-</li>
-<li><p>Config:</p>
-<p>  使用 3 个配置服务器，确保元数据完整性</p>
-</li>
-<li><p>Route:</p>
-<p>  使用 3 个路由进程，实现负载平衡，提高客户端接入性能</p>
-</li>
-</ul>
-<p><img src="/img/2014/mongodb_replica_shard.png" alt=""></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="特点">特点</h2><p>MongoDB是它是一个面向集合的,模式自由的文档型数据库。那么什么是文档性数据库呢？它与其他的数据库的差别在哪里？</p>
-<ol>
-<li><p>面向集合的存储（ Collenction-Orented）：适合存储对象及JSON形式]]>
-    </summary>
-    
-      <category term="nosql" scheme="http://sqtds.github.io/tags/nosql/"/>
     
   </entry>
   
