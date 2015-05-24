@@ -5,30 +5,30 @@
   
   <title>java反射 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一，概述java动态代理只能对方法进行反射。
+  <meta name="description" content="一，概述java动态代理只能对方法进行反射，为什么？
 二，ClassgetXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。
 getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。
 1,Methods
-public Method[] getMethods()返回某个类的所有公用（public）方法包括其继承类的公">
+public Method[] getMethods()返回某个类的所有公用（public）方法包括其继">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java反射">
 <meta property="og:url" content="http://sqtds.github.io/2015/05/17/2015/java-reflection/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="一，概述java动态代理只能对方法进行反射。
+<meta property="og:description" content="一，概述java动态代理只能对方法进行反射，为什么？
 二，ClassgetXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。
 getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。
 1,Methods
-public Method[] getMethods()返回某个类的所有公用（public）方法包括其继承类的公">
+public Method[] getMethods()返回某个类的所有公用（public）方法包括其继">
 <meta property="og:image" content="/img/2015/反射.png">
 <meta property="og:image" content="/img/2015/AccessibleObject.png">
 <meta property="og:image" content="/img/2015/AccessibleObjectMethod.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java反射">
-<meta name="twitter:description" content="一，概述java动态代理只能对方法进行反射。
+<meta name="twitter:description" content="一，概述java动态代理只能对方法进行反射，为什么？
 二，ClassgetXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。
 getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。
 1,Methods
-public Method[] getMethods()返回某个类的所有公用（public）方法包括其继承类的公">
+public Method[] getMethods()返回某个类的所有公用（public）方法包括其继">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -139,7 +139,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 18.33px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -250,7 +250,7 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。<br><img src="/img/2015/反射.png" alt=""></p>
+        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
 <h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
 <p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
 <h3 id="1,Methods">1,Methods</h3><ul>
@@ -289,7 +289,9 @@ Modifier.isStrict(<span class="keyword">int</span> modifiers)
 Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
 Modifier.isTransient(<span class="keyword">int</span> modifiers)
 Modifier.isVolatile(<span class="keyword">int</span> modifiers)
-</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br><span class="line">从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。</span><br></pre></td></tr></table></figure>
+</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
 <h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
 <h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
 </code></pre><p>创建一个大小为3，类型为int的数组。</p>

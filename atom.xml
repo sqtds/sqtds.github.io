@@ -4,7 +4,7 @@
   <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-05-17T08:07:41.000Z</updated>
+  <updated>2015-05-23T04:33:36.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -15,15 +15,361 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[java异常]]></title>
+    <link href="http://sqtds.github.io/2015/05/23/2015/java-exception/"/>
+    <id>http://sqtds.github.io/2015/05/23/2015/java-exception/</id>
+    <published>2015-05-23T04:32:38.000Z</published>
+    <updated>2015-05-23T04:33:36.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="概述">概述</h2>]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="概述">概述</h2>]]>
+    </summary>
+    
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[java I/O]]></title>
+    <link href="http://sqtds.github.io/2015/05/23/2015/java-io/"/>
+    <id>http://sqtds.github.io/2015/05/23/2015/java-io/</id>
+    <published>2015-05-23T02:06:38.000Z</published>
+    <updated>2015-05-23T04:29:31.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p><img src="/img/2015/I.O.png" alt=""></p>
+<h2 id="二，BIO">二，BIO</h2><p>java I/O主要分为下面这几类：</p>
+<ul>
+<li>基于字节操作的 I/O 接口：InputStream 和 OutputStream</li>
+<li>基于字符操作的 I/O 接口：Writer 和 Reader</li>
+<li>基于磁盘操作的 I/O 接口：File</li>
+<li>基于网络操作的 I/O 接口：Socket</li>
+</ul>
+<p>字符与字节： </p>
+<ol>
+<li>InputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方法读到的是一个字节（二进制数据），很不利于人们阅读，而且无法直接对文件中的字符进行操作，比如替换，查找（必须以字节形式操作）；<br>而Reader类弥补了这个缺陷，可以以文本格式输入/输出，非常方便；比如可以使用while((ch = filereader.read())!=-1 )循环来读取文件；可以使用BufferedReader的readLine()方法一行一行的读取文本。</li>
+<li>InputStreamReader 是字节流通向字符流的桥梁：它使用指定的 charset 读取字节并将其解码为字符。它使用的字符集可以由名称指定或显式给定，或者可以接受平台默认的字符集。 </li>
+<li>BufferedReader的最大特点就是缓冲区的设置。BufferReader类用来包装所有其 read() 操作可能开销很高的 Reader（如 FileReader 和InputStreamReader）。</li>
+</ol>
+<h2 id="三，NIO">三，NIO</h2><p>nio基于块，io基于流。NIO 将最耗时的 I/O 操作(即填充和提取缓冲区)转移回操作系统，因而可以极大地提高速度。</p>
+<ul>
+<li>面向流的I/O系统一次一个字节地处理数据。一个输入流产生一个字节的数据，一个输出流消费一个字节的数据。为流式数据创建过滤器非常容易。链接几个过滤器，以便每个过滤器只负责单个复杂处理机制的一部分，这样也是相对简单的。不利的一面是，面向流的 I/O 通常相当慢。</li>
+<li>面向块的I/O系统以块的形式处理数据。每一个操作都在一步中产生或者消费一个数据块。按块处理数据比按(流式的)字节处理数据要快得多。但是面向块的 I/O 缺少一些面向流的 I/O 所具有的优雅性和简单性。</li>
+</ul>
+<h3 id="1，Buffer">1，Buffer</h3><h4 id="1-1_Buffer类型">1.1 Buffer类型</h4><p>对于每一种基本 Java 类型都有一种缓冲区类型：</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>ShortBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>FloatBuffer</li>
+<li>DoubleBuffer</li>
+</ul>
+<h4 id="1-2_Buffer中的参数项:">1.2 Buffer中的参数项:</h4><ul>
+<li>capacity    缓冲区数组的总长度</li>
+<li>position    下一个要操作的数据元素的位置</li>
+<li>limit        缓冲区数组中不可操作的下一个元素的位置，limit&lt;=capacity</li>
+<li>mark        用于记录当前 position 的前一个位置或者默认是 0<br><img src="/img/2015/buffer.jpeg" alt=""></li>
+</ul>
+<h4 id="1-3_Buffer中的常用方法">1.3 Buffer中的常用方法</h4><pre><code>ByteBuffer <span class="keyword">buf</span> <span class="keyword">=</span> ByteBuffer<span class="typename">.allocate</span>(<span class="number">48</span>); <span class="comment">// create buffer</span>
+
+<span class="keyword">buf</span><span class="typename">.flip</span>();  <span class="comment">//make buffer ready for read</span>
+<span class="keyword">buf</span><span class="typename">.clear</span>(); <span class="comment">//make buffer ready for writing</span>
+<span class="keyword">buf</span><span class="typename">.compact</span>();<span class="comment">//make buffer ready for writing,copies all unread data to the beginning of the Buffer</span>
+
+<span class="keyword">buf</span><span class="typename">.rewind</span>();<span class="comment">//sets the position back to 0, so you can reread all the data in the buffer. </span>
+
+<span class="keyword">buf</span><span class="typename">.mark</span>() ;<span class="comment">//mark a given position </span>
+<span class="keyword">buf</span><span class="typename">.reset</span>();<span class="comment">//reset the position back to the marked position</span>
+</code></pre><p><img src="/img/2015/buffers-modes.png" alt="buffer的读写模式"></p>
+<h4 id="1-4_缓冲区分片">1.4 缓冲区分片</h4><p>slice() 方法根据现有的缓冲区创建一种子缓冲区 。也就是说，它创建一个新的缓冲区，新缓冲区与原来的缓冲区的一部分共享数据。</p>
+<h4 id="1-5_直接和间接缓冲区">1.5 直接和间接缓冲区</h4><p> 直接缓冲区 是为加快 I/O 速度，而以一种特殊的方式分配其内存的缓冲区。给定一个直接字节缓冲区，Java 虚拟机将尽最大努力直接对它执行本机 I/O 操作。也就是说，它会在每一次调用底层操作系统的本机 I/O 操作之前(或之后)，尝试避免将缓冲区的内容拷贝到一个中间缓冲区中(或者从一个中间缓冲区中拷贝数据)。</p>
+<h4 id="1-6_内存映射文件_I/O">1.6 内存映射文件 I/O</h4><p>内存映射文件 I/O 是一种读和写文件数据的方法，它可以比常规的基于流或者基于通道的 I/O 快得多。一般来说，只有文件中实际读取或者写入的部分才会送入（或者 映射 ）到内存中。</p>
+<p>现代操作系统一般根据需要将文件的部分映射为内存的部分，从而实现文件系统。Java 内存映射机制不过是在底层操作系统中可以采用这种机制时，提供了对该机制的访问。</p>
+<h3 id="2，Channel">2，Channel</h3><p>Channel是一个对象，可以通过它读取和写入数据。举个例子，channel就马路，buffer就是汽车，数据就是装在汽车上的沙子。<br>通道与流的不同之处在于通道是双向的。而流只是在一个方向上移动(一个流必须是 InputStream 或者 OutputStream 的子类)， 而 通道 可以用于读、写或者同时用于读写。</p>
+<h4 id="2-1_Channel的类型">2.1 Channel的类型</h4><ul>
+<li>FileChannel     //文件</li>
+<li>DatagramChannel  //UDP</li>
+<li>SocketChannel    //TCP</li>
+<li>ServerSocketChannel  //TCP服务端</li>
+</ul>
+<h4 id="2-2_FileChannel">2.2 FileChannel</h4><p>FileChannel可以实现从Channel到Channel间的直接数据传输.</p>
+<ul>
+<li>FileChannel.transferFrom()  将数据从来源channel传输过来。</li>
+<li>FileChannel.transferTo()   将数据传输到其他的channel中。</li>
+</ul>
+<h4 id="2-3_SocketChannel">2.3 SocketChannel</h4><p>SocketChannel是连接tcp网络的通道。其操作模式如下：</p>
+<pre><code><span class="type">SocketChannel</span> socketChannel = <span class="type">SocketChannel</span>.<span class="keyword">open</span><span class="literal">()</span>;
+socketChannel.connect(<span class="keyword">new</span> <span class="type">InetSocketAddress</span>(<span class="string">"localhost"</span>, <span class="number">80</span>));
+<span class="type">ByteBuffer</span> buf = <span class="type">ByteBuffer</span>.allocate(<span class="number">48</span>);
+<span class="built_in">int</span> bytesRead = socketChannel.read(buf);
+
+<span class="type">ByteBuffer</span> buf = <span class="type">ByteBuffer</span>.allocate(<span class="number">48</span>);
+buf.clear<span class="literal">()</span>;
+buf.put(newData.getBytes<span class="literal">()</span>);
+buf.flip<span class="literal">()</span>;
+<span class="keyword">while</span>(buf.hasRemaining<span class="literal">()</span>) {
+    channel.write(buf);
+}
+</code></pre><h4 id="2-4_ServerSocketChannel">2.4 ServerSocketChannel</h4><p>监听tcp连接。</p>
+<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+serverSocketChannel.socket().bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9999</span>));
+serverSocketChannel.configureBlocking(<span class="literal">false</span>);
+<span class="keyword">while</span>(<span class="literal">true</span>){
+    SocketChannel socketChannel =
+            serverSocketChannel.accept();
+    <span class="regexp">//</span><span class="keyword">do</span> something <span class="reserved">with</span> socketChannel...
+}
+</code></pre><h4 id="2-5_DatagramChannel">2.5 DatagramChannel</h4><p>UDP连接</p>
+<h4 id="2-6_Pipe">2.6 Pipe</h4><p>管道是一种线程之间进行数据交换的方式。<br>Pipe有一个source channel 和一个sink channel.你可以写数据到sink channel中，从source channel中读取数据.<br><img src="/img/2015/pipe-internals.png" alt="pipe-internals"></p>
+<pre><code>Pipe <span class="keyword">pipe</span> = Pipe.<span class="keyword">open</span>();
+Pipe.SinkChannel sinkChannel = <span class="keyword">pipe</span>.sink();
+sinkChannel.<span class="keyword">write</span>(buf);
+Pipe.SourceChannel sourceChannel = <span class="keyword">pipe</span>.source();
+inChannel.<span class="keyword">read</span>(buf);
+</code></pre><h4 id="2-7_分散和聚集">2.7 分散和聚集</h4><p>分散/聚集 I/O 是使用多个而不是单个缓冲区来保存数据的读写方法。<br>在 分散读取 中，通道依次填充每个缓冲区。填满一个缓冲区后，它就开始填充下一个。在某种意义上，缓冲区数组就像一个大缓冲区。</p>
+<p>接口：</p>
+<pre><code>ScatteringByteChannel
+<span class="function"><span class="keyword">long</span> <span class="title">read</span><span class="params">( ByteBuffer[] dsts )</span></span>;
+<span class="function"><span class="keyword">long</span> <span class="title">read</span><span class="params">( ByteBuffer[] dsts, <span class="keyword">int</span> offset, <span class="keyword">int</span> length )</span></span>;
+
+GatheringByteChannel
+<span class="function"><span class="keyword">long</span> <span class="title">write</span><span class="params">( ByteBuffer[] srcs )</span></span>;
+<span class="function"><span class="keyword">long</span> <span class="title">write</span><span class="params">( ByteBuffer[] srcs, <span class="keyword">int</span> offset, <span class="keyword">int</span> length )</span></span>;
+</code></pre><p>分散/聚集 I/O 对于将数据划分为几个部分很有用。例如，您可能在编写一个使用消息对象的网络应用程序，每一个消息被划分为固定长度的头部和固定长度的正文。您可以创建一个刚好可以容纳头部的缓冲区和另一个刚好可以容纳正文的缓冲区。当您将它们放入一个数组中并使用分散读取来向它们读入消息时，头部和正文将整齐地划分到这两个缓冲区中。</p>
+<h3 id="3，Selector">3，Selector</h3><p>selector用于多路复用，可以同时监听一组通信信道（Channel）上的 I/O 状态。</p>
+<p>传统的套接字服务器的处理方式是对于每一个客户端套接字连接，都新创建一个线程来进行处理。创建线程是很耗时的操作，而有的实现会采用线程池。不过一个请求一个线程的处理模型并不是很理想。原因在于耗费时间创建的线程，在大部分时间可能处于等待的状态。而多路复用I/O的基本做法是由一个线程来管理多个套接字连接。该线程会负责根据连接的状态，来进行相应的处理。多路复用I/O依靠操作系统提供的select或相似系统调用的支持，选择那些已经就绪的套接字连接来处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Selector selector = Selector.open();</span><br><span class="line">channel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">  <span class="keyword">int</span> readyChannels = selector.select();</span><br><span class="line">  <span class="keyword">if</span>(readyChannels == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">  Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</span><br><span class="line">  Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();</span><br><span class="line">  <span class="keyword">while</span>(keyIterator.hasNext()) &#123;</span><br><span class="line">    SelectionKey key = keyIterator.next();</span><br><span class="line">    <span class="keyword">if</span>(key.isAcceptable()) &#123;</span><br><span class="line">        <span class="comment">// a connection was accepted by a ServerSocketChannel.</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isConnectable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a connection was established with a remote server.</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isReadable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a channel is ready for reading</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isWritable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a channel is ready for writing</span></span><br><span class="line">    &#125;</span><br><span class="line">    keyIterator.remove();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四，AIO">四，AIO</h2><h2 id="五，其他">五，其他</h2><h3 id="1，同步与异步">1，同步与异步</h3><p>所谓同步就是一个任务的完成需要依赖另外一个任务时，只有等待被依赖的任务完成后，依赖的任务才能算完成，这是一种可靠的任务序列。要么成功都成功，失败都失败，两个任务的状态可以保持一致。而异步是不需要等待被依赖的任务完成，只是通知被依赖的任务要完成什么工作，依赖的任务也立即执行，只要自己完成了整个任务就算完成了。至于被依赖的任务最终是否真正完成，依赖它的任务无法确定，所以它是不可靠的任务序列。</p>
+<h3 id="2，阻塞与非阻塞">2，阻塞与非阻塞</h3><p>阻塞与非阻塞主要是从 CPU 的消耗上来说的，阻塞就是 CPU 停下来等待一个慢的操作完成 CPU 才接着完成其它的事。非阻塞就是在这个慢的操作在执行时 CPU 去干其它别的事，等这个慢的操作完成时，CPU 再接着完成后续的操作。虽然表面上看非阻塞的方式可以明显的提高 CPU 的利用率，但是也带了另外一种后果就是系统的线程切换增加。</p>
+<h3 id="3，网络I/O优化">3，网络I/O优化</h3><ol>
+<li>一个是减少网络交互的次数，缓存。</li>
+<li>减少网络传输数据量的大小，压缩。</li>
+<li>尽量减少编码，最好直接以字节发送。</li>
+<li>同步异步，阻塞非阻塞的选择。</li>
+</ol>
+<h2 id="六，参考资料">六，参考资料</h2><ol>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-javaio/" target="_blank" rel="external">深入分析 Java I/O 的工作机制</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-i-o" target="_blank" rel="external">Java深度历险（八）——Java I/O</a></li>
+<li><a href="http://www.importnew.com/14111.html" target="_blank" rel="external">Java I/O底层是如何工作的？</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/overview.html" target="_blank" rel="external">Java NIO Overview</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/education/java/j-nio/section2.html" target="_blank" rel="external">NIO 入门</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，概述">一，概述</h2><p><img src="/img/2015/I.O.png" alt=""></p>
+<h2 id="二，BIO">二，BIO</h2><p>java I/O主要分为下面这几类：</p>
+<ul>
+<li>基于字节操作的 I/O 接]]>
+    </summary>
+    
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[java序列化]]></title>
+    <link href="http://sqtds.github.io/2015/05/23/2015/java-serizable/"/>
+    <id>http://sqtds.github.io/2015/05/23/2015/java-serizable/</id>
+    <published>2015-05-23T00:32:49.000Z</published>
+    <updated>2015-05-23T02:19:15.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
+<h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
+<h4 id="1-3writeObject和readObject">1.3writeObject和readObject</h4><p>通过实现这2个方法来生成自己的自定义序列化方式。</p>
+<h4 id="1-4readObjectNoData">1.4readObjectNoData</h4><p>当没有获取到对象数据时，默认的初始化行为。</p>
+<h4 id="1-5writeReplace和readResolve">1.5writeReplace和readResolve</h4><p>控制实例化对象的写入写出，可以指定任意对象。可通过此接口来禁止单例对象的多态化。</p>
+<h3 id="2，ObjectOutputStream和ObjectInputStream">2，ObjectOutputStream和ObjectInputStream</h3><p>实际的序列化和反序列化工作是通过ObjectOuputStream和ObjectInputStream来完成的。</p>
+<p>ObjectInputStream：</p>
+<ul>
+<li>readObject ： 从流中读取一个Java对象</li>
+<li>defaultWriteObject：默认的写入方法，注意这不是说默认会调用，而是采用默认的算法。</li>
+</ul>
+<p>ObjectOutputStream：</p>
+<ul>
+<li>writeObject：把一个Java对象写入到流中</li>
+<li>defaultReadObject： 默认的读取算法。</li>
+</ul>
+<h3 id="3，Externalizable接口">3，Externalizable接口</h3><p>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口—Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。</p>
+<ul>
+<li>writeExternal：把一个Java对象写入到流中</li>
+<li>readExternal：从流中读取一个Java对象</li>
+</ul>
+<h2 id="三，其他序列化器">三，其他序列化器</h2><h3 id="1，json">1，json</h3><p>json的序列化框架有fastjson,jackson,gson等。</p>
+<p>适用性：</p>
+<ul>
+<li>公司之间传输数据量相对小，实时性要求相对低（例如秒级别）的服务。</li>
+<li>基于Web browser的Ajax请求。</li>
+<li>由于JSON具有非常强的前后兼容性，对于接口经常发生变化，并对可调式性要求高的场景，例如Mobile app与服务端的通讯。</li>
+</ul>
+<h3 id="2,xml">2,xml</h3><p>xml的序列化框架有XStream。</p>
+<p>XML的序列化和反序列化的空间和时间开销都比较大，对于对性能要求在ms级别的服务，不推荐使用。</p>
+<h3 id="3,hessian">3,hessian</h3><p>hessian主要用于java序列化。它的实现机制是着重于数据，附带简单的类型信息的方法：</p>
+<ol>
+<li>对于简单的数据类型。就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。</li>
+<li>对于复杂对象，通过Java的反射机制，<strong>hessian把对象所有的属性当成一个Map来序列化</strong>，产生类似M className propertyName1 I 1 propertyName S stringValue</li>
+<li>对于引用对象，在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。</li>
+</ol>
+<h3 id="4,thift">4,thift</h3><p>Thrift是Facebook开源提供的一个高性能，轻量级RPC服务框架，其产生正是为了满足当前大数据量、分布式、跨语言、跨平台数据通讯的需求。 但是，Thrift并不仅仅是序列化协议，而是一个RPC框架。相对于JSON和XML而言，Thrift在空间开销和解析性能上有了比较大的提升，对于对性能要求比较高的分布式系统，它是一个优秀的RPC解决方案；但是由于Thrift的序列化被嵌入到Thrift框架里面，Thrift框架本身并没有透出序列化和反序列化接口，这导致其很难和其他传输层协议共同使用（例如HTTP）。</p>
+<h3 id="5,protobuf">5,protobuf</h3><ul>
+<li>序列化数据非常简洁，紧凑.</li>
+<li>解析速度非常快</li>
+<li>提供了非常友好的动态库，使用非常简介，反序列化只需要一行代码。</li>
+</ul>
+<h3 id="6,avro">6,avro</h3><p>Avro的产生解决了JSON的冗长和没有IDL的问题。 Avro提供两种序列化格式：JSON格式或者Binary格式。Binary格式在空间开销和解析性能方面可以和Protobuf媲美，JSON格式方便测试阶段的调试。 </p>
+<ul>
+<li>动态类型：Avro并不需要生成代码，模式和数据存放在一起，而模式使得整个数据的处理过程并不生成代码、静态数据类型等等。这方便了数据处理系统和语言的构造。</li>
+<li>未标记的数据：由于读取数据的时候模式是已知的，那么需要和数据一起编码的类型信息就很少了，这样序列化的规模也就小了。</li>
+<li>不需要用户指定字段号：即使模式改变，处理数据时新旧模式都是已知的，所以通过使用字段名称可以解决差异问题。</li>
+</ul>
+<h2 id="四，参考资料">四，参考资料</h2><ol>
+<li>序列化的秘密.pdf —-liujia</li>
+<li><a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="external">jvm-serializers</a></li>
+<li><a href="http://www.infoq.com/cn/articles/serialization-and-deserialization" target="_blank" rel="external">序列化和反序列化</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-object-serialization-rmi" target="_blank" rel="external">Java对象序列化与RMI</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-gpb/" target="_blank" rel="external">Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://www.biaodianfu.com/avro.html" target="_blank" rel="external">Avro：大数据的二进制传输中间件</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id=]]>
+    </summary>
+    
+      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[linux搜索命令]]></title>
+    <link href="http://sqtds.github.io/2015/05/18/2015/linux-search/"/>
+    <id>http://sqtds.github.io/2015/05/18/2015/linux-search/</id>
+    <published>2015-05-18T01:55:16.000Z</published>
+    <updated>2015-05-22T01:35:23.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，grep">一，grep</h2><blockquote>
+<p>Syntax: grep [options] pattern [files]</p>
+</blockquote>
+<pre><code>搜索在文件中包含pattern的所有的行    
+<span class="id">#grep</span> John /etc/passwd
+搜索在文件中不包含pattern的所有的行    
+<span class="id">#grep</span> -v John /etc/passwd
+搜索在文件中包含pattern的行数
+<span class="id">#grep</span> -c John /etc/passwd
+忽略大小写
+<span class="id">#grep</span> -<span class="tag">i</span> John /etc/passwd
+搜索子目录,展现文件名和行
+<span class="id">#grep</span> -ri john /home/users
+搜索子目录,只展现文件名
+<span class="id">#grep</span> -ril john /home/users
+</code></pre><h2 id="二，grep与正则的配合">二，grep与正则的配合</h2><pre><code>行的开始^
+grpe <span class="string">"^aa"</span> message<span class="class">.logs</span>
+行的结尾$
+grpe <span class="string">"aa$"</span> message<span class="class">.logs</span>
+计算空行数
+grep -c <span class="string">"^$"</span> message.logs
+</code></pre><h2 id="三，find">三，find</h2><blockquote>
+<p>Syntax: find [pathnames] [conditions]</p>
+</blockquote>
+<pre><code>查找文件名包含特定的字符
+<span class="preprocessor"># find /etc -name "*mail*"</span>
+查找文件大小大于<span class="number">100</span>M
+<span class="preprocessor">#find / -type f -size +100M</span>
+查找文件在最近的<span class="number">60</span>天未被修改
+<span class="preprocessor"># find . -mtime +60</span>
+查找文件在最近的<span class="number">2</span>天内被修改的
+<span class="preprocessor"># find . –mtime -2</span>
+查看以.tar.gz并且大于<span class="number">100</span>M的文件，并且删除
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec ls -l {}</span>
+\;
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec rm -f {}</span>
+\;
+</code></pre><h2 id="四，sed">四，sed</h2><blockquote>
+<p>Syntax: #sed ‘ADDRESSs/REGEXP/REPLACEMENT/FLAGS’ filename<br>Syntax: #sed ‘PATTERNs/REGEXP/REPLACEMENT/FLAGS’ filename</p>
+</blockquote>
+<ul>
+<li>s is substitute command</li>
+<li>/ is a delimiter</li>
+<li>REGEXP is regular expression to match</li>
+<li>REPLACEMENT is a value to replace</li>
+</ul>
+<p>FLAGS选项:</p>
+<ul>
+<li>g 用REPLACEMENT代替所有的 REGEXP  </li>
+<li>n 可以是任意数字,用REPLACEMENT代替REGEXP的第n个实例。</li>
+<li>p 打印匹配后的行</li>
+<li>i 忽略大小写</li>
+<li>w 将匹配后的行写入到文件中</li>
+</ul>
+<p>我们也可以用( one of @ % ; : )的其中一个代替/</p>
+<pre><code>使用Linux-Unix替代Linux，只替代第一次
+$ sed <span class="string">'s/Linux/Linux-Unix/'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代所有的
+$ sed <span class="string">'s/Linux/Linux-Unix/g'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代第<span class="number">2</span>次
+$ sed <span class="string">'s/Linux/Linux-Unix/2'</span> thegeekstuff<span class="class">.txt</span>
+将替换后的行输出并打印 ，-n 表示取消默认输出
+$ sed -n <span class="string">'s/Linux/Linux-Unix/gpw output'</span> thegeekstuff<span class="class">.txt</span>
+删除所有的以#开头的行  -e 表示在文本中编辑
+$ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
+</code></pre><h2 id="五，cut">五，cut</h2><p>Cut命令用于展现文本中的特定列。</p>
+<blockquote>
+<p>Syntax: cut  [-bn] [file] 或 cut [-c] [file]  或  cut [-df] [file]</p>
+</blockquote>
+<ul>
+<li>-b ：以字节为单位进行分割。这些字节位置将忽略多字节字符边界，除非也指定了 -n 标志。</li>
+<li>-c ：以字符为单位进行分割。</li>
+<li>-d ：自定义分隔符，默认为制表符。</li>
+<li>-f  ：与-d一起使用，指定显示哪个区域。</li>
+<li><p>-n ：取消分割多字节字符。仅和 -b 标志一起使用。如果字符的最后一个字节落在由 -b 标志的 List 参数指示的范围之内，该字符将被写出；否则，该字符将被排除。</p>
+<p>  从冒号(:)分隔文件中展现第一个字段.<br>  $ cut -d: -f 1 names.txt<br>  从冒号(:)分隔文件中展现第一到三个字段.<br>  $ cut -d: -f 1,3 names.txt<br>  展现每行的前8个字符<br>  $ cut -c 1-8 names.txt<br>  展现可用内存<br>  free | tr -s ‘ ‘ | sed ‘/^Mem/!d’ | cut -d” “ -f2 </p>
+</li>
+</ul>
+<h2 id="六，awk">六，awk</h2><blockquote>
+<p>Syntax:awk ‘/search pattern1/ {Actions}<br>          /search pattern2/ {Actions}’ file</p>
+</blockquote>
+<ul>
+<li>search pattern is a regular expression.</li>
+<li>Actions – statement(s) to be performed.</li>
+<li>several patterns and actions are possible in Awk.</li>
+<li>file – Input file.</li>
+<li>Single quotes around program is to avoid shell not to interpret any of its special characters</li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，grep">一，grep</h2><blockquote>
+<p>Syntax: grep [options] pattern [files]</p>
+</blockquote>
+<pre><code>搜索在文件中包含pattern的所有的行    
+<spa]]>
+    </summary>
+    
+      <category term="linux命令集" scheme="http://sqtds.github.io/tags/linux%E5%91%BD%E4%BB%A4%E9%9B%86/"/>
+    
+      <category term="linux" scheme="http://sqtds.github.io/categories/linux/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[linux常用技巧]]></title>
     <link href="http://sqtds.github.io/2015/05/17/2014/linux-command/"/>
     <id>http://sqtds.github.io/2015/05/17/2014/linux-command/</id>
     <published>2015-05-17T11:02:11.000Z</published>
-    <updated>2015-05-17T08:07:41.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
-]]></content>
+    <updated>2015-05-18T05:53:58.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="一，TOP命令">一，TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+<h3 id="二，进程启动">二，进程启动</h3><ol>
+<li><strong>&amp;</strong> 在后台启动进程，如果关闭会话，进程也会终止</li>
+<li><strong>nohup</strong> 在后台启动进程，如果关闭会话，进程不会终止</li>
+<li><strong>at</strong> 定时启动命令   <code>$ at -f backup.sh 10 am tomorrow</code></li>
+<li><strong>watch</strong> 间隔启动   <code>$ watch df -h</code></li>
+</ol>
+<h3 id="三，">三，</h3>]]></content>
     <summary type="html">
-    <![CDATA[<h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，]]>
+    <![CDATA[<h3 id="一，TOP命令">一，TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift]]>
     </summary>
     
       <category term="linux" scheme="http://sqtds.github.io/tags/linux/"/>
@@ -37,8 +383,8 @@
     <link href="http://sqtds.github.io/2015/05/17/2015/java-reflection/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-reflection/</id>
     <published>2015-05-17T10:42:41.000Z</published>
-    <updated>2015-05-17T12:33:44.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。<br><img src="/img/2015/反射.png" alt=""></p>
+    <updated>2015-05-23T02:12:57.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
 <h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
 <p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
 <h3 id="1,Methods">1,Methods</h3><ul>
@@ -77,7 +423,9 @@ Modifier.isStrict(<span class="keyword">int</span> modifiers)
 Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
 Modifier.isTransient(<span class="keyword">int</span> modifiers)
 Modifier.isVolatile(<span class="keyword">int</span> modifiers)
-</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br><span class="line">从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。</span><br></pre></td></tr></table></figure>
+</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
 <h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
 <h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
 </code></pre><p>创建一个大小为3，类型为int的数组。</p>
@@ -91,8 +439,8 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射。<br><img src="/img/2015/反射.png" alt=""></p>
-<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的X]]>
+    <![CDATA[<h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
+<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为publ]]>
     </summary>
     
       <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
@@ -106,7 +454,7 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
     <link href="http://sqtds.github.io/2015/05/17/2015/java-classloader/"/>
     <id>http://sqtds.github.io/2015/05/17/2015/java-classloader/</id>
     <published>2015-05-17T08:21:51.000Z</published>
-    <updated>2015-05-17T12:36:21.000Z</updated>
+    <updated>2015-05-23T02:18:35.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，概览">一，概览</h2><p><img src="/img/2015/类加载.png" alt="类加载"></p>
 <h3 id="1，类的生命周期">1，类的生命周期</h3><p>一个java类的完整的生命周期会经历<strong>加载、连接、初始化、使用、和卸载</strong>五个阶段，当然也有在加载或者连接之后没有被初始化就直接被使用的情况，如图所示：<br><img src="/img/2015/classloaderprocess.png" alt=""></p>
 <h3 id="2，连接">2，连接</h3><p>链接过程：验证、准备和解析。</p>
@@ -123,9 +471,8 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <li>该类所有的实例都已经被回收，也就是java堆中不存在该类的任何实例。</li>
 <li>加载该类的ClassLoader已经被回收。</li>
 <li>该类对应的java.lang.Class对象没有任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
-<li><h2 id="二，问答">二，问答</h2></li>
 </ul>
-<h3 id="1,什么是双亲委派？">1,什么是双亲委派？</h3><p>某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
+<h2 id="二，问答">二，问答</h2><h3 id="1,什么是双亲委派？">1,什么是双亲委派？</h3><p>某个特定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次递归，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
 <h3 id="2，由不同的类加载器加载的指定类还是相同的类型吗？">2，由不同的类加载器加载的指定类还是相同的类型吗？</h3><p>在JVM中一个类用其全名和一个加载类ClassLoader的实例作为唯一标识，不同类加载器加载的类将被置于不同的命名空间。</p>
 <h3 id="3,在代码中直接调用Class-forName(String_name)方法，到底会触发那个类加载器进行类加载行为？">3,在代码中直接调用Class.forName(String name)方法，到底会触发那个类加载器进行类加载行为？</h3><p>Class.forName(String name)默认会使用调用类的类加载器来进行类加载。</p>
 <h3 id="4,自定义类的默认父加载器是谁？">4,自定义类的默认父加载器是谁？</h3><p>AppClassLoder</p>
@@ -148,7 +495,7 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <h3 id="9，getResourceAsStream辨析">9，getResourceAsStream辨析</h3><ol>
 <li>Class.getResourceAsStream(String path) ： path 不以’/‘开头时默认是从此类所在的包下取资源，以’/‘开头则是从<br>ClassPath根下获取。其只是通过path构造一个绝对路径，最终还是由ClassLoader获取资源。</li>
 <li>Class.getClassLoader.getResourceAsStream(String path) ：默认则是从ClassPath根下获取，path不能以’/‘开头，最终是由ClassLoader获取资源。</li>
-<li>ServletContext. getResourceAsStream(String path)：默认从WebAPP根目录下取资源，Tomcat下path是否以’/‘开头无所谓，当然这和具体的容器实现有关。</li>
+<li>ServletContext.getResourceAsStream(String path)：默认从WebAPP根目录下取资源，Tomcat下path是否以’/‘开头无所谓，当然这和具体的容器实现有关。</li>
 </ol>
 <h3 id="10，Web容器设计原则">10，Web容器设计原则</h3><ol>
 <li>每个 Web 应用自己的 Java 类文件和使用的库的 jar 包，分别放在 WEB-INF/classes和 WEB-INF/lib目录下面。</li>
@@ -159,7 +506,10 @@ Modifier.isVolatile(<span class="keyword">int</span> modifiers)
 <li>查找本地缓存</li>
 <li>使用系统类加载器加载系统类</li>
 <li>使用本地类加载器加载类</li>
-<li>如果没有找到，使用父类加载器加载类<h3 id="12，OSGi">12，OSGi</h3>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。<h2 id="三，参考资料">三，参考资料</h2></li>
+<li>如果没有找到，使用父类加载器加载类</li>
+</ol>
+<h3 id="12，OSGi">12，OSGi</h3><p>OSGi 中的每个模块都有对应的一个类加载器。它负责加载模块自己包含的 Java 包和类。当它需要加载 Java 核心库的类时（以 java开头的包和类），它会代理给父类加载器（通常是启动类加载器）来完成。当它需要加载所导入的 Java 类时，它会代理给导出此 Java 类的模块来完成加载。</p>
+<h2 id="三，参考资料">三，参考资料</h2><ol>
 <li><a href="http://www.importnew.com/15435.html" target="_blank" rel="external">详解java类的生命周期</a></li>
 <li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-classloader/#author1" target="_blank" rel="external">深入探讨 Java 类加载器</a></li>
 <li><a href="http://blog.csdn.net/zhoudaxia/article/details/35824249" target="_blank" rel="external">深入理解Java类加载器(1)：Java类加载原理解析</a></li>
@@ -919,556 +1269,6 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
     </summary>
     
       <category term="nosql" scheme="http://sqtds.github.io/tags/nosql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[mondrian 源码解读（九）-聚集层]]></title>
-    <link href="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-9/"/>
-    <id>http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-9/</id>
-    <published>2015-04-04T10:41:49.000Z</published>
-    <updated>2015-05-09T04:12:09.000Z</updated>
-    <content type="html"><![CDATA[<p>包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。<br>RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的unit sales)来限定，如：<code>(Unit sales, Gender = &#39;F&#39;, State  in {&#39;CA&#39;,&#39;OR&#39;}, Marital Status = anything)</code>，由于其中的列值可能会取多个，因此最终表达的cell值也可能是多个。RolapStar中有一个aggregations，是一个map对象，通过request的constrainedColumnsBitKey来索引一个aggregation。</p>
-<h2 id="聚合装载过程">聚合装载过程</h2><p>实际中无论是底层的单元值还是聚合后的单元值都是放在聚合对象aggregation中的。以aggregation.load(colums,measures,predicates,pinnedSegments)为入口：</p>
-<p>参数中的除了measure不一样外，其限定的列(colums)及列值（prediactes）都是一致的。因此转换成对对若干segment[]的求值： Segment.load(segment[]，….)，在该方法内部：</p>
-<ul>
-<li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
-<li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
-<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/2014/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/2014/mondrian_agg2.png" alt=""></li>
-<li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储（如果是稠密的，就用数组存储，如果是稀疏的，则用Map存储）；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
-<li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
-</ul>
-<h2 id="segment详解">segment详解</h2><p>我们看Segment里面都放了什么：</p>
-<pre><code><span class="keyword">protected</span> <span class="keyword">final</span> Column[] columns; <span class="comment">//约束列</span>
-<span class="keyword">public</span> <span class="keyword">final</span> MeasureColumn measure;<span class="comment">//这个segment是针对哪个度量的。</span>
-<span class="keyword">private</span> RolapModel model; <span class="comment">//对模型的引用</span>
-<span class="keyword">public</span> <span class="keyword">final</span> StarColumnPredicate[] predicates; <span class="comment">//Segment存在哪些断言</span>
-</code></pre><p>从这里我们可以看出，Segment就是对某个Cube的断面做的定义。那它的单元值是存在哪里呢？<br>就是我们在上面讲的到SegmentDataSet，由它来存储单元值。那么如何关联Segment与SegmentDataSet呢？这里我们有要讲到SegmentWithData。我们看他的定义：</p>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">SegmentWithData</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Segment</span>{</span>
-    <span class="keyword">final</span> <span class="type">SegmentAxis</span>[] axes;<span class="comment">//一组维度的约束</span>
-    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">SegmentDataset</span> data;<span class="comment">//数据存储</span>
-...
-    <span class="comment">//此方法判断SegmentWithData中是否存在以keys为维度的单元值</span>
-    public <span class="type">Object</span> getCellValue(<span class="type">Object</span>[] keys) {
-        assert keys.length == axes.length;
-        int missed = <span class="number">0</span>;
-        <span class="type">CellKey</span> cellKey = <span class="type">CellKey</span>.<span class="type">Generator</span>.newCellKey(axes.length);
-        <span class="keyword">for</span> (int i = <span class="number">0</span>; i &lt; keys.length; i++) {
-            <span class="type">Comparable</span> key = (<span class="type">Comparable</span>) keys[i];
-            int offset = axes[i].getOffset(key);
-            <span class="keyword">if</span> (offset &lt; <span class="number">0</span>) {
-                <span class="keyword">if</span> (axes[i].wouldContain(key)) {
-                    <span class="comment">// see whether this segment should contain this value</span>
-                    missed++;
-                    <span class="keyword">continue</span>;
-                } <span class="keyword">else</span> {
-                    <span class="comment">// this value should not appear in this segment; we</span>
-                    <span class="comment">// should be looking in a different segment</span>
-                    <span class="keyword">return</span> <span class="literal">null</span>;
-                }
-            }
-            cellKey.setAxis(i, offset);
-        }
-        <span class="keyword">if</span> (isExcluded(keys)) {
-            <span class="comment">// this value should not appear in this segment; we</span>
-            <span class="comment">// should be looking in a different segment</span>
-            <span class="keyword">return</span> <span class="literal">null</span>;
-        }
-        <span class="keyword">if</span> (missed &gt; <span class="number">0</span>) {
-            <span class="comment">// the value should be in this segment, but isn't, because one</span>
-            <span class="comment">// or more of its keys does have any values</span>
-            <span class="keyword">return</span> <span class="type">FunUtil</span>.nullValue;
-        } <span class="keyword">else</span> {
-            <span class="comment">//cellkey是对一组维度的值得定义</span>
-            <span class="type">Object</span> o = data.getObject(cellKey);
-            <span class="keyword">if</span> (o == <span class="literal">null</span>) {
-                o = <span class="type">FunUtil</span>.nullValue;
-            }
-            <span class="keyword">return</span> o;
-        }
-    }
-}    
-</code></pre><p>在这里，SegmentWithData包装了Segment与它单元值之间的关系，通过SegmentAxis来判断当前比较的值是否相同。</p>
-<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/2014/mondrian_agg3.png" alt=""><br><img src="/img/2014/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/2014/mondrian_agg5.png" alt=""></p>
-<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/2014/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/2014/mondrian_agg7.png" alt=""></p>
-<p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
-<pre><code><span class="type">Query</span> query = connection.parseQuery(
-    <span class="string">"SELECT"</span> +
-    <span class="string">" {[Time].[1997],"</span> +
-    <span class="string">" [Time].[1997].Children} ON COLUMNS,"</span> +
-    <span class="string">" {[Customer].[USA],"</span> +
-    <span class="string">" [Customer].[USA].[OR],"</span> +
-    <span class="string">" [Customer].[USA].[WA]} ON ROWS"</span> +
-    <span class="string">"FROM [Sales]"</span>);
-<span class="type">Result</span> <span class="literal">result</span> = connection.execute(query);
-</code></pre><p>该语句执行后产生的segment分别为(除了第一个外，其他segment都会包含多个cell，因为它们的限定列中含有多值的情况)：</p>
-<pre><code>Segment YN<span class="comment">#1    Year Nation Unit Sales</span>
-                <span class="number">1997</span> USA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA
-
-Segment YNS<span class="comment">#1    Year Nation State Unit Sales</span>
-                <span class="number">1997</span> USA    OR    xxx
-                <span class="number">1997</span> USA    WA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
-
-Segment YQN<span class="comment">#1    Year Quarter Nation Unit Sales</span>
-                <span class="number">1997</span> Q1      USA    xxx
-                <span class="number">1997</span> Q2      USA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA
-
-Segment YQNS<span class="comment">#1    Year Quarter Nation State Unit Sales</span>
-                <span class="number">1997</span> Q1      USA    OR    xxx
-                <span class="number">1997</span> Q1      USA    WA    xxx
-                <span class="number">1997</span> Q2      USA    OR    xxx
-                <span class="number">1997</span> Q2      USA    WA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
-</code></pre>]]></content>
-    <summary type="html">
-    <![CDATA[<p>包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。<br>RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个se]]>
-    </summary>
-    
-      <category term="mondrian" scheme="http://sqtds.github.io/tags/mondrian/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[mondrian 源码解读（八）-计算结果]]></title>
-    <link href="http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/"/>
-    <id>http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/</id>
-    <published>2015-04-04T10:07:17.000Z</published>
-    <updated>2015-05-09T04:12:09.000Z</updated>
-    <content type="html"><![CDATA[<p>上一节我们了解了member的查询过程。下面，我们将进入mdx的执行过程。</p>
-<p>首先，我们需要了解3个重要的类，结果集RolapResult，求值上下文RolapEvaluator与单元格读取CellReader。这3个类的关系是首先由在RolapResult初始化构造函数中传入一个Query，由Query生成一个RolapEvaluator，然后由Query中的Calc根据RolapEvaluator来获取轴上的成员。获取到所有的成员之后，RolapEvaluator根据成员调用CellReader获取到当前值。</p>
-<h2 id="RolapResult">RolapResult</h2><p>RolapResult是一个运行中的请求的结果集。</p>
-<p>Mondiran的执行结果由RolapResult类表单，由于mdx查询语句本身就包含on rows(行轴上)、on columns（列轴上）和where部分（切片轴上），结果集中相对应的为ROlapAxis对象，这其中有个sliceAxis对象。因此结果集是由若干ROlapAxis对象和一个RolapCell组构成的。每个axis对象又由若干Position对象组成，每个Position对象又可能由若干member组成（注意一个postion会横跨多个维度的成员）。注意ROlapAxis是抽象类，实际的对象类可能随着不同的轴是不同的。如图：<br><img src="/img/2014/mondrian_result.png" alt=""></p>
-<p>图中，column轴上两个position(每个position含有一个成员)，分别是:</p>
-<pre><code> [[Measures].[YJD]]
-[[Measures].[GCLC]]
-</code></pre><p>Row轴上有三个position(每个position含有二个成员)，分别是:</p>
-<pre><code>[[dimLX].[All dimLXs], [dimTime].[All dimTimes]]
-[[dimLX].[All dimLXs].[宁波—梁辉], [dimTime].[All dimTimes]]
-[[dimLX].[All dimLXs].[同江－三亚], [dimTime].[All dimTimes]]
-</code></pre><p>切片轴上则有一个position：</p>
-<pre><code>[[dimStation].[All dimStations].[宁波市]]
-</code></pre><p>单元值们则放置在RolapResult中的cellInfos对象里，属CellInfoContainer接口，其中存放着CellInfo，并通过Cellkey进行索引。</p>
-<p>CellKey：用于在maps里访问cellinfo时使用的键值，根据cell的位置来决定键值。CellKey共有四个默认实现，及zero、one、two、three和many版的实现，分别对应着轴的个数。这些类中关键的属性便是存储各轴的位置值。</p>
-<p>CellInfo、CellInfoContainer：内部类。CellInfo包含了一个cell所需要的所有信息(最关键的包含value值和一些formatter设置);最终将作为构造ROlapCell对象的参数。CellInfoContainer显然是cellInfo的容器，并使用CellKey来索引。</p>
-<p>ROlapCell：最终返回给jpivot的cell单元值。</p>
-<h2 id="RolapEvaluator">RolapEvaluator</h2><p>RolapEvaluator即在多维环境中计算表达式。<br>该类中维护一个很重要的对象，即currentMembers,该上下文对象针对每个维度都包含了一个成员；通过setContext方法用来设置当前维度，以开始计算当前维度组合下的表达式值。</p>
-<p>该类有一个方法：<br><code>public final Object evaluateCurrent()</code><br>该方法就是对单元格的求值，在该方法中，规定了solver order的求解顺序。</p>
-<h2 id="CellReader">CellReader</h2><p>CellReader即单元格读取。</p>
-<p>Cells会被求值多次。第一次时, Evaluator使用FastBatchingCellReader来求值。当一个单元被求值时，evaluateCurrent()被调用。此时FastBatchingCellReader并没有被调用，而是为那个cell记录了一个 CellRequest并且return (not throw) an exception。在所有的cells都有了对应的CellRequests之后， Aggregation会生成 SQL，以一个单独的sql请求来载入所有的cells。然后由AggregatingCellReader 重新计算cells，从缓存中返回cells值。<br><img src="/img/2014/CellReader.gif" alt=""></p>
-<h3 id="FastBatchingCellReader">FastBatchingCellReader</h3><p>主要方法，Object get(Evaluator  evaluator)</p>
-<ol>
-<li>首先根据当前的上下文环境（即一组members）创建cellRequest，cellRequest中包含了所有必要的从star中取值的信息。该组members的交集便是要求值的单元格，其中切片轴上的成员和其他轴上的成员完全同等对待；其中度量轴上的成员要求上StoredMeasure（非计算成员CaculatedMember）；度量值上的成员位于第一个。通过调用request的addConstrainedColumn()方法把各member对应的column和value（属StarColumnPredicate）值加至到request中.</li>
-<li>调用AggregationManager.getCellFromCache(request,pinnedSegments)方法从缓存中获取cell值。首先根据request中的列组索引标识从缓存中获取aggreation缓存对象，如果为空说明缓存还未建立则直接返回null，如果有值则调用aggregation.getCellValue(measure,colValueKeys)方法获取缓存的cell值；getCellValue内部首先会根据measure查找匹配的segment，然后调用segment.getCellValue(keys)从segment的dataset缓存集中查找相应的cell值。</li>
-<li>如果getCellFromCache返回为null则调用recordCellRequest（）记录需求。这些cell request会被组织成多个cell request batch，以便将来聚合层进行批读取以提高效率。关于batch的详细讨论参见下面Batch类章节。</li>
-<li>上层会在适当的时候调用batchCellReading.loadAggregations()以实际读取这些cell值，前提是batches对象中已有cellRequest了。每个batch的读取参见batch. loadAggregation()方法，最终调用聚合层的方法，参见aggreation.load(….)。</li>
-</ol>
-<h3 id="FastBatchingCellReader-Batch类">FastBatchingCellReader.Batch类</h3><p>每个batch对应与一组特定的columns环境下的cell求取（具有相同的列和列值(列值是具体的值，不会是“all”值)）；从batch的属性可以看出batch包含了哪些上下文：</p>
-<ol>
-<li>RolapStar.Column[]，这个指明了基于哪些列(也即基于哪些维度，包括切片维度)进行读取；</li>
-<li>Set<starcolumnpredicate>[]，保存了每列的限定值，对于一列而言，限定值可能会有多个（毕竟是批处理，一次请求多个）；</starcolumnpredicate></li>
-<li>MeasureList，指明求取哪些度量值上的cell（度量值本质是度量维上的限定值）。</li>
-<li>BitKey，该batch的唯一索引。<br>如图所示的一个mdx查询结果界面：<br><img src="/img/2014/fasterBatch.png" alt=""></li>
-</ol>
-<p>此时会产生两个batch，每个batch最终可能会产生若干segment，segment是cells的集合，</p>
-<ol>
-<li><p>一个batch是(其中“当量数/适应交通量=拥挤度”，拥挤度是计算成员)，最终产生3个segment，每个segment只有一个cell：</p>
-<p>  （地市=’宁波市’,measure=’观察里程’）    </p>
-<pre><code><span class="attribute">（地市</span>=<span class="string">’宁波市’,measure=’当量数’）</span>
-</code></pre><p>  （地市=’宁波市’,measure=’适应交通量’）</p>
-</li>
-<li><p>另一个batch是(其中的G310等是路线代码，最终过滤掉空值后就剩下两个了) ，最终产生3个segment，每个segment有多个cell：</p>
-<pre><code>（地市=’宁波市’,roadId <span class="keyword">in</span> (G310,G322,G210,S321….)，<span class="variable">measure=</span>’观察里程’）
-（地市=’宁波市’,roadId <span class="keyword">in</span> (G310,G322,G210,S321….)，<span class="variable">measure=</span>’当量数’） 
-（地市=’宁波市’,roadId <span class="keyword">in</span> (G310,G322,G210,S321….)，<span class="variable">measure=</span>’适应交通量’）
-</code></pre></li>
-</ol>
-<p>此次：mdx的执行过程就分析完了。<br>ps：最后这一点来源于网络，由于从文档上无法得知作者来源，如有侵权还望见谅。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>上一节我们了解了member的查询过程。下面，我们将进入mdx的执行过程。</p>
-<p>首先，我们需要了解3个重要的类，结果集RolapResult，求值上下文RolapEvaluator与单元格读取CellReader。这3个类的关系是首先由在RolapResult初始]]>
-    </summary>
-    
-      <category term="mondrian" scheme="http://sqtds.github.io/tags/mondrian/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Oracle rollup、cube、grouping sets]]></title>
-    <link href="http://sqtds.github.io/2015/03/31/2014/oracle-group-by/"/>
-    <id>http://sqtds.github.io/2015/03/31/2014/oracle-group-by/</id>
-    <published>2015-03-31T09:45:27.000Z</published>
-    <updated>2015-05-17T08:06:34.000Z</updated>
-    <content type="html"><![CDATA[<p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
-<h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用group by rollup(A,B,C)，首先会对(A、B、C)进行GROUP BY，然后对(A、B)进行GROUP BY，然后是(A)进行GROUP BY，最后对全表进行GROUP BY操作。roll up的意思是“卷起”，这也可以帮助我们理解group by rollup就是对选择的列从右到左以一次少一列的方式进行grouping直到所有列都去掉后的grouping(也就是全表grouping)，对于n个参数的rollup，有n+1次的grouping。以下2个sql的结果集是一样的：</p>
-<p><code>Select A,B,C,sum(E) from test group by rollup(A,B,C)</code><br>与</p>
-<p><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,null,null,sum(E) from test</code></p>
-<h2 id="2_cube">2 cube</h2><p>cube的意思是立方，对cube的每个参数，都可以理解为取值为参与grouping和不参与grouping两个值的一个维度，然后所有维度取值组合的集合就是grouping的集合，对于n个参数的cube，有2^n次的grouping。如果使用group by cube(A,B,C),，则首先会对(A、B、C)进行GROUP BY，然后依次是(A、B)，(A、C)，(A)，(B、C)，(B)，(C)，最后对全表进行GROUP BY操作，一共是2^3=8次grouping。同rollup一样，也可以用基本的group by加上结果集的union all写出一个与group by cube结果集相同的sql：<br><code>Select A,B,C,sum(E) from test group by cube(A,B,C);</code><br>与<br><code>Select A,B,C,sum(E) from test group by A,B,C
-union all
-Select A,B,null,sum(E) from test group by A,B
-union all
-Select A,null,C,sum(E) from test group by A,C
-union all
-Select A,null,null,sum(E) from test group by A
-union all
-Select null,B,C,sum(E) from test group by B,C
-union all
-Select null,B,null,sum(E) from test group by B
-union all
-Select null,null,C,sum(E) from test group by C
-union all
-Select null,null,null,sum(E) from test;</code></p>
-<h2 id="3_grouping_sets">3 grouping sets</h2><p>grouping sets就是对参数中的每个参数做grouping，也就是有几个参数做几次grouping,例如使用<code>group by grouping sets(A,B,C)</code>，则对(A),(B),(C)进行group by，如果使用<code>group by grouping sets((A,B),C)</code>,则对(A,B),(C)进行group by。甚至<code>grouping by grouping set(A,A)</code>都是语法允许的，也就是对(A)进行2次group by,grouping sets的参数允许重复</p>
-<h2 id="4_总结">4 总结</h2><ul>
-<li>rollup        (N+1个分组方案)</li>
-<li>cube         (2^N个分组方案)</li>
-<li>grouping sets (自定义罗列出分组方案)</li>
-</ul>
-<hr>
-<h2 id="5_注意点">5 注意点</h2><h3 id="5-1_机制不同">5.1 机制不同</h3><p>在rollup和cube的说明中分别给出了用基本group by加结果集union all给出了结果集相同的sql，但这只是为了理解的方便而给出的sql，并不说明rollup和cube与基本group by加结果集union all等价。实际上两者的内部机制是安全不一样的，前者除了写法简洁以外，运行时不需多次扫描表，效率远比后者高。</p>
-<h3 id="5-2_集合可运算">5.2 集合可运算</h3><p>3种扩展用法的参数可以是源表中的某一个具体的列，也可以是若干列经过计算而形成的一个新列（比如说A+B，A||B），也可以是这两种列的一个集合（例如（A+B，C）），对于grouping set更是特殊，可以是空集合()，表示对全表进行group by。</p>
-<h3 id="5-3_group_by_与_rollup,_cube组合使用">5.3 group by 与 rollup, cube组合使用</h3><p>Group by的基本用法以及这3种扩展用法可以组合使用，也就是说可以出现group by A,rollup(A,B)这样的用法，oracle将对出现在group by中的每种用法的grouping列集合做笛卡尔积然后对其中的每一个元素做group by。这话说起来挺绕口，举例说明吧，group by A, rollup(A,B)，基本用法的grouping集合是(A),rollup(A,B)的grouping集合是((A,B),(A),()),两个集合的笛卡尔积集合是((A,A,B),(A,A),(A))，所以会首先对(A,A,B)做group by，然后对(A,A)做group by，最后对(A)做group by。实际上对(A,A,B)做group by和对(A,B)做group by两者是完全等价的(group by A,A,B结果和group by A,B完全一样)，同理对(A,A)做group by和对(A)做group by也是等价的。简化后的结果就是首先对(A,B)做group by，然后对(A)做group by，最后再对(A)做group by。下面给出两个等价的sql以便理解：<br><code>Select A,B,sum(E) from test1 group by A, rollup(A,B);</code><br>与<br><code>Select A,B,sum(E) from test1 group by A,B
-Union all
-Select A,null,sum(E) from test1 group by A
-Union all
-Select A,null,sum(E) from test1 group by A;</code></p>
-<h2 id="6_grouping()、grouping_id()、group_id()">6 grouping()、grouping_id()、group_id()</h2><h3 id="6-1_grouping()">6.1 grouping()</h3><p>参数只有一个，而且必须为group by中出现的某一列，表示结果集的一行是否对该列做了grouping。对于对该列做了grouping的行而言，grouping()=0，反之为1；</p>
-<h3 id="6-2_grouping_id()">6.2 grouping_id()</h3><p>参数可以是多个，但必须为group by中出现的列。Grouping_id()的返回值其实就是参数中的每列的grouping()值的二进制向量，例如如果grouping(A)=1，grouping(B)=0，则grouping_id(A,B)的返回值就是二进制的10，转成10进制就是2。</p>
-<h3 id="6-3_group_id()">6.3 group_id()</h3><p>无参数。见上面的说明3），group by对某些列的集合会进行重复的grouping，而实际上绝大多数情况下对结果集中的这些重复行是不需要的，那就必须有办法剔出这些重复grouping的行。当结果集中有n条重复grouping而形成的行时，每行的group_id()分别是0,1,…,n，这样我们在条件中加入一个group_id()&lt;1就可以剔出这些重复grouping的行了。</p>
-<h2 id="7_示例">7 示例</h2><h3 id="7-1_建表与数据">7.1 建表与数据</h3><p>SQL&gt; <code>create table test(department_id number, a varchar2(20), b varchar2(20));</code></p>
-<p>Table created</p>
-<p>SQL&gt; <code>insert into test values(10, &#39;A&#39;, &#39;B&#39;);</code></p>
-<p>1 row inserted</p>
-<p>SQL&gt; <code>commit;</code></p>
-<p>Commit complete</p>
-<h3 id="7-2_查询语句">7.2 查询语句</h3><p><code>select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by rollup(department_id, a, b)
-order by 4, 5, 6;
-select department_id,
-       a,
-       b,
-       grouping(department_id),
-       grouping(a),
-       grouping(b)
-  from test
- group by cube(department_id, a, b)
-order by 4, 5, 6;</code></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>Oracle的group by除了基本用法以外，还有3种扩展用法，分别是rollup、cube、grouping sets。</p>
-<h2 id="1_rollup">1 rollup</h2><p>假设有一个表test，有A、B、C、D、E5列。<br>如果使用grou]]>
-    </summary>
-    
-      <category term="数据库" scheme="http://sqtds.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-      <category term="数据库" scheme="http://sqtds.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[mondrian 源码解读（番外篇）-MDX函数的执行过程详解]]></title>
-    <link href="http://sqtds.github.io/2014/11/13/2014/mondrian-ext-function%E6%89%A7%E8%A1%8C%E6%9C%BA%E5%88%B6/"/>
-    <id>http://sqtds.github.io/2014/11/13/2014/mondrian-ext-function执行机制/</id>
-    <published>2014-11-13T10:07:10.000Z</published>
-    <updated>2015-04-04T09:09:12.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
-<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
-<ul>
-<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
-<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
-</li>
-<li><p>第二，轴上的计算器(Calc)的创建。</p>
-<p>  主要是针对各个轴如何创建计算器。</p>
-</li>
-</ul>
-<p>下面是的resolve()方法解释：</p>
-<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
-    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
-    resolve(validator); <span class="comment">// resolve self and children ,2</span>
-    <span class="comment">// Create a dummy result so we can use its evaluator</span>
-    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
-    ExpCompiler compiler =
-            createCompiler(
-                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
-    compile(compiler);  <span class="comment">//5</span>
-}
-</code></pre><ol>
-<li>第1行创建校验器(Validator)。</li>
-<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
-<li>第3行针对当前Query创建求值器(Evaluator)。</li>
-<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
-<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
-</ol>
-<a id="more"></a>
-<p>首先我们看Validator接口：</p>
-<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Validator</span> </span>{
-    <span class="function">Exp  <span class="title">validate</span><span class="params">(Exp exp, <span class="keyword">boolean</span> scalar)</span></span>;
-    <span class="function"><span class="keyword">void</span> <span class="title">validate</span><span class="params">(QueryAxis axis)</span></span>;
-    <span class="function"><span class="keyword">void</span> <span class="title">validate</span><span class="params">(Formula formula)</span></span>;
-    ...
-}
-</code></pre><p>很显然，这是一个访问者模式，针对不同的对象进行不同的操作。看完Validator接口后，我们看<code>resolve()</code>方法的时序图，如下：</p>
-<p><img src="/img/query.png" alt="时序图"></p>
-<p>其他功能例如表达式的查找，度量成员的查找,公式(formulas)的成员（member）或者集（set）的创建创建等也是在这个过程中执行的，这里就不一一介绍了。下面将对主要的2点做详细的介绍。</p>
-<hr>
-<h4 id="1-1轴上表达式(Exp)的转换">1.1轴上表达式(Exp)的转换</h4><p>我们看上图，当执行Query的<code>validate(axis)</code>方法时：</p>
-<ol>
-<li>QueryAxis会调用Validator的<code>void validate(QueryAxis axis)</code>方法</li>
-<li>Validator反过来调用QueryAxis的<code>public void resolve(Validator validator)</code>方法</li>
-<li>QueryAxis又会调用Validator的<code>public Exp validate(Exp exp, boolean scalar)</code>方法</li>
-<li>接着Validator又会调用UnresolvedFunCall的<code>public Exp accept(Validator validator)</code>方法。</li>
-<li>最后UnresolvedFunCall的<code>accept(Validator validator)</code>会创建一个ResolvedFunCall对象返回到QueryAxis的exp上。</li>
-</ol>
-<p>现在我们看UnresolvedFunCall的<code>accept(Validator validator)</code>方法，看它是如何执行的。</p>
-<pre><code><span class="comment">//UnresolvedFunCall</span>
-<span class="keyword">public</span> <span class="function">Exp <span class="title">accept</span><span class="params">(Validator validator)</span> </span>{
-    Exp[] newArgs = <span class="keyword">new</span> Exp[args.length]; <span class="comment">//1</span>
-    FunDef funDef =
-            FunUtil.resolveFunArgs(
-                    validator, <span class="keyword">null</span>, args, newArgs, name, syntax);  <span class="comment">//2</span>
-    <span class="function"><span class="keyword">return</span> funDef.<span class="title">createCall</span><span class="params">(validator, newArgs)</span></span>;  <span class="comment">//3</span>
-}
-</code></pre><p>它的执行有一下几步：</p>
-<ol>
-<li>创建表达式参数</li>
-<li>解析表达式为指定的函数定义(FunDef)</li>
-<li>创建已解析的函数调用(ResolvedFunCall)</li>
-</ol>
-<p>这里有2个点需要关注，第2和第3。我们看看它是如何执行的。</p>
-<hr>
-<h5 id="1-1-1解析表达式为指定的函数定义(FunDef)">1.1.1解析表达式为指定的函数定义(FunDef)</h5><p>下面是FunUtil的resolveFunArgs方法。</p>
-<pre><code><span class="comment">//FunUtil</span>
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="function">FunDef <span class="title">resolveFunArgs</span><span class="params">(
-        Validator validator,
-        FunDef funDef,
-        Exp[] args,
-        Exp[] newArgs,
-        String name,
-        Syntax syntax)</span>
-</span>{
-    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.length; i++) {
-        newArgs[i] = validator.validate(args[i], <span class="keyword">false</span>);  <span class="comment">//2</span>
-    }
-    <span class="keyword">if</span> (funDef == <span class="keyword">null</span> || validator.alwaysResolveFunDef()) {
-        funDef = validator.getDef(newArgs, name, syntax);  <span class="comment">//5</span>
-    }
-    <span class="keyword">return</span> funDef;
-}
-</code></pre><p>我们看第2行<code>newArgs[i] = validator.validate(args[i], false)</code>，这一行对参数进行了解析，最后返回解析后的表达式赋值给新参数。注意这里的参数可以是维度，成员，ID，函数或者其他的表达式。<br>第5行 <code>funDef = validator.getDef(newArgs, name, syntax)</code>，即通过新参数，表达式名称，和语义(Syntax)来构建一个FunDef，最后返回这个FunDef。</p>
-<p>下面，我们先要了解什么是函数定义(FunDef)。看一下它的接口：</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">FunDef</span> {
-
-    <span class="function">Syntax <span class="title">getSyntax</span><span class="params">()</span></span>; <span class="comment">//函数语义，例如函数，前缀，中缀，后缀等。</span>
-
-    <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;  <span class="comment">//函数名称</span>
-
-    <span class="function"><span class="keyword">int</span> <span class="title">getReturnCategory</span><span class="params">()</span></span>;  <span class="comment">//返回类型</span>
-
-    <span class="keyword">int</span>[] getParameterCategories();  <span class="comment">//参数类型</span>
-
-    <span class="function">Calc <span class="title">compileCall</span><span class="params">(ResolvedFunCall call, ExpCompiler compiler)</span></span>;    <span class="comment">//创建求值器</span>
-
-    <span class="function">Exp <span class="title">createCall</span><span class="params">(Validator validator, Exp[] args)</span></span>;    <span class="comment">//创建表达式，一般来说是ResolvedFunCall</span>
-
-}
-</code></pre><p>很明显，FunDef描述了函数的特征：语义，名称，返回类型，参数类型。还有2个接口，compileCall定义如何创建求值器，createCall定义了如何创建表达式。</p>
-<p>了解清楚了FunDef后，我们再看如何获取FunDef，即第5行的<code>validator.getDef(newArgs, name, syntax)</code>。我们把主干抽出来，代码如下：</p>
-<pre><code><span class="comment">//Validator实现</span>
-<span class="keyword">public</span> <span class="function">FunDef <span class="title">getDef</span><span class="params">(
-    Exp[] args,
-    String funName,
-    Syntax syntax)</span>
-</span>{
-    <span class="comment">//...</span>
-
-    List&lt;Resolver&gt; resolvers = funTable.getResolvers(funName, syntax);  <span class="comment">//1</span>
-
-    <span class="keyword">final</span> List&lt;Resolver.Conversion&gt; conversionList =
-        <span class="keyword">new</span> ArrayList&lt;Resolver.Conversion&gt;();
-    List&lt;FunDef&gt; matchDefs = <span class="keyword">new</span> ArrayList&lt;FunDef&gt;();
-    <span class="keyword">for</span> (Resolver resolver : resolvers) {
-        FunDef def = resolver.resolve(args, <span class="keyword">this</span>, conversionList); <span class="comment">//2</span>
-        <span class="keyword">if</span> (def != <span class="keyword">null</span>) {
-            <span class="comment">//....</span>
-            matchDefs.add(def);
-            <span class="comment">//...</span>
-        }
-    }
-
-    <span class="keyword">switch</span> (matchDefs.size()) {
-    <span class="keyword">case</span> <span class="number">0</span>:
-        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"No Function Matches Signature&gt;&gt;&gt;"</span>+
-            signature);
-    <span class="keyword">case</span> <span class="number">1</span>:
-        <span class="keyword">break</span>;
-    <span class="keyword">default</span>:
-        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"MoreThanOneFunctionMatchesSignature"</span>+
-                signature+
-                buf.toString());
-    }
-
-    <span class="comment">// ...</span>
-
-    <span class="keyword">return</span> matchDef;
-}
-</code></pre><p>这里首先做的是funTable通过名称(funName)和语义(syntax)来获取解析器(Resolver)列表，这应该是这里最重要的一部分了。然后再根据获取到的解析器列表来解析参数（args）获取到具体的FunDef。这刚好与FunDef的描述相符合，即语义，名称，参数类型决定了某个具体的函数。注意，要理解的是FunDef还有个返回类型，为什么这里不需要呢这？就像java的方法一样，方法可以同名，不同的参数，单返回类型必须只有一种，不可能定义出重载返回类型的方法出来。</p>
-<p>所以了解了这些以后，我们继续看第1处的 <code>funTable.getResolvers(funName, syntax);</code>和第2处的<code>resolver.resolve(args, this, conversionList)</code>就很简单了。这里不就详细解释了，详情请看如何定义一个函数部分。</p>
-<h5 id="1-1-2创建已解析的函数调用(ResolvedFunCall)">1.1.2创建已解析的函数调用(ResolvedFunCall)</h5><p>创建完FunDef后，我们再回到UnresolvedFunCall的<code>accept(Validator validator)</code>方法。<br>我们看ResolvedFunCall是如何被创建的。由于大部分FunDef继承的FunDefBase，我们只需要看FunDefBase中的<code>createCall(Validator validator, Exp[] args)</code>方法就可以了。</p>
-<pre><code><span class="comment">//FunDefBase</span>
-public <span class="type">Exp</span> createCall(<span class="type">Validator</span> validator, <span class="type">Exp</span>[] args) {
-    int[] categories = getParameterCategories();  <span class="comment">//1</span>
-    <span class="keyword">final</span> <span class="type">Type</span> <span class="class"><span class="keyword">type</span> =</span> getResultType(validator, args);  <span class="comment">//2</span>
-    <span class="keyword">if</span> (<span class="class"><span class="keyword">type</span> <span class="title">==</span> <span class="title">null</span>) {</span>
-        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">RuntimeException</span>(<span class="string">"could not derive type"</span>);
-    }
-    <span class="keyword">return</span> <span class="keyword">new</span> <span class="type">ResolvedFunCall</span>(<span class="keyword">this</span>, args, <span class="class"><span class="keyword">type</span>);</span>  <span class="comment">//3</span>
-}
-</code></pre><ol>
-<li>第一步获取参数类型</li>
-<li>第二步获取返回类型，这里要注意的是，对于(cube,dimension, hierarchy, level, member)的返回类型，我们需要指定到某个具体的返回类型中。假设返回一个level类型，我们要知道这个level是属于哪个hierarchy，哪个dimension。所以FunBase默认情况下是取的第一个参数的返回类型进行填充。对于某些函数来说，并不是第一个参数决定返回类型，所以需要自己实现。</li>
-<li>根据this，args，type创建ResolvedFunCall。</li>
-</ol>
-<p>最后将解析的ResolvedFunCall返回给QueryAxis，这样，轴（查询轴和切片轴）上表达式(Exp)的转换就完成了。</p>
-<h4 id="1-2轴上的计算器(Calc)的创建">1.2轴上的计算器(Calc)的创建</h4><p>跳到最上面，接下来我们看如何创建轴上的计算器(Calc）。<br>第3,4,5步是我们比较关心的。第3,4步比较简单，这里就不展开了。<br>我们看第5步，在<code>compile(compiler)</code>方法内部，调用了轴上的<code>compile(ExpCompiler compiler, ResultStyle resultStyle)</code>方法。我们看方法的具体实现：</p>
-<pre><code><span class="function"><span class="keyword">public</span> Calc <span class="title">compile</span><span class="params">(ExpCompiler compiler, ResultStyle resultStyle)</span> </span>{
-    Exp <span class="built_in">exp</span> = <span class="keyword">this</span>.<span class="built_in">exp</span>;
-    <span class="keyword">if</span> (axisOrdinal.isFilter()) {              <span class="comment">//1</span>
-        <span class="built_in">exp</span> = normalizeSlicerExpression(<span class="built_in">exp</span>);   <span class="comment">//2</span>
-        <span class="built_in">exp</span> = <span class="built_in">exp</span>.accept(compiler.getValidator());  <span class="comment">//3</span>
-    }
-    <span class="keyword">switch</span> (resultStyle) {
-        <span class="keyword">case</span> LIST:
-            <span class="keyword">return</span> compiler.compileList(<span class="built_in">exp</span>, <span class="keyword">false</span>);
-        <span class="keyword">case</span> MUTABLE_LIST:
-            <span class="keyword">return</span> compiler.compileList(<span class="built_in">exp</span>, <span class="keyword">true</span>);
-        <span class="keyword">case</span> ITERABLE:
-            <span class="keyword">return</span> compiler.compileIter(<span class="built_in">exp</span>);  <span class="comment">//4</span>
-        <span class="keyword">default</span>:
-            <span class="keyword">throw</span> Util.unexpected(resultStyle);
-    }
-}
-</code></pre><ol>
-<li>第1行判断表达式是否是切片轴，如果是，进入2,3步。</li>
-<li>标准化表达式，即将表达式封装成集表达式（{}表达式）。</li>
-<li>对表达式执行前面1.1的解析过程，将UnresolvedFunCall转换成ResolvedFunCall。</li>
-<li>最后使用compiler编译迭代，返回计算器。</li>
-</ol>
-<p>接下来我们看它是如何编译的。我们看<code>compiler.compileIter(exp)</code>这个方法。</p>
-<pre><code><span class="keyword">public</span> IterCalc compileIter(<span class="built_in">Exp</span> <span class="built_in">exp</span>) {
-    IterCalc calc =
-        (IterCalc) compileAs(<span class="built_in">exp</span>, <span class="literal">null</span>, ResultStyle.ITERABLE_ONLY);
-    <span class="keyword">if</span> (calc == <span class="literal">null</span>) {
-        calc = (IterCalc) compileAs(<span class="built_in">exp</span>, <span class="literal">null</span>, ResultStyle.ANY_ONLY);
-        assert calc != <span class="literal">null</span>;
-    }
-    <span class="keyword">return</span> calc;
-}
-</code></pre><p>这个方法比较简答，先用ResultStyle.ITERABLE_ONLY编译一次，如果为空，继续用ResultStyle.ANY_ONLY编译一次。</p>
-<p>我们继续看compileAs方法：</p>
-<pre><code><span class="keyword">public</span> Calc compileAs(
-    Exp <span class="built_in">exp</span>,
-    Type resultType,
-    List&lt;ResultStyle&gt; preferredResultTypes)
-{
-    <span class="built_in">int</span> substitutions = <span class="number">0</span>;
-    List&lt;ResultStyle&gt; <span class="built_in">save</span> = <span class="keyword">this</span>.resultStyles;
-    <span class="keyword">try</span> {
-        <span class="keyword">this</span>.resultStyles = preferredResultTypes;
-        <span class="keyword">if</span> (resultType != <span class="keyword">null</span> &amp;&amp; resultType != <span class="built_in">exp</span>.getType()) {  <span class="comment">//1</span>
-            <span class="keyword">if</span> (resultType <span class="keyword">instanceof</span> MemberType) {
-                <span class="keyword">return</span> compileMember(<span class="built_in">exp</span>);                        <span class="comment">//2</span>
-            } <span class="keyword">else</span> <span class="keyword">if</span> (resultType <span class="keyword">instanceof</span> LevelType) {
-                <span class="keyword">return</span> compileLevel(<span class="built_in">exp</span>);
-            } <span class="keyword">else</span> <span class="keyword">if</span> (resultType <span class="keyword">instanceof</span> HierarchyType) {
-                <span class="keyword">return</span> compileHierarchy(<span class="built_in">exp</span>);
-            } <span class="keyword">else</span> <span class="keyword">if</span> (resultType <span class="keyword">instanceof</span> DimensionType) {
-                <span class="keyword">return</span> compileDimension(<span class="built_in">exp</span>);
-            } <span class="keyword">else</span> <span class="keyword">if</span> (resultType <span class="keyword">instanceof</span> ScalarType) {
-                <span class="keyword">return</span> compileScalar(<span class="built_in">exp</span>, <span class="keyword">false</span>);
-            }
-        }                                                       <span class="comment">//3</span>
-        <span class="keyword">final</span> Calc calc = compile(<span class="built_in">exp</span>);                         <span class="comment">//4</span>
-        <span class="keyword">if</span> (substitutions &gt; <span class="number">0</span>) {
-            <span class="keyword">final</span> IterCalc iterCalc = (IterCalc) calc;
-            <span class="keyword">if</span> (iterCalc == <span class="keyword">null</span>) {
-                <span class="keyword">this</span>.resultStyles =
-                    Collections.singletonList(ResultStyle.ITERABLE);
-                <span class="keyword">return</span> compile(<span class="built_in">exp</span>);
-            } <span class="keyword">else</span> {
-                <span class="keyword">return</span> iterCalc;
-            }
-        }
-        <span class="keyword">return</span> calc;
-    } <span class="keyword">finally</span> {
-        <span class="keyword">this</span>.resultStyles = <span class="built_in">save</span>;
-    }
-}
-</code></pre><p>根据结果集类型，使用不同的编译方式。我们看代码块1-3之间的，它的主要作用是因为表达式的类型跟返回的结果集类型不同，所以要特殊对待。例如，我们看第2行，如果表达式的类型的MemberType，但是返回类型是HierarchyType，这时我们就需要将其转换为<hierarchytype>类型了。</hierarchytype></p>
-<p>对于返回结果集合表达式类似相同的情况，在第4行中，<code>compile(exp)</code>调用了ResolvedFunCall的<code>exp.accept(this)</code>，最后调用<code>funDef.compileCall(this, compiler)</code>方法，创建了一个计算器（Calc）。注意这里的compileCall是需要在自己在函数中实现的。</p>
-<h3 id="二，函数的执行过程。">二，函数的执行过程。</h3><p>函数的执行是在RolapResult结果集中进行的。具体的方法是<code>executeAxis(
-        Evaluator evaluator,
-        QueryAxis queryAxis,
-        Calc axisCalc,
-        boolean construct,
-        AxisMemberList axisMembers)</code><br>方法。我们可以看到方法中有一段代码</p>
-<pre><code><span class="keyword">final</span> TupleIterable iterable =
-          ((IterCalc) axisCalc).evaluateIterable(evaluator);
-</code></pre><p>为什么要是一个IterCalc呢，留给大家思考。这里通过执行IterCalc的<code>evaluateIterable()</code>方法，来完成整个轴的执行过程。具体的过程是根据轴的不同调用不同的计算器，在计算器里层继续调用参数的计算器（参考各个FunDef的实现），直到返回结果为止。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="MDX函数的执行过程详解">MDX函数的执行过程详解</h2><p>笔者注：由于将来公司可能会有对函数的二次开发需求，所以为公司写了函数的执行过程，以供将来使用。</p>
-<h3 id="一，Query对象的创建">一，Query对象的创建</h3><p>在Query对象中，最主要的是resolve()方法，这里涉及到了2个非常重要的功能。</p>
-<ul>
-<li><p>第一，轴（查询轴和切片轴）上表达式(Exp)的转换。</p>
-<p>  主要是将表达式从UnresolvedFunCall转换为ResolvedFunCall。</p>
-</li>
-<li><p>第二，轴上的计算器(Calc)的创建。</p>
-<p>  主要是针对各个轴如何创建计算器。</p>
-</li>
-</ul>
-<p>下面是的resolve()方法解释：</p>
-<pre><code> <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">resolve</span><span class="params">()</span> </span>{
-    <span class="keyword">final</span> Validator validator = createValidator(); <span class="comment">//1</span>
-    resolve(validator); <span class="comment">// resolve self and children ,2</span>
-    <span class="comment">// Create a dummy result so we can use its evaluator</span>
-    <span class="keyword">final</span> Evaluator evaluator = Util.createEvaluator(<span class="keyword">this</span>); <span class="comment">//3</span>
-    ExpCompiler compiler =
-            createCompiler(
-                    evaluator, validator, Collections.singletonList(resultStyle)); <span class="comment">//4</span>
-    compile(compiler);  <span class="comment">//5</span>
-}
-</code></pre><ol>
-<li>第1行创建校验器(Validator)。</li>
-<li>第2行根据Validator转换所有的UnresolvedFunCall到ResolvedFunCall。</li>
-<li>第3行针对当前Query创建求值器(Evaluator)。</li>
-<li>第4行根据求值器，校验器创建表达式编译器(ExpCompiler)。</li>
-<li>第5行根据表达式编译器编译所有的轴，并创建轴上的计算器。</li>
-</ol>]]>
-    
-    </summary>
-    
-      <category term="mondrian" scheme="http://sqtds.github.io/tags/mondrian/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
   </entry>
   

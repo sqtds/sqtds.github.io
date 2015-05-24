@@ -5,15 +5,27 @@
   
   <title>linux常用技巧 | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。">
+  <meta name="description" content="一，TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。
+二，进程启动
+&amp;amp; 在后台启动进程，如果关闭会话，进程也会终止
+nohup 在后台启动进程，如果关闭会话，进程不会终止
+at 定时启">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux常用技巧">
 <meta property="og:url" content="http://sqtds.github.io/2015/05/17/2014/linux-command/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。">
+<meta property="og:description" content="一，TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。
+二，进程启动
+&amp;amp; 在后台启动进程，如果关闭会话，进程也会终止
+nohup 在后台启动进程，如果关闭会话，进程不会终止
+at 定时启">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux常用技巧">
-<meta name="twitter:description" content="TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。">
+<meta name="twitter:description" content="一，TOP命令对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。
+二，进程启动
+&amp;amp; 在后台启动进程，如果关闭会话，进程也会终止
+nohup 在后台启动进程，如果关闭会话，进程不会终止
+at 定时启">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -124,7 +136,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 18.33px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -235,8 +247,14 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
-
+        <h3 id="一，TOP命令">一，TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+<h3 id="二，进程启动">二，进程启动</h3><ol>
+<li><strong>&amp;</strong> 在后台启动进程，如果关闭会话，进程也会终止</li>
+<li><strong>nohup</strong> 在后台启动进程，如果关闭会话，进程不会终止</li>
+<li><strong>at</strong> 定时启动命令   <code>$ at -f backup.sh 10 am tomorrow</code></li>
+<li><strong>watch</strong> 间隔启动   <code>$ watch df -h</code></li>
+</ol>
+<h3 id="三，">三，</h3>
       
     </div>
     
@@ -244,6 +262,15 @@ var _hmt = _hmt || [];
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/05/18/2015/linux-search/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          linux搜索命令
+        
+      </div>
+    </a>
   
   
     <a href="/2015/05/17/2015/java-reflection/" id="article-nav-older" class="article-nav-link-wrap">

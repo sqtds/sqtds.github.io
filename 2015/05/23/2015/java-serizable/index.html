@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>java序列化 | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java序列化">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/23/2015/java-serizable/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
+<meta property="og:image" content="/img/2015/序列化.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java序列化">
+<meta name="twitter:description" content="一，概述本文主要介绍java序列化方面的一些基础知识。
+二，java序列化类介绍1，Serializable接口1.1.triansant当某个字段被声明为transient后，默认序列化机制就会忽略该字段。
+1.2.serialVersionUID序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。
+1.3writeObject">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?1bd1f966e3148e2b59e4b159067ad372";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="/img/photo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">sqtds</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">if you never try , you will lost forever.</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/随笔">随笔</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+					        
+								<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+					        
+								<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">奥巴马的博客</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">我是一名小小码农...</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">sqtds</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/photo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">sqtds</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">if you never try , you will lost forever.</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/随笔">随笔</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+			        
+						<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+			        
+						<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-2015/java-serizable" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/23/2015/java-serizable/" class="article-date">
+  	<time datetime="2015-05-23T00:32:49.000Z" itemprop="datePublished">5月 23 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java序列化
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
+<h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
+<h4 id="1-3writeObject和readObject">1.3writeObject和readObject</h4><p>通过实现这2个方法来生成自己的自定义序列化方式。</p>
+<h4 id="1-4readObjectNoData">1.4readObjectNoData</h4><p>当没有获取到对象数据时，默认的初始化行为。</p>
+<h4 id="1-5writeReplace和readResolve">1.5writeReplace和readResolve</h4><p>控制实例化对象的写入写出，可以指定任意对象。可通过此接口来禁止单例对象的多态化。</p>
+<h3 id="2，ObjectOutputStream和ObjectInputStream">2，ObjectOutputStream和ObjectInputStream</h3><p>实际的序列化和反序列化工作是通过ObjectOuputStream和ObjectInputStream来完成的。</p>
+<p>ObjectInputStream：</p>
+<ul>
+<li>readObject ： 从流中读取一个Java对象</li>
+<li>defaultWriteObject：默认的写入方法，注意这不是说默认会调用，而是采用默认的算法。</li>
+</ul>
+<p>ObjectOutputStream：</p>
+<ul>
+<li>writeObject：把一个Java对象写入到流中</li>
+<li>defaultReadObject： 默认的读取算法。</li>
+</ul>
+<h3 id="3，Externalizable接口">3，Externalizable接口</h3><p>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口—Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。</p>
+<ul>
+<li>writeExternal：把一个Java对象写入到流中</li>
+<li>readExternal：从流中读取一个Java对象</li>
+</ul>
+<h2 id="三，其他序列化器">三，其他序列化器</h2><h3 id="1，json">1，json</h3><p>json的序列化框架有fastjson,jackson,gson等。</p>
+<p>适用性：</p>
+<ul>
+<li>公司之间传输数据量相对小，实时性要求相对低（例如秒级别）的服务。</li>
+<li>基于Web browser的Ajax请求。</li>
+<li>由于JSON具有非常强的前后兼容性，对于接口经常发生变化，并对可调式性要求高的场景，例如Mobile app与服务端的通讯。</li>
+</ul>
+<h3 id="2,xml">2,xml</h3><p>xml的序列化框架有XStream。</p>
+<p>XML的序列化和反序列化的空间和时间开销都比较大，对于对性能要求在ms级别的服务，不推荐使用。</p>
+<h3 id="3,hessian">3,hessian</h3><p>hessian主要用于java序列化。它的实现机制是着重于数据，附带简单的类型信息的方法：</p>
+<ol>
+<li>对于简单的数据类型。就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。</li>
+<li>对于复杂对象，通过Java的反射机制，<strong>hessian把对象所有的属性当成一个Map来序列化</strong>，产生类似M className propertyName1 I 1 propertyName S stringValue</li>
+<li>对于引用对象，在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。</li>
+</ol>
+<h3 id="4,thift">4,thift</h3><p>Thrift是Facebook开源提供的一个高性能，轻量级RPC服务框架，其产生正是为了满足当前大数据量、分布式、跨语言、跨平台数据通讯的需求。 但是，Thrift并不仅仅是序列化协议，而是一个RPC框架。相对于JSON和XML而言，Thrift在空间开销和解析性能上有了比较大的提升，对于对性能要求比较高的分布式系统，它是一个优秀的RPC解决方案；但是由于Thrift的序列化被嵌入到Thrift框架里面，Thrift框架本身并没有透出序列化和反序列化接口，这导致其很难和其他传输层协议共同使用（例如HTTP）。</p>
+<h3 id="5,protobuf">5,protobuf</h3><ul>
+<li>序列化数据非常简洁，紧凑.</li>
+<li>解析速度非常快</li>
+<li>提供了非常友好的动态库，使用非常简介，反序列化只需要一行代码。</li>
+</ul>
+<h3 id="6,avro">6,avro</h3><p>Avro的产生解决了JSON的冗长和没有IDL的问题。 Avro提供两种序列化格式：JSON格式或者Binary格式。Binary格式在空间开销和解析性能方面可以和Protobuf媲美，JSON格式方便测试阶段的调试。 </p>
+<ul>
+<li>动态类型：Avro并不需要生成代码，模式和数据存放在一起，而模式使得整个数据的处理过程并不生成代码、静态数据类型等等。这方便了数据处理系统和语言的构造。</li>
+<li>未标记的数据：由于读取数据的时候模式是已知的，那么需要和数据一起编码的类型信息就很少了，这样序列化的规模也就小了。</li>
+<li>不需要用户指定字段号：即使模式改变，处理数据时新旧模式都是已知的，所以通过使用字段名称可以解决差异问题。</li>
+</ul>
+<h2 id="四，参考资料">四，参考资料</h2><ol>
+<li>序列化的秘密.pdf —-liujia</li>
+<li><a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="external">jvm-serializers</a></li>
+<li><a href="http://www.infoq.com/cn/articles/serialization-and-deserialization" target="_blank" rel="external">序列化和反序列化</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-object-serialization-rmi" target="_blank" rel="external">Java对象序列化与RMI</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-gpb/" target="_blank" rel="external">Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://www.biaodianfu.com/avro.html" target="_blank" rel="external">Avro：大数据的二进制传输中间件</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/23/2015/java-io/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          java I/O
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/18/2015/linux-search/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">linux搜索命令</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="2015/java-serizable" data-title="java序列化" data-url="http://sqtds.github.io/2015/05/23/2015/java-serizable/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 sqtds
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/mobile.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

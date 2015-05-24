@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 18.33px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -196,6 +196,150 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2015/linux-search" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/18/2015/linux-search/" class="article-date">
+  	<time datetime="2015-05-18T01:55:16.000Z" itemprop="datePublished">5月 18 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/18/2015/linux-search/">linux搜索命令</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，grep">一，grep</h2><blockquote>
+<p>Syntax: grep [options] pattern [files]</p>
+</blockquote>
+<pre><code>搜索在文件中包含pattern的所有的行    
+<span class="id">#grep</span> John /etc/passwd
+搜索在文件中不包含pattern的所有的行    
+<span class="id">#grep</span> -v John /etc/passwd
+搜索在文件中包含pattern的行数
+<span class="id">#grep</span> -c John /etc/passwd
+忽略大小写
+<span class="id">#grep</span> -<span class="tag">i</span> John /etc/passwd
+搜索子目录,展现文件名和行
+<span class="id">#grep</span> -ri john /home/users
+搜索子目录,只展现文件名
+<span class="id">#grep</span> -ril john /home/users
+</code></pre><h2 id="二，grep与正则的配合">二，grep与正则的配合</h2><pre><code>行的开始^
+grpe <span class="string">"^aa"</span> message<span class="class">.logs</span>
+行的结尾$
+grpe <span class="string">"aa$"</span> message<span class="class">.logs</span>
+计算空行数
+grep -c <span class="string">"^$"</span> message.logs
+</code></pre><h2 id="三，find">三，find</h2><blockquote>
+<p>Syntax: find [pathnames] [conditions]</p>
+</blockquote>
+<pre><code>查找文件名包含特定的字符
+<span class="preprocessor"># find /etc -name "*mail*"</span>
+查找文件大小大于<span class="number">100</span>M
+<span class="preprocessor">#find / -type f -size +100M</span>
+查找文件在最近的<span class="number">60</span>天未被修改
+<span class="preprocessor"># find . -mtime +60</span>
+查找文件在最近的<span class="number">2</span>天内被修改的
+<span class="preprocessor"># find . –mtime -2</span>
+查看以.tar.gz并且大于<span class="number">100</span>M的文件，并且删除
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec ls -l {}</span>
+\;
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec rm -f {}</span>
+\;
+</code></pre><h2 id="四，sed">四，sed</h2><blockquote>
+<p>Syntax: #sed ‘ADDRESSs/REGEXP/REPLACEMENT/FLAGS’ filename<br>Syntax: #sed ‘PATTERNs/REGEXP/REPLACEMENT/FLAGS’ filename</p>
+</blockquote>
+<ul>
+<li>s is substitute command</li>
+<li>/ is a delimiter</li>
+<li>REGEXP is regular expression to match</li>
+<li>REPLACEMENT is a value to replace</li>
+</ul>
+<p>FLAGS选项:</p>
+<ul>
+<li>g 用REPLACEMENT代替所有的 REGEXP  </li>
+<li>n 可以是任意数字,用REPLACEMENT代替REGEXP的第n个实例。</li>
+<li>p 打印匹配后的行</li>
+<li>i 忽略大小写</li>
+<li>w 将匹配后的行写入到文件中</li>
+</ul>
+<p>我们也可以用( one of @ % ; : )的其中一个代替/</p>
+<pre><code>使用Linux-Unix替代Linux，只替代第一次
+$ sed <span class="string">'s/Linux/Linux-Unix/'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代所有的
+$ sed <span class="string">'s/Linux/Linux-Unix/g'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代第<span class="number">2</span>次
+$ sed <span class="string">'s/Linux/Linux-Unix/2'</span> thegeekstuff<span class="class">.txt</span>
+将替换后的行输出并打印 ，-n 表示取消默认输出
+$ sed -n <span class="string">'s/Linux/Linux-Unix/gpw output'</span> thegeekstuff<span class="class">.txt</span>
+删除所有的以#开头的行  -e 表示在文本中编辑
+$ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
+</code></pre><h2 id="五，cut">五，cut</h2><p>Cut命令用于展现文本中的特定列。</p>
+<blockquote>
+<p>Syntax: cut  [-bn] [file] 或 cut [-c] [file]  或  cut [-df] [file]</p>
+</blockquote>
+<ul>
+<li>-b ：以字节为单位进行分割。这些字节位置将忽略多字节字符边界，除非也指定了 -n 标志。</li>
+<li>-c ：以字符为单位进行分割。</li>
+<li>-d ：自定义分隔符，默认为制表符。</li>
+<li>-f  ：与-d一起使用，指定显示哪个区域。</li>
+<li><p>-n ：取消分割多字节字符。仅和 -b 标志一起使用。如果字符的最后一个字节落在由 -b 标志的 List 参数指示的范围之内，该字符将被写出；否则，该字符将被排除。</p>
+<p>  从冒号(:)分隔文件中展现第一个字段.<br>  $ cut -d: -f 1 names.txt<br>  从冒号(:)分隔文件中展现第一到三个字段.<br>  $ cut -d: -f 1,3 names.txt<br>  展现每行的前8个字符<br>  $ cut -c 1-8 names.txt<br>  展现可用内存<br>  free | tr -s ‘ ‘ | sed ‘/^Mem/!d’ | cut -d” “ -f2 </p>
+</li>
+</ul>
+<h2 id="六，awk">六，awk</h2><blockquote>
+<p>Syntax:awk ‘/search pattern1/ {Actions}<br>          /search pattern2/ {Actions}’ file</p>
+</blockquote>
+<ul>
+<li>search pattern is a regular expression.</li>
+<li>Actions – statement(s) to be performed.</li>
+<li>several patterns and actions are possible in Awk.</li>
+<li>file – Input file.</li>
+<li>Single quotes around program is to avoid shell not to interpret any of its special characters</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux命令集/">linux命令集</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/linux/">linux</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/linux-command" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -222,8 +366,14 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="TOP命令">TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
-
+        <h3 id="一，TOP命令">一，TOP命令</h3><p>对于多核CPU，显示的是多个CPU的所占的百分比的总和，如需要查看每个核的情况，进入top视图后按1，就会按核来显示消耗情况。<br>默认情况下，TOP视图中显示的是进程的CPU消耗情况，在TOP视图中，按shift+h后，可按线程查看CPU的消耗情况。</p>
+<h3 id="二，进程启动">二，进程启动</h3><ol>
+<li><strong>&amp;</strong> 在后台启动进程，如果关闭会话，进程也会终止</li>
+<li><strong>nohup</strong> 在后台启动进程，如果关闭会话，进程不会终止</li>
+<li><strong>at</strong> 定时启动命令   <code>$ at -f backup.sh 10 am tomorrow</code></li>
+<li><strong>watch</strong> 间隔启动   <code>$ watch df -h</code></li>
+</ol>
+<h3 id="三，">三，</h3>
       
     </div>
     

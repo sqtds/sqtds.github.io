@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>java I/O | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一，概述
+二，BIOjava I/O主要分为下面这几类：
+
+基于字节操作的 I/O 接口：InputStream 和 OutputStream
+基于字符操作的 I/O 接口：Writer 和 Reader
+基于磁盘操作的 I/O 接口：File
+基于网络操作的 I/O 接口：Socket
+
+字符与字节： 
+
+InputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java I/O">
+<meta property="og:url" content="http://sqtds.github.io/2015/05/23/2015/java-io/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="一，概述
+二，BIOjava I/O主要分为下面这几类：
+
+基于字节操作的 I/O 接口：InputStream 和 OutputStream
+基于字符操作的 I/O 接口：Writer 和 Reader
+基于磁盘操作的 I/O 接口：File
+基于网络操作的 I/O 接口：Socket
+
+字符与字节： 
+
+InputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方">
+<meta property="og:image" content="/img/2015/I.O.png">
+<meta property="og:image" content="/img/2015/buffer.jpeg">
+<meta property="og:image" content="/img/2015/buffers-modes.png">
+<meta property="og:image" content="/img/2015/pipe-internals.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java I/O">
+<meta name="twitter:description" content="一，概述
+二，BIOjava I/O主要分为下面这几类：
+
+基于字节操作的 I/O 接口：InputStream 和 OutputStream
+基于字符操作的 I/O 接口：Writer 和 Reader
+基于磁盘操作的 I/O 接口：File
+基于网络操作的 I/O 接口：Socket
+
+字符与字节： 
+
+InputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?1bd1f966e3148e2b59e4b159067ad372";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="/img/photo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">sqtds</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">if you never try , you will lost forever.</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/随笔">随笔</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+					        
+								<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+					        
+								<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">奥巴马的博客</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">我是一名小小码农...</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">sqtds</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/photo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">sqtds</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">if you never try , you will lost forever.</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/随笔">随笔</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+			        
+						<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+			        
+						<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-2015/java-io" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/23/2015/java-io/" class="article-date">
+  	<time datetime="2015-05-23T02:06:38.000Z" itemprop="datePublished">5月 23 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java I/O
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，概述">一，概述</h2><p><img src="/img/2015/I.O.png" alt=""></p>
+<h2 id="二，BIO">二，BIO</h2><p>java I/O主要分为下面这几类：</p>
+<ul>
+<li>基于字节操作的 I/O 接口：InputStream 和 OutputStream</li>
+<li>基于字符操作的 I/O 接口：Writer 和 Reader</li>
+<li>基于磁盘操作的 I/O 接口：File</li>
+<li>基于网络操作的 I/O 接口：Socket</li>
+</ul>
+<p>字符与字节： </p>
+<ol>
+<li>InputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方法读到的是一个字节（二进制数据），很不利于人们阅读，而且无法直接对文件中的字符进行操作，比如替换，查找（必须以字节形式操作）；<br>而Reader类弥补了这个缺陷，可以以文本格式输入/输出，非常方便；比如可以使用while((ch = filereader.read())!=-1 )循环来读取文件；可以使用BufferedReader的readLine()方法一行一行的读取文本。</li>
+<li>InputStreamReader 是字节流通向字符流的桥梁：它使用指定的 charset 读取字节并将其解码为字符。它使用的字符集可以由名称指定或显式给定，或者可以接受平台默认的字符集。 </li>
+<li>BufferedReader的最大特点就是缓冲区的设置。BufferReader类用来包装所有其 read() 操作可能开销很高的 Reader（如 FileReader 和InputStreamReader）。</li>
+</ol>
+<h2 id="三，NIO">三，NIO</h2><p>nio基于块，io基于流。NIO 将最耗时的 I/O 操作(即填充和提取缓冲区)转移回操作系统，因而可以极大地提高速度。</p>
+<ul>
+<li>面向流的I/O系统一次一个字节地处理数据。一个输入流产生一个字节的数据，一个输出流消费一个字节的数据。为流式数据创建过滤器非常容易。链接几个过滤器，以便每个过滤器只负责单个复杂处理机制的一部分，这样也是相对简单的。不利的一面是，面向流的 I/O 通常相当慢。</li>
+<li>面向块的I/O系统以块的形式处理数据。每一个操作都在一步中产生或者消费一个数据块。按块处理数据比按(流式的)字节处理数据要快得多。但是面向块的 I/O 缺少一些面向流的 I/O 所具有的优雅性和简单性。</li>
+</ul>
+<h3 id="1，Buffer">1，Buffer</h3><h4 id="1-1_Buffer类型">1.1 Buffer类型</h4><p>对于每一种基本 Java 类型都有一种缓冲区类型：</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>ShortBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>FloatBuffer</li>
+<li>DoubleBuffer</li>
+</ul>
+<h4 id="1-2_Buffer中的参数项:">1.2 Buffer中的参数项:</h4><ul>
+<li>capacity    缓冲区数组的总长度</li>
+<li>position    下一个要操作的数据元素的位置</li>
+<li>limit        缓冲区数组中不可操作的下一个元素的位置，limit&lt;=capacity</li>
+<li>mark        用于记录当前 position 的前一个位置或者默认是 0<br><img src="/img/2015/buffer.jpeg" alt=""></li>
+</ul>
+<h4 id="1-3_Buffer中的常用方法">1.3 Buffer中的常用方法</h4><pre><code>ByteBuffer <span class="keyword">buf</span> <span class="keyword">=</span> ByteBuffer<span class="typename">.allocate</span>(<span class="number">48</span>); <span class="comment">// create buffer</span>
+
+<span class="keyword">buf</span><span class="typename">.flip</span>();  <span class="comment">//make buffer ready for read</span>
+<span class="keyword">buf</span><span class="typename">.clear</span>(); <span class="comment">//make buffer ready for writing</span>
+<span class="keyword">buf</span><span class="typename">.compact</span>();<span class="comment">//make buffer ready for writing,copies all unread data to the beginning of the Buffer</span>
+
+<span class="keyword">buf</span><span class="typename">.rewind</span>();<span class="comment">//sets the position back to 0, so you can reread all the data in the buffer. </span>
+
+<span class="keyword">buf</span><span class="typename">.mark</span>() ;<span class="comment">//mark a given position </span>
+<span class="keyword">buf</span><span class="typename">.reset</span>();<span class="comment">//reset the position back to the marked position</span>
+</code></pre><p><img src="/img/2015/buffers-modes.png" alt="buffer的读写模式"></p>
+<h4 id="1-4_缓冲区分片">1.4 缓冲区分片</h4><p>slice() 方法根据现有的缓冲区创建一种子缓冲区 。也就是说，它创建一个新的缓冲区，新缓冲区与原来的缓冲区的一部分共享数据。</p>
+<h4 id="1-5_直接和间接缓冲区">1.5 直接和间接缓冲区</h4><p> 直接缓冲区 是为加快 I/O 速度，而以一种特殊的方式分配其内存的缓冲区。给定一个直接字节缓冲区，Java 虚拟机将尽最大努力直接对它执行本机 I/O 操作。也就是说，它会在每一次调用底层操作系统的本机 I/O 操作之前(或之后)，尝试避免将缓冲区的内容拷贝到一个中间缓冲区中(或者从一个中间缓冲区中拷贝数据)。</p>
+<h4 id="1-6_内存映射文件_I/O">1.6 内存映射文件 I/O</h4><p>内存映射文件 I/O 是一种读和写文件数据的方法，它可以比常规的基于流或者基于通道的 I/O 快得多。一般来说，只有文件中实际读取或者写入的部分才会送入（或者 映射 ）到内存中。</p>
+<p>现代操作系统一般根据需要将文件的部分映射为内存的部分，从而实现文件系统。Java 内存映射机制不过是在底层操作系统中可以采用这种机制时，提供了对该机制的访问。</p>
+<h3 id="2，Channel">2，Channel</h3><p>Channel是一个对象，可以通过它读取和写入数据。举个例子，channel就马路，buffer就是汽车，数据就是装在汽车上的沙子。<br>通道与流的不同之处在于通道是双向的。而流只是在一个方向上移动(一个流必须是 InputStream 或者 OutputStream 的子类)， 而 通道 可以用于读、写或者同时用于读写。</p>
+<h4 id="2-1_Channel的类型">2.1 Channel的类型</h4><ul>
+<li>FileChannel     //文件</li>
+<li>DatagramChannel  //UDP</li>
+<li>SocketChannel    //TCP</li>
+<li>ServerSocketChannel  //TCP服务端</li>
+</ul>
+<h4 id="2-2_FileChannel">2.2 FileChannel</h4><p>FileChannel可以实现从Channel到Channel间的直接数据传输.</p>
+<ul>
+<li>FileChannel.transferFrom()  将数据从来源channel传输过来。</li>
+<li>FileChannel.transferTo()   将数据传输到其他的channel中。</li>
+</ul>
+<h4 id="2-3_SocketChannel">2.3 SocketChannel</h4><p>SocketChannel是连接tcp网络的通道。其操作模式如下：</p>
+<pre><code><span class="type">SocketChannel</span> socketChannel = <span class="type">SocketChannel</span>.<span class="keyword">open</span><span class="literal">()</span>;
+socketChannel.connect(<span class="keyword">new</span> <span class="type">InetSocketAddress</span>(<span class="string">"localhost"</span>, <span class="number">80</span>));
+<span class="type">ByteBuffer</span> buf = <span class="type">ByteBuffer</span>.allocate(<span class="number">48</span>);
+<span class="built_in">int</span> bytesRead = socketChannel.read(buf);
+
+<span class="type">ByteBuffer</span> buf = <span class="type">ByteBuffer</span>.allocate(<span class="number">48</span>);
+buf.clear<span class="literal">()</span>;
+buf.put(newData.getBytes<span class="literal">()</span>);
+buf.flip<span class="literal">()</span>;
+<span class="keyword">while</span>(buf.hasRemaining<span class="literal">()</span>) {
+    channel.write(buf);
+}
+</code></pre><h4 id="2-4_ServerSocketChannel">2.4 ServerSocketChannel</h4><p>监听tcp连接。</p>
+<pre><code>ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+serverSocketChannel.socket().bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9999</span>));
+serverSocketChannel.configureBlocking(<span class="literal">false</span>);
+<span class="keyword">while</span>(<span class="literal">true</span>){
+    SocketChannel socketChannel =
+            serverSocketChannel.accept();
+    <span class="regexp">//</span><span class="keyword">do</span> something <span class="reserved">with</span> socketChannel...
+}
+</code></pre><h4 id="2-5_DatagramChannel">2.5 DatagramChannel</h4><p>UDP连接</p>
+<h4 id="2-6_Pipe">2.6 Pipe</h4><p>管道是一种线程之间进行数据交换的方式。<br>Pipe有一个source channel 和一个sink channel.你可以写数据到sink channel中，从source channel中读取数据.<br><img src="/img/2015/pipe-internals.png" alt="pipe-internals"></p>
+<pre><code>Pipe <span class="keyword">pipe</span> = Pipe.<span class="keyword">open</span>();
+Pipe.SinkChannel sinkChannel = <span class="keyword">pipe</span>.sink();
+sinkChannel.<span class="keyword">write</span>(buf);
+Pipe.SourceChannel sourceChannel = <span class="keyword">pipe</span>.source();
+inChannel.<span class="keyword">read</span>(buf);
+</code></pre><h4 id="2-7_分散和聚集">2.7 分散和聚集</h4><p>分散/聚集 I/O 是使用多个而不是单个缓冲区来保存数据的读写方法。<br>在 分散读取 中，通道依次填充每个缓冲区。填满一个缓冲区后，它就开始填充下一个。在某种意义上，缓冲区数组就像一个大缓冲区。</p>
+<p>接口：</p>
+<pre><code>ScatteringByteChannel
+<span class="function"><span class="keyword">long</span> <span class="title">read</span><span class="params">( ByteBuffer[] dsts )</span></span>;
+<span class="function"><span class="keyword">long</span> <span class="title">read</span><span class="params">( ByteBuffer[] dsts, <span class="keyword">int</span> offset, <span class="keyword">int</span> length )</span></span>;
+
+GatheringByteChannel
+<span class="function"><span class="keyword">long</span> <span class="title">write</span><span class="params">( ByteBuffer[] srcs )</span></span>;
+<span class="function"><span class="keyword">long</span> <span class="title">write</span><span class="params">( ByteBuffer[] srcs, <span class="keyword">int</span> offset, <span class="keyword">int</span> length )</span></span>;
+</code></pre><p>分散/聚集 I/O 对于将数据划分为几个部分很有用。例如，您可能在编写一个使用消息对象的网络应用程序，每一个消息被划分为固定长度的头部和固定长度的正文。您可以创建一个刚好可以容纳头部的缓冲区和另一个刚好可以容纳正文的缓冲区。当您将它们放入一个数组中并使用分散读取来向它们读入消息时，头部和正文将整齐地划分到这两个缓冲区中。</p>
+<h3 id="3，Selector">3，Selector</h3><p>selector用于多路复用，可以同时监听一组通信信道（Channel）上的 I/O 状态。</p>
+<p>传统的套接字服务器的处理方式是对于每一个客户端套接字连接，都新创建一个线程来进行处理。创建线程是很耗时的操作，而有的实现会采用线程池。不过一个请求一个线程的处理模型并不是很理想。原因在于耗费时间创建的线程，在大部分时间可能处于等待的状态。而多路复用I/O的基本做法是由一个线程来管理多个套接字连接。该线程会负责根据连接的状态，来进行相应的处理。多路复用I/O依靠操作系统提供的select或相似系统调用的支持，选择那些已经就绪的套接字连接来处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Selector selector = Selector.open();</span><br><span class="line">channel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">  <span class="keyword">int</span> readyChannels = selector.select();</span><br><span class="line">  <span class="keyword">if</span>(readyChannels == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">  Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();</span><br><span class="line">  Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();</span><br><span class="line">  <span class="keyword">while</span>(keyIterator.hasNext()) &#123;</span><br><span class="line">    SelectionKey key = keyIterator.next();</span><br><span class="line">    <span class="keyword">if</span>(key.isAcceptable()) &#123;</span><br><span class="line">        <span class="comment">// a connection was accepted by a ServerSocketChannel.</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isConnectable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a connection was established with a remote server.</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isReadable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a channel is ready for reading</span></span><br><span class="line">    &#125; <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(key.isWritable()</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// a channel is ready for writing</span></span><br><span class="line">    &#125;</span><br><span class="line">    keyIterator.remove();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四，AIO">四，AIO</h2><h2 id="五，其他">五，其他</h2><h3 id="1，同步与异步">1，同步与异步</h3><p>所谓同步就是一个任务的完成需要依赖另外一个任务时，只有等待被依赖的任务完成后，依赖的任务才能算完成，这是一种可靠的任务序列。要么成功都成功，失败都失败，两个任务的状态可以保持一致。而异步是不需要等待被依赖的任务完成，只是通知被依赖的任务要完成什么工作，依赖的任务也立即执行，只要自己完成了整个任务就算完成了。至于被依赖的任务最终是否真正完成，依赖它的任务无法确定，所以它是不可靠的任务序列。</p>
+<h3 id="2，阻塞与非阻塞">2，阻塞与非阻塞</h3><p>阻塞与非阻塞主要是从 CPU 的消耗上来说的，阻塞就是 CPU 停下来等待一个慢的操作完成 CPU 才接着完成其它的事。非阻塞就是在这个慢的操作在执行时 CPU 去干其它别的事，等这个慢的操作完成时，CPU 再接着完成后续的操作。虽然表面上看非阻塞的方式可以明显的提高 CPU 的利用率，但是也带了另外一种后果就是系统的线程切换增加。</p>
+<h3 id="3，网络I/O优化">3，网络I/O优化</h3><ol>
+<li>一个是减少网络交互的次数，缓存。</li>
+<li>减少网络传输数据量的大小，压缩。</li>
+<li>尽量减少编码，最好直接以字节发送。</li>
+<li>同步异步，阻塞非阻塞的选择。</li>
+</ol>
+<h2 id="六，参考资料">六，参考资料</h2><ol>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-javaio/" target="_blank" rel="external">深入分析 Java I/O 的工作机制</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-i-o" target="_blank" rel="external">Java深度历险（八）——Java I/O</a></li>
+<li><a href="http://www.importnew.com/14111.html" target="_blank" rel="external">Java I/O底层是如何工作的？</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/overview.html" target="_blank" rel="external">Java NIO Overview</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/education/java/j-nio/section2.html" target="_blank" rel="external">NIO 入门</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/23/2015/java-exception/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          java异常
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/23/2015/java-serizable/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java序列化</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="2015/java-io" data-title="java I/O" data-url="http://sqtds.github.io/2015/05/23/2015/java-io/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 sqtds
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/mobile.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

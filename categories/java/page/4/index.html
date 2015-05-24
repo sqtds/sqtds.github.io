@@ -124,7 +124,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 20px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 18.33px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/mondrian/" style="font-size: 20px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令集/" style="font-size: 10px;">linux命令集</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 13.33px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 10px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -195,6 +195,318 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/mondrian-source-code-7" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/02/2014/mondrian-source-code-7/" class="article-date">
+  	<time datetime="2014-11-02T10:07:10.000Z" itemprop="datePublished">11月 2 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/02/2014/mondrian-source-code-7/">mondrian 源码解读（七）-读取member</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在前面几节中我们了解了cube的创建和query的创建。有了这2样东西后，我们就可以开始执行mdx语句了。在第二小节中，我们了解了mdx的执行顺序。</p>
+<ol>
+<li>先执行from，即表示从哪个cube中获取结果。</li>
+<li>再执行where，with和axis，即获取member阶段。</li>
+<li>有了所有依赖的成员后，最后执行Cell的值。</li>
+</ol>
+<p>cube的创建已经在前一节中讲过了，接着是member获取阶段，由于这一阶段分为3部分，内容比较多。所以下面我们先将member是如何读取的，后几节再介绍它的执行过程。</p>
+<h2 id="MemberSource">MemberSource</h2><p>所有对成员的读取操作都是通过MemberSource来完成的。<br>MemberSource基本功能就是是读取层次的成员操作。<br>我们看下它的基本接口：</p>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MemberSource</span> </span>{
+
+    <span class="function">RolapHierarchy <span class="title">getHierarchy</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">boolean</span> <span class="title">setCache</span><span class="params">(MemberCache cache)</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembers</span><span class="params">()</span></span>;
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getRootMembers</span><span class="params">()</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        RolapMember parentMember,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberChildren</span><span class="params">(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getMemberCount</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">lookupMember</span><span class="params">(
+        List&lt;Id.Segment&gt; uniqueNameParts,
+        <span class="keyword">boolean</span> failIfNotFound)</span></span>;
+}    
+</code></pre><p>从上面我们可以看到，有3个最基本的接口，分别是获取层次，即当前的MemberSource属于哪个层次，设置缓存对象（为了从缓存中读取member），和获得当前层次的成员。这就是MemberSource的核心功能。</p>
+<h2 id="MemberReader">MemberReader</h2><p>我们先看MemberReader的层次图。<br><img src="/img/2014/QQ图片20141102182120.jpg" alt=""><br>从上图中我们看到，MemberReader是继承的MemberSource，所以MemberReader具有MemberSource所有的功能。那么它有哪些功能呢？<br>我们看看它的接口:</p>
+<pre><code><span class="class"><span class="keyword">interface</span> <span class="title">MemberReader</span> <span class="keyword">extends</span> <span class="title">MemberSource</span> </span>{
+
+    <span class="function">RolapMember <span class="title">getLeadMember</span><span class="params">(RolapMember member, <span class="keyword">int</span> n)</span></span>;
+
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level)</span></span>;
+
+
+    <span class="function"><span class="keyword">void</span> <span class="title">getMemberRange</span><span class="params">(
+        RolapLevel level,
+        RolapMember startMember,
+        RolapMember endMember,
+        List&lt;RolapMember&gt; list)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(
+        RolapMember m1,
+        RolapMember m2,
+        <span class="keyword">boolean</span> siblingsAreEqual)</span></span>;
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        RolapMember member,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    Map&lt;? extends Member, Access&gt; getMemberChildren(
+        List&lt;RolapMember&gt; parentMembers,
+        List&lt;RolapMember&gt; children,
+        MemberChildrenConstraint constraint);
+
+    <span class="function">List&lt;RolapMember&gt; <span class="title">getMembersInLevel</span><span class="params">(
+        RolapLevel level,
+        TupleConstraint constraint)</span></span>;
+
+    <span class="function"><span class="keyword">int</span> <span class="title">getLevelMemberCount</span><span class="params">(RolapLevel level)</span></span>;
+
+    <span class="function">MemberBuilder <span class="title">getMemberBuilder</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getDefaultMember</span><span class="params">()</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberParent</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">substitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">desubstitute</span><span class="params">(RolapMember member)</span></span>;
+
+    <span class="function">RolapMember <span class="title">getMemberByKey</span><span class="params">(
+        RolapLevel level,
+        List&lt;Comparable&gt; keyValues)</span></span>;
+}
+</code></pre><p>从上面大家发现没，MemberReader更细化功能，它可以获取到Level上的成员，也可以获取成员的父成员或者成员的子成员，并且在获取成员的时候可以添加约束条件。有了这些功能，我们就可以任意的获取成员了，所以MemberReader是成员获取的主接口。</p>
+<h2 id="具体实现">具体实现</h2><h3 id="SmartMemberReader">SmartMemberReader</h3><p>SmartMemberReader实现了MemberReader接口，它实现了维度成员及其子成员的缓存，如果有一个成员位于缓存中，则还会有一个其子成员的列表。它同时缓存了level下的成员们。该类主要的成员有：</p>
+<ul>
+<li>source：MemberReader，用于实际从数据库中读取维度成员值。</li>
+<li>mapMemberToChildren：map，实现成员及其子成员的映射， key为RolapMember，value为List<rolapmember>。</rolapmember></li>
+<li>mapKeyToMember： map ，实现所有成员的缓存，其中的key为MmberKey</li>
+<li>mapLevelToMembers: map，实现级别及其所有成员的映射， key为RolapLevel，value为List<rolapmember>。</rolapmember></li>
+</ul>
+<h3 id="SqlMemberSource">SqlMemberSource</h3><p>SqlMemberSource是最终更数据库打交道的类，它会针对要查询对Level生成一个sql，该sql最终通过数据库执行，将查询结果返回后拼装成member。需要注意的一点是，如果该member有parentmember，必须要生成其对应的parentmember。生成过程即先递归的在level中查找其上一级level的member是否缓存，如果没有缓存，则将其加入查询列表中，直到上一级为空或缓存了member。找到所有要查询的level后，最后一次性生成sql向数据库查询数据。</p>
+<p>SmartMemberReader的source其实为mondrian.rolap.SqlMemberSource类，该类中反过来又存储了SmartMemberReader对象，作为其cache成员属性。成员读取过程：</p>
+<ol>
+<li>smartMemberReader.getMemberChildren(parentMembers,children,constrain);</li>
+<li>最终通过source.getMemberChildren()…，其中反过来会把找到的children赋予mapKeyToMember。</li>
+<li>最终除了将结果返回在children输出参数中，同时也对mapMemberToChildren赋值了。</li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-6/" class="article-date">
+  	<time datetime="2014-10-26T10:07:05.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在第4节中，构建query的时候，有一个非常重要的东西被我忽略了，那就是构建cube <code>Util.lookupCube(statement.getSchemaReader(), cube, true)</code>，下面我们来谈谈cube是如何构建的。</p>
+<h2 id="Cube是什么？">Cube是什么？</h2><p>在第2节中，我们已经谈论了cube，即维度和度量的组合。</p>
+<h2 id="RolapCube">RolapCube</h2><p>在理解了Cube后，我们就可以理解RolapCube了。根据字面意思，我们也可以理解为关系型联机分析处理cube。我们看看它里面主要是实体对象：</p>
+<pre><code><span class="comment">//不解释</span>
+<span class="keyword">protected</span> Dimension[] dimensions;
+
+<span class="comment">//</span>
+<span class="keyword">private</span> <span class="keyword">final</span> RolapHierarchy measuresHierarchy;
+
+<span class="comment">/**
+ * List of calculated members.
+ * 定义在schema中的计算成员，注意公式是如何转换的呢？
+ */</span>
+<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Formula&gt; calculatedMemberList = <span class="keyword">new</span> ArrayList&lt;Formula&gt;();
+
+<span class="keyword">private</span> RolapStar star; <span class="comment">//关联的星型模型</span>
+
+<span class="comment">//在Evaluator中用于计算当前成员是否为空，如果当前度量成员中有count聚合，即为当前成员，如果没有找到，创建一个虚拟的count聚合为测量的成员。</span>
+RolapBaseCubeMeasure factCountMeasure;
+</code></pre><p>calculatedMemberList这里谈一下。如何将schema中定义的计算成员转换成已近解析好的Formula？<br>这里其实很简单，通过构造一个特定的mdx：<br><code>with member [Measures].[aa] as &#39;expression1&#39; ,
+[Measures].[bb] as &#39;expression2&#39;select from cube</code><br>然后使用parser解析器解析mdx后返回一个query，query里面的计算成员即为此计算成员。</p>
+<h2 id="RolapStar是什么？">RolapStar是什么？</h2><p>我们可以将它理解为一个关联了物理表之间的关系的对象。通过它来生成特定的sql，查询需要的数据。<br>具体实体对象大家可以打开看看，这里不做详细的解释了。</p>
+<pre><code><span class="keyword">private</span> DataSource dataSource;
+<span class="keyword">private</span> <span class="keyword">final</span> Table factTable;
+<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList = <span class="keyword">new</span> ArrayList&lt;Column&gt;();
+
+Table对象..星型模型
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Table</span> </span>{
+    <span class="keyword">private</span> <span class="keyword">final</span> RolapStar star;
+    <span class="keyword">private</span> <span class="keyword">final</span> MondrianDef.Relation relation;
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList;
+    <span class="keyword">private</span> <span class="keyword">final</span> Table <span class="keyword">parent</span>;
+    <span class="keyword">private</span> <span class="keyword">List</span>&lt;Table&gt; children;
+    <span class="keyword">private</span> <span class="keyword">final</span> Condition joinCondition;
+    <span class="keyword">private</span> <span class="keyword">final</span> String alias;
+}
+</code></pre><h2 id="源码修改">源码修改</h2><p>cube的创建是根据schema中定义的属性配置来创建cube，这部分没有细看，如何创建其实我们并不关系，理解cube的数据结构就行了。</p>
+<p>我们在修改mondrian源码时，将cube创建这块全部去掉了，取而代之的使用了自己的cube创建方式。由于我们底层的存储结构不依赖与xml，而是我们自己定义好的实体间的关系，所以我们将我们的实体转换成了cube。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
+  	<time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
+<h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
+<h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
+<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-5/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -400,341 +712,9 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
-  	<time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="mondrian是什么？">mondrian是什么？</h2><p>mondrian是一款基于java的开源的多维分析olap服务器。更多资料请移步mondrian官方网站：<a href="http://community.pentaho.com/projects/mondrian/。">http://community.pentaho.com/projects/mondrian/。</a></p>
-<h2 id="如何部署mondrian？">如何部署mondrian？</h2><p>在mondrian官方文档中，已经有详细的步骤了，请移步：<a href="http://mondrian.pentaho.com/documentation/developers_guide.php">http://mondrian.pentaho.com/documentation/developers_guide.php</a></p>
-<p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/10/26/2014/mondrian-source-code-1/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/03/2014/antlr4-tips/" class="article-date">
-  	<time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/2014/antlr4-tips/">antlr4-技巧（十）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
-<h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
-<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/2014/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/2014/QQ图片20140903210304.jpg" alt=""></p>
-<h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
-<pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
-<span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
-walker.walk(extractor, tree); <span class="comment">// initiate walk of tree with listener</span>
-
-public <span class="class"><span class="keyword">class</span> <span class="title">InsertSerialIDListener</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">JavaBaseListener</span> {</span>
-    <span class="type">TokenStreamRewriter</span> rewriter;
-    public <span class="type">InsertSerialIDListener</span>(<span class="type">TokenStream</span> tokens) {
-    rewriter = <span class="keyword">new</span> <span class="type">TokenStreamRewriter</span>(tokens);
-}
-<span class="annotation">@Override</span>
-public void enterClassBody(<span class="type">JavaParser</span>.<span class="type">ClassBodyContext</span> ctx) {
-        <span class="type">String</span> field = <span class="string">"\n\tpublic static final long serialVersionUID = 1L;"</span>;
-        rewriter.insertAfter(ctx.start, field);
-    }
-}
-</code></pre><p>回到最开始，我们看看如何使用隐藏的通道。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">CommentShifter</span> <span class="title">extends</span> <span class="title">CymbolBaseListener</span> {
-    BufferedTokenStream tokens;
-    TokenStreamRewriter rewriter;
-    <span class="comment">/** Create TokenStreamRewriter attached to token stream
-     *  sitting between the Cymbol lexer and parser.
-     */</span>
-    <span class="function"><span class="keyword">public</span> <span class="title">CommentShifter</span><span class="params">(BufferedTokenStream tokens)</span> </span>{
-        <span class="keyword">this</span>.tokens = tokens;
-        rewriter = <span class="keyword">new</span> TokenStreamRewriter(tokens);
-    }
-
-    @<span class="function">Override
-    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitVarDecl</span><span class="params">(CymbolParser.VarDeclContext ctx)</span> </span>{
-        Token semi = ctx.getStop(); 
-        <span class="keyword">int</span> i = semi.getTokenIndex();
-        List&lt;Token&gt; cmtChannel =
-            tokens.getHiddenTokensToRight(i, CymbolLexer.COMMENTS); 
-        <span class="keyword">if</span> ( cmtChannel!=<span class="keyword">null</span> ) {
-            Token cmt = cmtChannel.<span class="keyword">get</span>(<span class="number">0</span>); 
-            <span class="keyword">if</span> ( cmt!=<span class="keyword">null</span> ) {
-                String txt = cmt.getText().substring(<span class="number">2</span>);
-                String newCmt = <span class="string">"/* "</span> + txt.trim() + <span class="string">" */\n"</span>;
-                rewriter.insertBefore(ctx.start, newCmt); 
-                rewriter.replace(cmt, <span class="string">"\n"</span>);              
-            }
-        }
-    }
-}
-
-ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-CymbolLexer lexer = <span class="keyword">new</span> CymbolLexer(input);
-CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-CymbolParser parser = <span class="keyword">new</span> CymbolParser(tokens);
-RuleContext tree = parser.file();
-
-ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-CommentShifter shifter = <span class="keyword">new</span> CommentShifter(tokens);
-walker.walk(shifter, tree);
-
-
-lexmagic/t.cym
-<span class="keyword">int</span> n = <span class="number">0</span>; <span class="comment">// define a counter</span>
-<span class="keyword">int</span> i = <span class="number">9</span>;
-we want to generate the following output:
-<span class="comment">/* define a counter */</span>
-<span class="keyword">int</span> n = <span class="number">0</span>;
-<span class="keyword">int</span> i = <span class="number">9</span>;
-</code></pre><p>所有的工作都发送在exitVarDecl()中。首先，我们得到‘；’所在的位置。然后我们查询它的后面是否有隐藏的通道，如果有的话，我们将获取通道的第一个字符来判断通道中是否有tokens，最后插入到最前面即可。</p>
-<h2 id="上下文敏感的词法">上下文敏感的词法</h2><h2 id="在流中孤立">在流中孤立</h2><p>这里需要注意一点，.*？表示非贪婪操作符。他们一直扫描直到遇到符合下一个规则的操作符为止。</p>
-<pre><code><span class="xml">COMMENT : '<span class="comment">&lt;!--' .*? '--&gt;</span>' -&gt; skip ;
-CDATA : '<span class="cdata">&lt;![CDATA[' .*? ']]&gt;</span>' ;
-TAG : '<span class="tag">&lt;<span class="title">'</span> <span class="attribute">.</span>*? '&gt;</span>' ; // must come after other tag-like structures
-ENTITY : '&amp;' .*? ';' ;
-TEXT : ~[<span class="tag">&lt;<span class="title">&amp;]+</span> ; // <span class="attribute">any</span> <span class="attribute">sequence</span> <span class="attribute">of</span> <span class="attribute">chars</span> <span class="attribute">except</span> &lt; <span class="attribute">and</span> &amp; <span class="attribute">chars</span></span></span>
-</code></pre><p>在某种场景下，一个语言可能有几种不同的模式。词法模式可以允许我们分离单个的词法语言到多个子规则。当进入到当前规则的模式时，词法仅仅返回符合的token。最常用的需求可能是在不同的词法之间进行转换。          例如，对于一个xml文件，我们可以定义2个模式，在标签‘&lt;’之外的模式和在‘&gt;’之内的模式。这2中模式是孤立的，下面是这个例子的语法：</p>
-<pre><code>lexer grammar ModeTagsLexer;
-<span class="comment">// Default mode rules (the SEA)</span>
-<span class="string">OPEN :</span> <span class="string">'&lt;'</span> -&gt; mode(ISLAND) ; <span class="comment">// switch to ISLAND mode</span>
-<span class="string">TEXT :</span> ~<span class="string">'&lt;'</span> + ; <span class="comment">// clump all text together</span>
-mode ISLAND;
-<span class="string">CLOSE :</span> <span class="string">'&gt;'</span> -&gt; mode(DEFAULT_MODE) ; <span class="comment">// back to SEA mode</span>
-<span class="string">SLASH :</span> <span class="string">'/'</span> ;
-<span class="string">ID :</span> [a-zA-Z]+ ; <span class="comment">// match/send ID in tag to parser</span>
-
-parser grammar ModeTagsParser;
-options { tokenVocab=ModeTagsLexer; } <span class="comment">// use tokens from ModeTagsLexer.g4</span>
-<span class="string">file:</span> (tag | TEXT)* ;
-<span class="string">tag :</span> <span class="string">'&lt;'</span> ID <span class="string">'&gt;'</span>
-| <span class="string">'&lt;'</span> <span class="string">'/'</span> ID <span class="string">'&gt;'</span>
-;
-</code></pre><p>在这个例子中，仅仅是options tokenVocab不常用的。它的意思是保持lexer和parser是同步的，即有相同的token类型。</p>
-<h2 id="解析xml">解析xml</h2><p>在这个例子中，我们只需要了解有pushMode和popMode即可，就像入栈和出栈一样，挺简单的。</p>
-<pre><code>lexer grammar XMLLexer;
-
-<span class="comment">// Default "mode": Everything OUTSIDE of a tag</span>
-COMMENT     :   <span class="string">'&lt;!--'</span> .*? <span class="string">'--&gt;'</span> ;
-CDATA       :   <span class="string">'&lt;![CDATA['</span> .*? <span class="string">']]&gt;'</span> ;
-<span class="comment">/** Scarf all DTD stuff, Entity Declarations like &lt;!ENTITY ...&gt;,
- *  and Notation Declarations &lt;!NOTATION ...&gt;
- */</span>
-DTD         :   <span class="string">'&lt;!'</span> .*? <span class="string">'&gt;'</span>            -&gt; skip ; 
-EntityRef   :   <span class="string">'&amp;'</span> Name <span class="string">';'</span> ;
-CharRef     :   <span class="string">'&amp;#'</span> DIGIT+ <span class="string">';'</span>
-            |   <span class="string">'&amp;#x'</span> HEXDIGIT+ <span class="string">';'</span>
-            ;
-SEA_WS      :   (<span class="string">' '</span>|<span class="string">'\t'</span>|<span class="string">'\r'</span>? <span class="string">'\n'</span>) ;
-
-OPEN        :   <span class="string">'&lt;'</span>                     -&gt; pushMode(INSIDE) ;
-XMLDeclOpen :   <span class="string">'&lt;?xml'</span> S               -&gt; pushMode(INSIDE) ;
-SPECIAL_OPEN:   <span class="string">'&lt;?'</span> Name               -&gt; more, pushMode(PROC_INSTR) ;
-
-TEXT        :   ~[&lt;&amp;]+ ;        <span class="comment">// match any 16 bit char other than &lt; and &amp;</span>
-
-<span class="comment">// ----------------- Everything INSIDE of a tag ---------------------</span>
-mode INSIDE;
-
-CLOSE       :   <span class="string">'&gt;'</span>                     -&gt; popMode ;
-SPECIAL_CLOSE:  <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?xml...?&gt;</span>
-SLASH_CLOSE :   <span class="string">'/&gt;'</span>                    -&gt; popMode ;
-SLASH       :   <span class="string">'/'</span> ;
-EQUALS      :   <span class="string">'='</span> ;
-STRING      :   <span class="string">'"'</span> ~[&lt;<span class="string">"]* '"</span><span class="string">'
-            |   '</span>\<span class="string">''</span> ~[&lt;<span class="string">']* '</span>\<span class="string">''</span>
-            ;
-Name        :   NameStartChar NameChar* ;
-S           :   [ \t\r\n]               -&gt; skip ;
-
-fragment
-HEXDIGIT    :   [a-fA-F0-<span class="number">9</span>] ;
-
-fragment
-DIGIT       :   [<span class="number">0</span>-<span class="number">9</span>] ;
-
-fragment
-NameChar    :   NameStartChar
-            |   <span class="string">'-'</span> | <span class="string">'.'</span> | DIGIT 
-            |   <span class="string">'\u00B7'</span>
-            |   <span class="string">'\u0300'</span>..<span class="string">'\u036F'</span>
-            |   <span class="string">'\u203F'</span>..<span class="string">'\u2040'</span>
-            ;
-
-fragment
-NameStartChar
-            :   [:a-zA-Z]
-            |   <span class="string">'\u2070'</span>..<span class="string">'\u218F'</span> 
-            |   <span class="string">'\u2C00'</span>..<span class="string">'\u2FEF'</span> 
-            |   <span class="string">'\u3001'</span>..<span class="string">'\uD7FF'</span> 
-            |   <span class="string">'\uF900'</span>..<span class="string">'\uFDCF'</span> 
-            |   <span class="string">'\uFDF0'</span>..<span class="string">'\uFFFD'</span>
-            ;
-
-<span class="comment">// ----------------- Handle &lt;? ... ?&gt; ---------------------</span>
-mode PROC_INSTR;
-PI          :   <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?...?&gt;</span>
-IGNORE      :   .                       -&gt; more ;
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
-  	<time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
-<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
-<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/categories/java/page/3/">&laquo; Prev</a><a class="page-number" href="/categories/java/">1</a><a class="page-number" href="/categories/java/page/2/">2</a><a class="page-number" href="/categories/java/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/categories/java/page/5/">5</a><a class="page-number" href="/categories/java/page/6/">6</a><a class="page-number" href="/categories/java/page/7/">7</a><a class="extend next" rel="next" href="/categories/java/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/categories/java/page/3/">&laquo; Prev</a><a class="page-number" href="/categories/java/">1</a><a class="page-number" href="/categories/java/page/2/">2</a><a class="page-number" href="/categories/java/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/categories/java/page/5/">5</a><a class="page-number" href="/categories/java/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/categories/java/page/8/">8</a><a class="extend next" rel="next" href="/categories/java/page/5/">Next &raquo;</a>
     </nav>
   
 </div>
