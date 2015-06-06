@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title><![CDATA[蜻蜓点水]]></title>
-  <subtitle><![CDATA[if you never try , you will lost forever.]]></subtitle>
+  
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
   <updated>2015-05-24T07:21:06.000Z</updated>
