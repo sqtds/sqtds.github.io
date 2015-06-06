@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://sqtds.github.io/about/index.html</loc>
+    <lastmod>2015-06-06T09:41:03.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://sqtds.github.io/2015/05/24/2015/gpu-base-konwledge/</loc>
     <lastmod>2015-05-24T07:47:50.000Z</lastmod>
   </url>
@@ -94,11 +99,6 @@
   <url>
     <loc>http://sqtds.github.io/2015/05/17/2014/linux-tips/</loc>
     <lastmod>2015-05-18T05:53:58.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://sqtds.github.io/about/index.html</loc>
-    <lastmod>2015-05-17T08:15:37.000Z</lastmod>
   </url>
   
   <url>
