@@ -254,8 +254,8 @@ var _hmt = _hmt || [];
 <span class="number">82</span> }
 </code></pre><p>原来这里有个死循环，当minNewCapacity为int的最大值时，newCapacity是无论如何也不会比它大了。参考Netty BUG <a href="https://github.com/netty/netty/issues/258。" target="_blank" rel="external">https://github.com/netty/netty/issues/258。</a></p>
 <p>当ClientBootstrap每次都初始化时，由于handler引用的是同一个，所以每个现场都会被halt在死循环上，线程运行多了，自然CPU100%了。</p>
-<h2 id="第四个坑">第四个坑</h2><p>这个坑是同事找到的，当时同事不理解问我netty的deocde方法的执行时机。于是问我，我就回答了netty每次收到消息后都会触发一次decode方法。 他就问我，deocde方法每次只处理一次消息实体是不是不对，要是decode里面传递了多个消息实体，那后面的怎么办。我一看，果然会存在这样的问题，这都是前人留下的坑…虽然我们的消息实体一般很长，但也会存在短的，这个在一般情况下不会发生。</p>
-<h2 id="最后">最后</h2><p>这次遇到了这么些问题，感觉自己在分析问题上还是没有完全掌控。这跟现场太远，不好跟踪bug，也跟自己对netty的掌握程度有关。所以还需要好好理解netty的机制。</p>
+<h2 id="第四个坑">第四个坑</h2><p>这个坑是同事找到的，当时同事不理解netty的deocde方法的执行时机。于是问我，我就回答了netty每次收到消息后都会触发一次decode方法。 他就问我，deocde方法每次只处理一次消息实体是不是不对，要是decode里面传递了多个消息实体，那后面的怎么办。我一看，果然会存在这样的问题，这都是前人留下的坑…虽然我们的消息实体一般很长，但也会存在短的，这个在一般情况下不会发生。</p>
+<h2 id="最后">最后</h2><p>这次遇到了这么些问题，感觉自己在分析问题上还是没有完全掌控。这跟现场太远，不好跟踪bug，也跟自己对netty的掌握程度有关。所以还需要好好理解netty的机制。<br>还有就是，不要完全相信以前的代码。。。</p>
 
       
     </div>
@@ -264,6 +264,15 @@ var _hmt = _hmt || [];
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/07/22/netty-study1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          netty研究
+        
+      </div>
+    </a>
   
   
     <a href="/2015/06/22/2015/网络协议-传输层/" id="article-nav-older" class="article-nav-link-wrap">

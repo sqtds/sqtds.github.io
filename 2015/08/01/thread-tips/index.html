@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   
-  <title>蜻蜓点水</title>
+  <title>thread tips | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="蜻蜓点水">
-<meta property="og:url" content="http://sqtds.github.io/tags/netty/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="thread tips">
+<meta property="og:url" content="http://sqtds.github.io/2015/08/01/thread-tips/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="蜻蜓点水">
+<meta name="twitter:title" content="thread tips">
 <meta name="twitter:description">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
@@ -166,13 +166,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap">
-  
-    <article id="post-2015/netty-exception" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-thread-tips" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/07/19/2015/netty-exception/" class="article-date">
-  	<time datetime="2015-07-19T08:45:27.000Z" itemprop="datePublished">7月 19 2015</time>
+      <a href="/2015/08/01/thread-tips/" class="article-date">
+  	<time datetime="2015-08-01T01:19:03.000Z" itemprop="datePublished">8月 1 2015</time>
 </a>
     </div>
   
@@ -184,74 +182,91 @@ var _hmt = _hmt || [];
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/19/2015/netty-exception/">记一次netty异常处理</a>
+    <h1 class="article-title" itemprop="name">
+      thread tips
     </h1>
   
 
       </header>
       
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言">前言</h2><p>在用netty的时候，大家都遇到了哪些坑呢？又是如何解决的呢？</p>
-<p>下面，我给大家讲讲这段时间我们在遇到的问题，也算是给自己个总结和教训吧。</p>
-<h2 id="背景">背景</h2><p>在3月底的时候，我们跟合作方开发了一个程序，他们是服务端，我们是客户端。</p>
-<p>我们之间有2个接口，按照不同的方式进行通讯：</p>
-<ul>
-<li><p>接口1：服务端每隔5秒钟发送一次数据，客户端（我们）只接收数据</p>
-</li>
-<li><p>接口2：服务端第一次发全量数据，我们收到数据后返回给他们当前数据的id码，他们收到id码后等待数据发生变化再返给我们数据，然后我们接到数据后再发给他们id码，一直循环。</p>
-</li>
-</ul>
-<h2 id="第一个坑">第一个坑</h2><p>当时接口2运行一段时间后，大概几天吧，就收到串包的数据了。然后我们就找合作方，他们查看了日志后说他们那边发送没问题。</p>
-<p>当时老大就说，既然他们说没问题。我们就要自证清白。于是我们就加了几行代码，将接口2接收到的每个报文的数据都写到文件中去了。</p>
-<p>过了几天，问题又复现了，我们将问题反馈给合作方。他们看了他们的日志后依然说没问题，并且发给我们了。我看了一眼他们的日志，发现了问题。原来是多个线程同时向一个通道中写入数据…</p>
-<h2 id="第二个坑">第二个坑</h2><p>第一个坑改好后，我们优化了代码，接受速率比以前有了很大的提升。<br>但是没过多久，又出问题了，我们发现隔一端时间（也是几天吧）之后，接口1又每收到数据了。检查了我们的代码后，本着怀疑他人的态度，我们认为是合作方的问题。注：当时程序在现场，跑一次要花半天时间，没有用wireshark查看数据包是否发过来。 反馈给合作方之后，他们也没查出所以然来。</p>
-<p>于是我们就出了个解决方案。当在5分钟之内没收到数据的时候，链接自动断开重连。就这样，这个问题就算暂时告一段落了。</p>
-<h2 id="第三个坑">第三个坑</h2><p>过了段时间，我们优化了代码程序，使得数据接收频率更快了。<br>但是，程序只跑了一天，CPU就到了100%了。于是现场的技术人员给我们发堆栈信息，分析了后，发现存在大量的Nio Worker线程。如图：<br><img src="/img/2015/netty-worker-exception.jpg" alt=""><br>于是我们判断重连有问题，仔细检查了代码后，并没有发现问题。于是将ClientBootstrap改成仅第一次连接初始化，以后重连的时候不初始化。<br>程序运行一天后，CPU没有出现100%了，但是数据又接收不到了。</p>
-<p>当时左思又想不得其解。模拟Nio Worker线程变多的情况也模拟不出来。<br>后来又看了一眼堆栈信息。突然忘记了一件重要的事情，线程都阻塞在了</p>
-<pre><code>at org<span class="class">.jboss</span><span class="class">.netty</span><span class="class">.buffer</span><span class="class">.DynamicChannelBuffer</span><span class="class">.ensureWritableBytes</span>(DynamicChannelBuffer<span class="class">.java</span>:<span class="number">81</span>)
-</code></pre><p>这一行，这是为啥？于是打开源码，一探究竟：</p>
-<pre><code><span class="number">79</span> <span class="built_in">int</span> minNewCapacity = writerIndex<span class="literal">()</span> + minWritableBytes;
-<span class="number">80</span> <span class="keyword">while</span> (newCapacity &lt; minNewCapacity) {
-<span class="number">81</span>     newCapacity &lt;&lt;= <span class="number">1</span>;
-<span class="number">82</span> }
-</code></pre><p>原来这里有个死循环，当minNewCapacity为int的最大值时，newCapacity是无论如何也不会比它大了。参考Netty BUG <a href="https://github.com/netty/netty/issues/258。" target="_blank" rel="external">https://github.com/netty/netty/issues/258。</a></p>
-<p>当ClientBootstrap每次都初始化时，由于handler引用的是同一个，所以每个现场都会被halt在死循环上，线程运行多了，自然CPU100%了。</p>
-<h2 id="第四个坑">第四个坑</h2><p>这个坑是同事找到的，当时同事不理解netty的deocde方法的执行时机。于是问我，我就回答了netty每次收到消息后都会触发一次decode方法。 他就问我，deocde方法每次只处理一次消息实体是不是不对，要是decode里面传递了多个消息实体，那后面的怎么办。我一看，果然会存在这样的问题，这都是前人留下的坑…虽然我们的消息实体一般很长，但也会存在短的，这个在一般情况下不会发生。</p>
-<h2 id="最后">最后</h2><p>这次遇到了这么些问题，感觉自己在分析问题上还是没有完全掌控。这跟现场太远，不好跟踪bug，也跟自己对netty的掌握程度有关。所以还需要好好理解netty的机制。<br>还有就是，不要完全相信以前的代码。。。</p>
-
+        
       
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/netty/">netty</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/exception/">exception</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
     </div>
     
   </div>
   
+    
+<nav id="article-nav">
+  
+    <a href="/2015/08/01/GC-turing/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          GC调优总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/07/22/netty-study1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">netty研究</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
 </article>
 
 
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
 
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="thread-tips" data-title="thread tips" data-url="http://sqtds.github.io/2015/08/01/thread-tips/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
-  
-  
+
+
 </div>
       <footer id="footer">
   <div class="outer">

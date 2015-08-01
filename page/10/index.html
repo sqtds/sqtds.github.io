@@ -168,6 +168,370 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/branch_prdeiction" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/24/2014/branch_prdeiction/" class="article-date">
+  	<time datetime="2014-08-24T06:51:37.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/2014/branch_prdeiction/">分支预测</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概念：什么是分支预测？">概念：什么是分支预测？</h2><p>在电脑架构中，分支预测器（英语：Branch predictor）是一种数字电路，在分支指令执行结束之前猜测哪一路分支将会被运行，以提高处理器的指令流水线的性能。使用分支预测器的目的，在于改善指令管线化的流程。现代使用指令管线化处理器的性能能够提高，分支预测器对于现今的指令流水线微处理器获得高性能是非常关键的技术。</p>
+<p>如果没有分支预测器，处理器将会等待分支指令通过了指令流水线的执行阶段，才把下一条指令送入流水线的第一个阶段—取指令阶段（fetch stage）。这种技术叫做流水线停顿（stream stalled）或者流水线冒泡（stream bubbling）或者分支延迟间隙。这是早期的RISC体系结构处理器采用的应对分支指令的流水线执行的办法。</p>
+<p>分支预测器猜测两路分支中哪一路最可能发生，然后投机执行这一路的指令，来避免流水线停顿造成的时间浪费。如果后来发现分支预测错误，那么流水线中投机执行的那些中间结果全部放弃，重新取得正确的分支路线上的指令开始执行，这招致了程序执行的延迟。</p>
+<p>在分支预测失败时浪费的时间是从取指令到执行完指令（但还没有写回结果）的流水线的级数。现代微处理器趋向采用非常长的流水线，因此分支预测失败可能会损失10-20个时钟周期。越长的流水线就需要越好的分支预测。</p>
+<p><img src="/img/2014/375px-Pipeline,_4_stage.svg.png" alt=""></p>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/计算机原理/">计算机原理</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/08/24/2014/branch_prdeiction/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/java-jdbc" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/10/2014/java-jdbc/" class="article-date">
+  	<time datetime="2014-08-10T09:50:39.000Z" itemprop="datePublished">8月 10 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/10/2014/java-jdbc/">jdbc连接数据库一定要用Class.forName吗？</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一来源">一来源</h3><p>上周，在调试使用jdbc连接infobright的时候，遇到了一个奇怪的问题，当我使用Class.forName加载myslq jdbc的驱动的进行连接数据库的时候，连接缺报异常了。奇怪的是异常信息并不是mysql驱动抛出来的，而是另一个数据库驱动，达梦的驱动异常。</p>
+<h3 id="二好奇心">二好奇心</h3><p>为什么会这样呢，我明明没有加载达梦的数据集驱动呀？连不上也就算了，还抛了个其他的异常，百思不得其解。于是，我debug到了DriverManager中的源码看了看，发现已经加载了各种不同的jdbc驱动有6,7种之多。就这样，顺带的，我凑了眼DriverManager的源码。<br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java源码阅读/">java源码阅读</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/08/10/2014/java-jdbc/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/java-int" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/09/2014/java-int/" class="article-date">
+  	<time datetime="2014-08-09T07:30:12.000Z" itemprop="datePublished">8月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/09/2014/java-int/">int源码赏析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概要">概要</h3><p>今天突发好奇，想不明白string是如何转换为int的，于是翻开jdk的源码，收货挺大的。</p>
+<h3 id="parseInt(String_s)">parseInt(String s)</h3><p>首先我们看parseInt这个方法，看下图，它又调用了parseInt(String s, int radix)，这个方法才是String转换成int的主要过程。这个方法比较有趣，我们来一一分析它的实现机制。</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s) throws <span class="type">NumberFormatException</span> {
+        //此处表示s默认为<span class="number">10</span>进制
+        <span class="keyword">return</span> parseInt(s,<span class="number">10</span>);
+}
+
+//radix为s的进制格式，不能大于<span class="number">36</span>也不能小于<span class="number">2</span>，即最小为<span class="number">2</span>进制，最大为<span class="number">36</span>进制，<span class="number">36</span>进制的得来是<span class="number">10</span>个数字加<span class="number">26</span>个字母
+//例如，parseInt(<span class="string">"Kona"</span>, <span class="number">27</span>) returns <span class="number">411787</span>
+public <span class="keyword">static</span> <span class="type">int</span> parseInt(<span class="type">String</span> s, <span class="type">int</span> radix)
+            throws <span class="type">NumberFormatException</span>
+{
+    /*
+     * <span class="type">WARNING</span>: <span class="type">This</span> <span class="keyword">method</span> may be invoked early during <span class="type">VM</span> initialization
+     * before <span class="type">IntegerCache</span> <span class="keyword">is</span> initialized. <span class="type">Care</span> must be taken to <span class="keyword">not</span> use
+     * the valueOf <span class="keyword">method</span>.
+     */
+
+    <span class="keyword">if</span> (s == null) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"null"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &lt; <span class="type">Character</span>.<span class="type">MIN_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" less than Character.MIN_RADIX"</span>);
+    }
+
+    <span class="keyword">if</span> (radix &gt; <span class="type">Character</span>.<span class="type">MAX_RADIX</span>) {
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"radix "</span> + radix +
+                                        <span class="string">" greater than Character.MAX_RADIX"</span>);
+    }
+
+    <span class="type">int</span> <span class="literal">result</span> = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">int</span> i = <span class="number">0</span>, len = s.length();
+    //统一转成负号进行处理，不会出现溢出现象
+    <span class="type">int</span> limit = -<span class="type">Integer</span>.<span class="type">MAX_VALUE</span>;
+    <span class="type">int</span> multmin;
+    <span class="type">int</span> digit;
+
+    <span class="keyword">if</span> (len &gt; <span class="number">0</span>) {
+        <span class="type">char</span> firstChar = s.charAt(<span class="number">0</span>);
+        <span class="keyword">if</span> (firstChar &lt; '<span class="number">0</span>') { // <span class="type">Possible</span> leading <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+            <span class="keyword">if</span> (firstChar == '-') {
+                negative = <span class="literal">true</span>;
+                limit = <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>;
+            } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar != '+')
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+
+            <span class="keyword">if</span> (len == <span class="number">1</span>) // <span class="type">Cannot</span> have lone <span class="string">"+"</span> <span class="keyword">or</span> <span class="string">"-"</span>
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            i++;
+        }
+        multmin = limit / radix;
+        <span class="keyword">while</span> (i &lt; len) {
+            // <span class="type">Accumulating</span> negatively avoids surprises near <span class="type">MAX_VALUE</span>
+            //拿到第i个数字并且格式化成<span class="number">10</span>进制
+            digit = <span class="type">Character</span>.digit(s.charAt(i++),radix);
+            <span class="keyword">if</span> (digit &lt; <span class="number">0</span>) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; multmin) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            <span class="literal">result</span> *= radix;
+            <span class="keyword">if</span> (<span class="literal">result</span> &lt; limit + digit) {
+                throw <span class="type">NumberFormatException</span>.forInputString(s);
+            }
+            //使用负号进行计算 , -<span class="number">20</span>-<span class="number">3</span>=-<span class="number">23</span>
+            <span class="literal">result</span> -= digit;
+        }
+    } <span class="keyword">else</span> {
+        throw <span class="type">NumberFormatException</span>.forInputString(s);
+    }
+    <span class="keyword">return</span> negative ? <span class="literal">result</span> : -<span class="literal">result</span>;
+}
+</code></pre><hr>
+<h3 id="Integer_decode(String_nm)">Integer decode(String nm)</h3><p>转换8进制，16进制，10进制到10进制</p>
+<pre><code>public <span class="keyword">static</span> <span class="type">Integer</span> decode(<span class="type">String</span> nm) throws <span class="type">NumberFormatException</span> {
+    <span class="type">int</span> radix = <span class="number">10</span>;
+    <span class="type">int</span> index = <span class="number">0</span>;
+    boolean negative = <span class="literal">false</span>;
+    <span class="type">Integer</span> <span class="literal">result</span>;
+
+    <span class="keyword">if</span> (nm.length() == <span class="number">0</span>)
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Zero length string"</span>);
+    <span class="type">char</span> firstChar = nm.charAt(<span class="number">0</span>);
+    // <span class="type">Handle</span> sign, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (firstChar == '-') {
+        negative = <span class="literal">true</span>;
+        index++;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (firstChar == '+')
+        index++;
+
+    // <span class="type">Handle</span> radix specifier, <span class="keyword">if</span> present
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"0x"</span>, index) || nm.startsWith(<span class="string">"0X"</span>, index)) {
+        index += <span class="number">2</span>;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"#"</span>, index)) {
+        index ++;
+        radix = <span class="number">16</span>;
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (nm.startsWith(<span class="string">"0"</span>, index) &amp;&amp; nm.length() &gt; <span class="number">1</span> + index) {
+        index ++;
+        radix = <span class="number">8</span>;
+    }
+
+    <span class="keyword">if</span> (nm.startsWith(<span class="string">"-"</span>, index) || nm.startsWith(<span class="string">"+"</span>, index))
+        throw new <span class="type">NumberFormatException</span>(<span class="string">"Sign character in wrong position"</span>);
+
+    <span class="keyword">try</span> {
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(nm.substring(index), radix);
+        <span class="literal">result</span> = negative ? <span class="type">Integer</span>.valueOf(-<span class="literal">result</span>.intValue()) : <span class="literal">result</span>;
+    } catch (<span class="type">NumberFormatException</span> e) {
+        // <span class="type">If</span> number <span class="keyword">is</span> <span class="type">Integer</span>.<span class="type">MIN_VALUE</span>, we'll <span class="keyword">end</span> up here. <span class="type">The</span> next line
+        // handles this <span class="keyword">case</span>, <span class="keyword">and</span> causes <span class="type">any</span> genuine format error to be
+        // rethrown.
+        <span class="type">String</span> constant = negative ? (<span class="string">"-"</span> + nm.substring(index))
+                                   : nm.substring(index);
+        <span class="literal">result</span> = <span class="type">Integer</span>.valueOf(constant, radix);
+    }
+    <span class="keyword">return</span> <span class="literal">result</span>;
+}
+</code></pre><h3 id="String_toString(int_i,_int_radix)">String toString(int i, int radix)</h3><pre><code><span class="keyword">public</span> static String toString(<span class="built_in">int</span> i, <span class="built_in">int</span> <span class="built_in">radix</span>) {
+
+    <span class="keyword">if</span> (<span class="built_in">radix</span> &lt; <span class="type">Character</span>.MIN_RADIX || <span class="built_in">radix</span> &gt; <span class="type">Character</span>.MAX_RADIX)
+        <span class="built_in">radix</span> = <span class="number">10</span>;
+
+    /* <span class="keyword">Use</span> the faster version */
+    <span class="keyword">if</span> (<span class="built_in">radix</span> == <span class="number">10</span>) {
+        <span class="keyword">return</span> toString(i);
+    }
+
+    <span class="built_in">char</span> buf[] = new <span class="built_in">char</span>[<span class="number">33</span>];
+    boolean negative = (i &lt; <span class="number">0</span>);
+    <span class="built_in">int</span> charPos = <span class="number">32</span>;
+
+    //如果非负数，转成负数
+    <span class="keyword">if</span> (<span class="comment">!negative) {</span>
+        i = -i;
+    }
+
+    /**  <span class="number">12</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">6</span>|<span class="number">2</span> ..<span class="number">.0</span>
+    *     <span class="number">3</span>|<span class="number">2</span> ..<span class="number">.1</span>
+    *     <span class="number">1</span>|<span class="number">2</span> ..<span class="number">.1</span>      
+    *    类似这种除法...
+     **/
+    <span class="keyword">while</span> (i &lt;= -<span class="built_in">radix</span>) {
+        buf[charPos--] = <span class="built_in">digits</span>[-(i % <span class="built_in">radix</span>)];
+        i = i / <span class="built_in">radix</span>;
+    }
+    buf[charPos] = <span class="built_in">digits</span>[-i];
+
+    <span class="keyword">if</span> (negative) {
+        buf[--charPos] = <span class="string">'-'</span>;
+    }
+
+    <span class="keyword">return</span> new String(buf, charPos, (<span class="number">33</span> - charPos));
+}
+</code></pre><hr>
+<h3 id="Integer_valueOf(String_s)">Integer valueOf(String s)</h3><p>valueOf有点特殊，他缓存了-128到127的值，所以数字在此范围内都是取的同一个对象。<br>与其类似的还有</p>
+<ul>
+<li>Boolean：(全部缓存)</li>
+<li>Byte：(全部缓存)</li>
+<li>Character(&lt;= 127缓存)</li>
+<li>Short(-128 — 127缓存)</li>
+<li>Integer(-128 — 127缓存)</li>
+<li>Long(-128 — 127缓存)</li>
+<li>Float(没有缓存)</li>
+<li>Doulbe(没有缓存)</li>
+</ul>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException </span>{
+    <span class="keyword">return</span> Integer.valueOf(parseInt(s, <span class="number">10</span>));
+}
+
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="function">Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>{
+    <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;
+    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
+        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];
+    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);
+}
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java源码阅读/">java源码阅读</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/linux-command" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -219,155 +583,6 @@ var _hmt = _hmt || [];
         <p class="article-more-link">
           <a  href="/2014/06/14/2014/linux-command/#more">more >></a>
         </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
-<ul>
-<li>PROPAGATION_REQUIRED</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_SUPPORTS</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
-<ul>
-<li>PROPAGATION_MANDATORY </li>
-</ul>
-<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
-<ul>
-<li>PROPAGATION_REQUIRES_NEW</li>
-</ul>
-<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_NOT_SUPPORTED</li>
-</ul>
-<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
-<ul>
-<li>PROPAGATION_NEVER</li>
-</ul>
-<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
-<ul>
-<li>PROPAGATION_NESTED</li>
-</ul>
-<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
-<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
-<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx2/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-tx2/">spring事务原理2-隔离级别</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>spring提供了5种事务的隔离级别：</p>
-<h3 id="ISOLATION_DEFAULT">ISOLATION_DEFAULT</h3><p>如果指定隔离级别为ISOLATION_DEFAULT ，则表示使用数据库默认的隔离级别，通常情况下是Read Committed 。</p>
-<h3 id="ISOLATION_READ_UNCOMMITTED">ISOLATION_READ_UNCOMMITTED</h3><p>对应Read Uncommitted 隔离级别，无法避免脏读，不可重复读和幻读。</p>
-<h3 id="ISOLATION_READ_COMMITTED">ISOLATION_READ_COMMITTED</h3><p>对应Read Committed 隔离级别，可以避免脏读，但无法避免不可重复读和幻读。</p>
-<h3 id="ISOLATION_REPEATABLE_READ">ISOLATION_REPEATABLE_READ</h3><p>对应Repeatable read隔离级别，可以避免脏读和不可重复读，但不能避免幻读.</p>
-<h3 id="ISOLATION_SERIALIZABLE">ISOLATION_SERIALIZABLE</h3><p>对应Serializable 隔离级别，可以避免所有的脏读，不可重复读以及幻读，但并发性效率最低.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
       
       <div class="clearfix"></div>
     </div>
@@ -483,10 +698,10 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-2014/spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-aop1/" class="article-date">
+      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
   	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
 </a>
     </div>
@@ -500,7 +715,7 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-aop1/">spring aop</a>
+      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
     </h1>
   
 
@@ -509,22 +724,38 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
-<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
-<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
 
-}
-
-public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
-    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-
-}
-
-public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
-    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-}
-</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
-<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
       
     </div>
     
@@ -537,109 +768,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/06/09/2014/spring-aop1/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/2014plan" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/08/2014/2014plan/" class="article-date">
-  	<time datetime="2014-06-08T07:35:09.000Z" itemprop="datePublished">6月 8 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/08/2014/2014plan/">2014年下半年计划</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2014年已经过去一半了,感觉什么事也没做。<br>上半年买的书都还有大半没看完，进度太慢了。发现再这样下去还是不行的，必须要给自己一点压力，让自己成长起来。so,so,so制定下下半年的计划，不能再这样继续荒废时间了：</p>
-<h3 id="plan1：_读书">plan1： 读书</h3><ul>
-<li><p>《java性能优化》</p>
-<p> 根据书上的性能优化措施,看完了至少能将公司的项目提升一个层次。</p>
-</li>
-<li><p>《android4高级编程》</p>
-<p>希望能上架自己的1,2个小应用，暂时还没想好做什么。</p>
-</li>
-<li><p>《数据挖掘》《深入浅出数据分析》《大数据》《大规模分布式存储系统》</p>
-<p>想办法做好公司的BI系统吧。</p>
-</li>
-<li><p>《大型网站系统与java中间件架构实践》《大型网站技术架构》《软件架构设计》</p>
-<p>要多练练架构才好，不过这些书讲的太过空泛了。</p>
-</li>
-<li><p>《深入理解计算机系统》《计算机程序的构造和解释》《代码大全》</p>
-<p>底层也要多了解了解才好。</p>
-</li>
-</ul>
-<h3 id="plan2：_分析开源框架">plan2： 分析开源框架</h3><ul>
-<li>spring</li>
-</ul>
-<p>感觉对spring的理解还是比较欠缺，下半年努力把spring的方方面面都理解清楚吧。</p>
-<ul>
-<li>网络，并发</li>
-</ul>
-<p>netty，concurrent包，这两部分也是需要继续研究的。</p>
-<ul>
-<li>大数据</li>
-</ul>
-<p>如果还有精力的话，就研究hadoop的代码吧。</p>
-<h3 id="plan3：_锻炼">plan3： 锻炼</h3><ul>
-<li><p>每周必须要跑一次步</p>
-</li>
-<li><p>计划一次爬山</p>
-</li>
-<li><p>每天至少3分钟平板支撑</p>
-</li>
-</ul>
-<h3 id="plan4：_赚钱">plan4： 赚钱</h3><p>没钱的屌丝，要想办法赚钱呀。</p>
-<ul>
-<li>炒股</li>
-</ul>
-<p>炒股就是博弈，人生要敢于冒风险。希望自己的资产能够在过年的时候上涨10%。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/其他/">其他</a>
 	</div>
 
 
@@ -659,7 +787,7 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
     </nav>
   
 </div>

@@ -168,6 +168,85 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-4/" class="article-date">
+  	<time datetime="2014-10-26T05:27:33.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-4/">mondrian 源码解读（四）-从parser开始</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前面几节我们介绍了一下mondrian最基础的东西，只有在了解了这些后，我们才能继续往下看。</p>
+<p>首先，mondrian需要将mdx语句解析成java对象，我们先看看他是如何解析的。</p>
+<h2 id="Query创建过程">Query创建过程</h2><p>我们从ConnectionBase的parser开始，在parseStatement中，有一句很重要的话语句。</p>
+<pre><code>public <span class="keyword">Query</span> parseQuery(String <span class="keyword">query</span>) {
+    <span class="keyword">return</span> (<span class="keyword">Query</span>) parseStatement(<span class="keyword">query</span>);
+}
+
+<span class="keyword">Query</span> parseStatement(...){
+...
+<span class="keyword">return</span> parser.parseInternal(
+                statement, <span class="keyword">query</span>, debug, funTable, strictValidation);
+...
+}
+</code></pre><h3 id="一，创建解析器">一，创建解析器</h3><p>首先，我们需要一个parser。在ConnectionBase类中，我们看到了parser的创建过程：</p>
+<pre><code><span class="keyword">protected</span> <span class="function">MdxParserValidator <span class="title">createParser</span><span class="params">()</span> </span>{
+    <span class="keyword">return</span> <span class="keyword">true</span>
+        ? <span class="keyword">new</span> JavaccParserValidatorImpl()
+        : <span class="keyword">new</span> MdxParserValidatorImpl();
+}
+</code></pre><p>实际上，由于这里永远是true，所以返回的是JavaccParserValidatorImpl。这个类也是实现了MdxParserValidator。它与原生的javaccparser生成的MdxParserValidatorImpl的主要不同在于factory的创建方式和异常的处理方式，这里就不做过多解读了，具体请看源代码。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-4/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -596,87 +675,6 @@ IGNORE      :   .                       -&gt; more ;
 <p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
 <p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/01/2014/antlr4-use-problem/" class="article-date">
-  	<time datetime="2014-09-01T12:10:36.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/2014/antlr4-use-problem/">antlr4-使用小结(续)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要记录在使用antlr4中中遇到的一些问题。</p>
-<p>一，标明了fragment的词法是不会被parser识别的，它只会在当前词法中可用。</p>
-<p>二，当未标明fragment的词法似乎是有包含关系的。当前面的词法包含了后面的词法时，后面的词法将不被parser解析出来。（可以看第9小节关系词法包含关系）。</p>
-<p>三，antlr的ieda插件只支持4.4以上的版本，所以如果需要生成4.4一下的版本的话，可以使用maven插件，或者手工生成。</p>
-<p>四，当一个词法中出现了2个同名的tokens名称时，另一个需要命名一个别名，不然会引起冲突。</p>
-<pre><code><span class="comment">//tokens1</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4.<span class="built_in">exp</span>}); <span class="comment">//$term4.exp取的是第一行的term4的内容</span>
-}
-;
-
-
-<span class="comment">//tokens2</span>
-term4  returns [Exp <span class="built_in">exp</span>]
-: term3 {
-    $<span class="built_in">exp</span> = $term3.<span class="built_in">exp</span>;
-}
-|   NOT  term4alias = term4 {
-    $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
-}
-;
-</code></pre>
       
     </div>
     

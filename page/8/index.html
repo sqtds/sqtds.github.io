@@ -168,6 +168,338 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
+  	<time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="mondrian是什么？">mondrian是什么？</h2><p>mondrian是一款基于java的开源的多维分析olap服务器。更多资料请移步mondrian官方网站：<a href="http://community.pentaho.com/projects/mondrian/。">http://community.pentaho.com/projects/mondrian/。</a></p>
+<h2 id="如何部署mondrian？">如何部署mondrian？</h2><p>在mondrian官方文档中，已经有详细的步骤了，请移步：<a href="http://mondrian.pentaho.com/documentation/developers_guide.php">http://mondrian.pentaho.com/documentation/developers_guide.php</a></p>
+<p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-1/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/03/2014/antlr4-tips/" class="article-date">
+  	<time datetime="2014-09-03T12:50:05.000Z" itemprop="datePublished">9月 3 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/03/2014/antlr4-tips/">antlr4-技巧（十）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在这一小节中我们主要介绍一些antlr4中的小技巧，这些技巧将极大的扩展antlr4的灵活性。</p>
+<h2 id="在不同的通道广播tokens">在不同的通道广播tokens</h2><p>绝大多数编程语言忽略tokens之间的空格和注释，这意味着他们可以出现在任何地方。对解析器来说，最简单的方式就是跳过他们，什么也不做。<br>但是如果我们想留下注释可空格的话，应该怎么做呢？</p>
+<p>antlr为我们提供了通道，它就像收音机的频道，我们可以指定某些字符发送到不同的频道中。解析器指向正确的通道并且忽略其他的通道。词法规则负责把tokens放到不同的通道中，类CommonTokenStream的职责就是对parser呈现仅仅一个通道。CommonTokenStream保留所有的token序列以至于我们能请求注释在一个特定的token之前或之后。下面的图片呈现了CommonTokenStream的运行过程：<br><img src="/img/2014/QQ图片20140903210244.jpg" alt=""><br>不同的注释可可以发送到不同的通道<br><img src="/img/2014/QQ图片20140903210304.jpg" alt=""></p>
+<h3 id="访问隐藏的通道">访问隐藏的通道</h3><p>为了解释如何访问隐藏的通道，我们举个简答的例子。在这里例子中，我们将构建一个解析器将变量后面的注释移到变量前面。<br>我们最常用的策略是使用TokenStreamRewriter类来重写输入流。下面是一个简单的例子，在类中插入一个序列化id：</p>
+<pre><code><span class="type">ParseTreeWalker</span> walker = <span class="keyword">new</span> <span class="type">ParseTreeWalker</span>(); <span class="comment">// create standard walker</span>
+<span class="type">InsertSerialIDListener</span> extractor = <span class="keyword">new</span> <span class="type">InsertSerialIDListener</span>(tokens);
+walker.walk(extractor, tree); <span class="comment">// initiate walk of tree with listener</span>
+
+public <span class="class"><span class="keyword">class</span> <span class="title">InsertSerialIDListener</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">JavaBaseListener</span> {</span>
+    <span class="type">TokenStreamRewriter</span> rewriter;
+    public <span class="type">InsertSerialIDListener</span>(<span class="type">TokenStream</span> tokens) {
+    rewriter = <span class="keyword">new</span> <span class="type">TokenStreamRewriter</span>(tokens);
+}
+<span class="annotation">@Override</span>
+public void enterClassBody(<span class="type">JavaParser</span>.<span class="type">ClassBodyContext</span> ctx) {
+        <span class="type">String</span> field = <span class="string">"\n\tpublic static final long serialVersionUID = 1L;"</span>;
+        rewriter.insertAfter(ctx.start, field);
+    }
+}
+</code></pre><p>回到最开始，我们看看如何使用隐藏的通道。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">CommentShifter</span> <span class="title">extends</span> <span class="title">CymbolBaseListener</span> {
+    BufferedTokenStream tokens;
+    TokenStreamRewriter rewriter;
+    <span class="comment">/** Create TokenStreamRewriter attached to token stream
+     *  sitting between the Cymbol lexer and parser.
+     */</span>
+    <span class="function"><span class="keyword">public</span> <span class="title">CommentShifter</span><span class="params">(BufferedTokenStream tokens)</span> </span>{
+        <span class="keyword">this</span>.tokens = tokens;
+        rewriter = <span class="keyword">new</span> TokenStreamRewriter(tokens);
+    }
+
+    @<span class="function">Override
+    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitVarDecl</span><span class="params">(CymbolParser.VarDeclContext ctx)</span> </span>{
+        Token semi = ctx.getStop(); 
+        <span class="keyword">int</span> i = semi.getTokenIndex();
+        List&lt;Token&gt; cmtChannel =
+            tokens.getHiddenTokensToRight(i, CymbolLexer.COMMENTS); 
+        <span class="keyword">if</span> ( cmtChannel!=<span class="keyword">null</span> ) {
+            Token cmt = cmtChannel.<span class="keyword">get</span>(<span class="number">0</span>); 
+            <span class="keyword">if</span> ( cmt!=<span class="keyword">null</span> ) {
+                String txt = cmt.getText().substring(<span class="number">2</span>);
+                String newCmt = <span class="string">"/* "</span> + txt.trim() + <span class="string">" */\n"</span>;
+                rewriter.insertBefore(ctx.start, newCmt); 
+                rewriter.replace(cmt, <span class="string">"\n"</span>);              
+            }
+        }
+    }
+}
+
+ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
+CymbolLexer lexer = <span class="keyword">new</span> CymbolLexer(input);
+CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
+CymbolParser parser = <span class="keyword">new</span> CymbolParser(tokens);
+RuleContext tree = parser.file();
+
+ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
+CommentShifter shifter = <span class="keyword">new</span> CommentShifter(tokens);
+walker.walk(shifter, tree);
+
+
+lexmagic/t.cym
+<span class="keyword">int</span> n = <span class="number">0</span>; <span class="comment">// define a counter</span>
+<span class="keyword">int</span> i = <span class="number">9</span>;
+we want to generate the following output:
+<span class="comment">/* define a counter */</span>
+<span class="keyword">int</span> n = <span class="number">0</span>;
+<span class="keyword">int</span> i = <span class="number">9</span>;
+</code></pre><p>所有的工作都发送在exitVarDecl()中。首先，我们得到‘；’所在的位置。然后我们查询它的后面是否有隐藏的通道，如果有的话，我们将获取通道的第一个字符来判断通道中是否有tokens，最后插入到最前面即可。</p>
+<h2 id="上下文敏感的词法">上下文敏感的词法</h2><h2 id="在流中孤立">在流中孤立</h2><p>这里需要注意一点，.*？表示非贪婪操作符。他们一直扫描直到遇到符合下一个规则的操作符为止。</p>
+<pre><code><span class="xml">COMMENT : '<span class="comment">&lt;!--' .*? '--&gt;</span>' -&gt; skip ;
+CDATA : '<span class="cdata">&lt;![CDATA[' .*? ']]&gt;</span>' ;
+TAG : '<span class="tag">&lt;<span class="title">'</span> <span class="attribute">.</span>*? '&gt;</span>' ; // must come after other tag-like structures
+ENTITY : '&amp;' .*? ';' ;
+TEXT : ~[<span class="tag">&lt;<span class="title">&amp;]+</span> ; // <span class="attribute">any</span> <span class="attribute">sequence</span> <span class="attribute">of</span> <span class="attribute">chars</span> <span class="attribute">except</span> &lt; <span class="attribute">and</span> &amp; <span class="attribute">chars</span></span></span>
+</code></pre><p>在某种场景下，一个语言可能有几种不同的模式。词法模式可以允许我们分离单个的词法语言到多个子规则。当进入到当前规则的模式时，词法仅仅返回符合的token。最常用的需求可能是在不同的词法之间进行转换。          例如，对于一个xml文件，我们可以定义2个模式，在标签‘&lt;’之外的模式和在‘&gt;’之内的模式。这2中模式是孤立的，下面是这个例子的语法：</p>
+<pre><code>lexer grammar ModeTagsLexer;
+<span class="comment">// Default mode rules (the SEA)</span>
+<span class="string">OPEN :</span> <span class="string">'&lt;'</span> -&gt; mode(ISLAND) ; <span class="comment">// switch to ISLAND mode</span>
+<span class="string">TEXT :</span> ~<span class="string">'&lt;'</span> + ; <span class="comment">// clump all text together</span>
+mode ISLAND;
+<span class="string">CLOSE :</span> <span class="string">'&gt;'</span> -&gt; mode(DEFAULT_MODE) ; <span class="comment">// back to SEA mode</span>
+<span class="string">SLASH :</span> <span class="string">'/'</span> ;
+<span class="string">ID :</span> [a-zA-Z]+ ; <span class="comment">// match/send ID in tag to parser</span>
+
+parser grammar ModeTagsParser;
+options { tokenVocab=ModeTagsLexer; } <span class="comment">// use tokens from ModeTagsLexer.g4</span>
+<span class="string">file:</span> (tag | TEXT)* ;
+<span class="string">tag :</span> <span class="string">'&lt;'</span> ID <span class="string">'&gt;'</span>
+| <span class="string">'&lt;'</span> <span class="string">'/'</span> ID <span class="string">'&gt;'</span>
+;
+</code></pre><p>在这个例子中，仅仅是options tokenVocab不常用的。它的意思是保持lexer和parser是同步的，即有相同的token类型。</p>
+<h2 id="解析xml">解析xml</h2><p>在这个例子中，我们只需要了解有pushMode和popMode即可，就像入栈和出栈一样，挺简单的。</p>
+<pre><code>lexer grammar XMLLexer;
+
+<span class="comment">// Default "mode": Everything OUTSIDE of a tag</span>
+COMMENT     :   <span class="string">'&lt;!--'</span> .*? <span class="string">'--&gt;'</span> ;
+CDATA       :   <span class="string">'&lt;![CDATA['</span> .*? <span class="string">']]&gt;'</span> ;
+<span class="comment">/** Scarf all DTD stuff, Entity Declarations like &lt;!ENTITY ...&gt;,
+ *  and Notation Declarations &lt;!NOTATION ...&gt;
+ */</span>
+DTD         :   <span class="string">'&lt;!'</span> .*? <span class="string">'&gt;'</span>            -&gt; skip ; 
+EntityRef   :   <span class="string">'&amp;'</span> Name <span class="string">';'</span> ;
+CharRef     :   <span class="string">'&amp;#'</span> DIGIT+ <span class="string">';'</span>
+            |   <span class="string">'&amp;#x'</span> HEXDIGIT+ <span class="string">';'</span>
+            ;
+SEA_WS      :   (<span class="string">' '</span>|<span class="string">'\t'</span>|<span class="string">'\r'</span>? <span class="string">'\n'</span>) ;
+
+OPEN        :   <span class="string">'&lt;'</span>                     -&gt; pushMode(INSIDE) ;
+XMLDeclOpen :   <span class="string">'&lt;?xml'</span> S               -&gt; pushMode(INSIDE) ;
+SPECIAL_OPEN:   <span class="string">'&lt;?'</span> Name               -&gt; more, pushMode(PROC_INSTR) ;
+
+TEXT        :   ~[&lt;&amp;]+ ;        <span class="comment">// match any 16 bit char other than &lt; and &amp;</span>
+
+<span class="comment">// ----------------- Everything INSIDE of a tag ---------------------</span>
+mode INSIDE;
+
+CLOSE       :   <span class="string">'&gt;'</span>                     -&gt; popMode ;
+SPECIAL_CLOSE:  <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?xml...?&gt;</span>
+SLASH_CLOSE :   <span class="string">'/&gt;'</span>                    -&gt; popMode ;
+SLASH       :   <span class="string">'/'</span> ;
+EQUALS      :   <span class="string">'='</span> ;
+STRING      :   <span class="string">'"'</span> ~[&lt;<span class="string">"]* '"</span><span class="string">'
+            |   '</span>\<span class="string">''</span> ~[&lt;<span class="string">']* '</span>\<span class="string">''</span>
+            ;
+Name        :   NameStartChar NameChar* ;
+S           :   [ \t\r\n]               -&gt; skip ;
+
+fragment
+HEXDIGIT    :   [a-fA-F0-<span class="number">9</span>] ;
+
+fragment
+DIGIT       :   [<span class="number">0</span>-<span class="number">9</span>] ;
+
+fragment
+NameChar    :   NameStartChar
+            |   <span class="string">'-'</span> | <span class="string">'.'</span> | DIGIT 
+            |   <span class="string">'\u00B7'</span>
+            |   <span class="string">'\u0300'</span>..<span class="string">'\u036F'</span>
+            |   <span class="string">'\u203F'</span>..<span class="string">'\u2040'</span>
+            ;
+
+fragment
+NameStartChar
+            :   [:a-zA-Z]
+            |   <span class="string">'\u2070'</span>..<span class="string">'\u218F'</span> 
+            |   <span class="string">'\u2C00'</span>..<span class="string">'\u2FEF'</span> 
+            |   <span class="string">'\u3001'</span>..<span class="string">'\uD7FF'</span> 
+            |   <span class="string">'\uF900'</span>..<span class="string">'\uFDCF'</span> 
+            |   <span class="string">'\uFDF0'</span>..<span class="string">'\uFFFD'</span>
+            ;
+
+<span class="comment">// ----------------- Handle &lt;? ... ?&gt; ---------------------</span>
+mode PROC_INSTR;
+PI          :   <span class="string">'?&gt;'</span>                    -&gt; popMode ; <span class="comment">// close &lt;?...?&gt;</span>
+IGNORE      :   .                       -&gt; more ;
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
+  	<time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
+<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
+<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/antlr4-use-problem" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -634,382 +966,9 @@ STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')
 
 
   
-    <article id="post-2014/antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-share-context/" class="article-date">
-  	<time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-share-context/">antlr4-共享上下文(六)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
-<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
-<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
-    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
-    }
-
-    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
-        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
-    }
-
-    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
-        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
-    }
-}
-</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
-<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
-</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
-<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push( left * right );
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-        <span class="built_in">stack</span>.push(left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
-    }
-}
-</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/2014/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/2014/QQ图片20140830171636.jpg" alt=""></p>
-<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
-    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
-}
-</code></pre><p>所以，我们用一个map来保存所有的值。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
-    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
-    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
-
-    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
-        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left * right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
-        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
-        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
-        setValue(ctx, left + right);
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
-        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
-        setValue(ctx, Integer.valueOf(intText));
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
-    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
-}
-
-<span class="comment">//保存树的节点和值的map</span>
-<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
-    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
-
-    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
-
-    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
-}
-</code></pre><h2 id="对比">对比</h2><ul>
-<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
-<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
-<li>注解：map字段映射了节点和值的关系。</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-label-rule" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-label-rule/" class="article-date">
-  	<time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="粒度问题">粒度问题</h2><p>由于以前生成的方法仅仅能够在规则上产生，当我们想要更小的粒度时，针对每个规则进行更小的粒度控制时，我们就显得力不从心了。</p>
-<p>这样，就产生了lable…</p>
-<h2 id="无标签情况下">无标签情况下</h2><p>下面是一个计算器。</p>
-<pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e op=MULT e    // MULT is <span class="string">'*'</span>
-  | e op=ADD e     // ADD is <span class="string">'+'</span>
-  | INT
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p><img src="/img/2014/QQ图片20140830162901.jpg" alt=""></p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends ExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitE</span><span class="params">(ExprParser.EContext ctx)</span> </span>{
-        <span class="keyword">if</span> ( ctx.getChildCount()==<span class="number">3</span> ) { <span class="comment">// operations have 3 children</span>
-            <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-            <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-            <span class="keyword">if</span> ( ctx.op.getType()==ExprParser.MULT ) {
-                <span class="built_in">stack</span>.push( left * right );
-            }
-            <span class="keyword">else</span> {
-                <span class="built_in">stack</span>.push( left + right ); <span class="comment">// must be add</span>
-            }
-        }
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTerminal</span><span class="params">(TerminalNode node)</span> </span>{
-        Token symbol = node.getSymbol();
-        <span class="keyword">if</span> ( symbol.getType()==ExprParser.INT ) {
-            <span class="built_in">stack</span>.push( Integer.valueOf(symbol.getText()) );
-        }
-    }
-}
-</code></pre><p>从上面看出，原始的方式下，我们不得不对所有的操作符进行判断，即op=MULT和op=Add。</p>
-<h2 id="有标签情况下">有标签情况下</h2><pre><code><span class="tag">grammar</span> <span class="tag">LExpr</span>;
-
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e MULT e         # Mult
-  | e ADD e         # Add
-  | INT                # Int
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p>注意不同点，我们使用#号来表示标签。这样，antlr就会对每个标签生成一个方法和特定的上下文对象。</p>
-<p><img src="/img/2014/QQ图片20140830164801.jpg" alt=""></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-iterator-example" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-iterator-example/" class="article-date">
-  	<time datetime="2014-08-30T07:32:32.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-iterator-example/">antlr4-遍历器例子(四)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在上文中，我们介绍了antlr4的2中遍历方式。下面，我们将对着2中遍历方式进行更为实际的例子，以确定他们各自的使用场合。</p>
-<h2 id="使用Parse-Tree_Listeners">使用Parse-Tree Listeners</h2><p>为了构建一个不混淆应用代码和语法的应用，关键点是解析器创建一个解析树然后遍历它，在遍历的过程中触发应用代码。我们可以使用我们最喜爱的技术或者antlr生成的树遍历机制来遍历。在这一小节中，我们将用antlr内置的ParseTreeWalker构建一个基于监听版本的属性文件应用。</p>
-<pre><code><span class="comment">//语法</span>
-grammar PropertyFile;
-file : prop+ ;
-prop : ID <span class="string">'='</span> <span class="keyword">STRING</span> <span class="string">'\n'</span> ;
-ID   : [a-z]+ ;
-<span class="keyword">STRING</span> : <span class="string">'"'</span> .*? <span class="string">'"'</span> ;
-
-<span class="comment">//文件</span>
-user=<span class="string">"parrt"</span>
-machine=<span class="string">"maniac"</span>
-</code></pre><p><img src="/img/2014/QQ图片20140830154441.jpg" alt="解析树"></p>
-<p><img src="/img/2014/QQ图片20140830154614.jpg" alt="PropertyFileListener"></p>
-<p><img src="/img/2014/QQ图片20140830154919.jpg" alt="PropertyFileBaseListener"></p>
-<pre><code>public <span class="literal">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileLoader</span> <span class="keyword">extends</span> <span class="title">PropertyFileBaseListener</span> </span>{
-    <span class="built_in">Map</span>&lt;<span class="built_in">String</span>,<span class="built_in">String</span>&gt; props = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, <span class="built_in">String</span>&gt;();
-    public <span class="keyword">void</span> exitProp(PropertyFileParser.PropContext ctx) {
-        <span class="built_in">String</span> id = ctx.ID().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="built_in">String</span> value = ctx.STRING().getText();
-        props.put(id, value);
-    }
-}
-</code></pre><p>下面的类的依赖图，我就不解释了：</p>
-<p><img src="/img/2014/QQ图片20140830155248.jpg" alt=""></p>
-<p>最后直接看结果吧，so easy:</p>
-<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> throws Exception </span>{
-    String inputFile = <span class="string">"E:\\code\\antlr\\antlr4-example\\part2\\listeners\\src\\main\\resources\\t.properties"</span>;
-    InputStream <span class="keyword">is</span> = <span class="keyword">new</span> FileInputStream(inputFile);
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(<span class="keyword">is</span>);
-    PropertyFileLexer lexer = <span class="keyword">new</span> PropertyFileLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    PropertyFileParser parser = <span class="keyword">new</span> PropertyFileParser(tokens);
-    ParseTree tree = parser.file();
-
-    <span class="comment">// create a standard ANTLR parse tree walker</span>
-    ParseTreeWalker walker = <span class="keyword">new</span> ParseTreeWalker();
-    <span class="comment">// create listener then feed to walker</span>
-    PropertyFileLoader loader = <span class="keyword">new</span> PropertyFileLoader();
-    walker.walk(loader, tree);        <span class="comment">// walk parse tree</span>
-    System.<span class="keyword">out</span>.println(loader.props); <span class="comment">// print results</span>
-    <span class="comment">//print {machine="maniac", user="parrt"}</span>
-}
-</code></pre><h2 id="使用Parse-Tree_Visitors">使用Parse-Tree Visitors</h2><p>当使用访问器时，我们仅仅是实现Visitor的代码即可。所以，无图无真相，无代码无…直接上代码了…</p>
-<p><img src="/img/2014/QQ图片20140830160030.jpg" alt=""></p>
-<p><img src="/img/2014/QQ图片20140830160122.jpg" alt=""></p>
-<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">PropertyFileVisitor</span> <span class="keyword"><span class="keyword">extends</span></span>
-</span>        <span class="type">PropertyFileBaseVisitor</span>&lt;<span class="type">Void</span>&gt;
-{
-    <span class="type">Map</span>&lt;<span class="type">String</span>,<span class="type">String</span>&gt; props = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt;();
-    public <span class="type">Void</span> visitProp(<span class="type">PropertyFileParser</span>.<span class="type">PropContext</span> ctx) {
-        <span class="type">String</span> id = ctx.<span class="type">ID</span>().getText(); <span class="comment">// prop : ID '=' STRING '\n' ;</span>
-        <span class="type">String</span> value = ctx.<span class="type">STRING</span>().getText();
-        props.put(id, value);
-        <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// Java says must return something even when Void</span>
-    }
-}
-</code></pre><p><img src="/img/2014/QQ图片20140830160343.jpg" alt=""></p>
-<p>在这个例子中，prop节点没有子节点，所以，visitProp()方法不需要调用visit()方法，在下一节中我们将查看更通用一点的例子。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
     </nav>
   
 </div>
