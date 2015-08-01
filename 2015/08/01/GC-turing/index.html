@@ -16,7 +16,7 @@
 二，监控命令1，jdk命令1.1 jps 进程状态信息jps [options] [hostid]
 -q 不输出类名、J">
 <meta property="og:image" content="/img/2015/GC调优.png">
-<meta property="og:image" content="/img/2015/gc-turing.png">
+<meta property="og:image" content="/img/2015/gc-turing-vmstat.png">
 <meta property="og:image" content="/img/2015/gc-turing-iostat.png">
 <meta property="og:image" content="/img/2015/gc-turing-memory.png">
 <meta property="og:image" content="/img/2015/gc-turing-heap.png">
@@ -265,7 +265,7 @@ H <span class="operator"><span class="keyword">Show</span> <span class="keyword"
 <span class="built_in">printf</span> <span class="string">'0x%x\n'</span> tid  
 转换线程id为<span class="number">16</span>进制
 jstack <span class="operator">-l</span> javaid | grep <span class="number">16</span>进制tid    
-</code></pre><h4 id="2-2_vmstat">2.2 vmstat</h4><p><img src="/img/2015/gc-turing.png" alt=""><br>关键指标: </p>
+</code></pre><h4 id="2-2_vmstat">2.2 vmstat</h4><p><img src="/img/2015/gc-turing-vmstat.png" alt=""><br>关键指标: </p>
 <ul>
 <li>r(等待和正在运行队列的进程数) 数大于CPU个数， 则有可能出现CPU瓶颈</li>
 <li>b(等待IO的进程数) 经常过高， 则io(网络IO/文件IO)消耗严重。</li>
