@@ -194,7 +194,8 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is the garbage collector”，可见垃圾收集器的重要性。下面，我将总结一下GC调优的方方面面，希望以后在这里能少走弯路。</p>
+        <p><img src="/img/2015/GC调优.png" alt=""></p>
+<h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is the garbage collector”，可见垃圾收集器的重要性。下面，我将总结一下GC调优的方方面面，希望以后在这里能少走弯路。</p>
 <h2 id="二，监控命令">二，监控命令</h2><h3 id="1，jdk命令">1，jdk命令</h3><h4 id="1-1_jps_进程状态信息">1.1 jps 进程状态信息</h4><pre><code>jps [options] [hostid]
 -<span class="ruby">q 不输出类名、<span class="constant">Jar</span>名和传入main方法的参数
 </span>-<span class="ruby">m 输出传入main方法的参数

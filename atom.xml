@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-08-01T09:26:13.000Z</updated>
+  <updated>2015-08-01T09:28:50.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -19,8 +19,9 @@
     <link href="http://sqtds.github.io/2015/08/01/GC-turing/"/>
     <id>http://sqtds.github.io/2015/08/01/GC-turing/</id>
     <published>2015-08-01T12:42:41.000Z</published>
-    <updated>2015-08-01T09:26:13.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is the garbage collector”，可见垃圾收集器的重要性。下面，我将总结一下GC调优的方方面面，希望以后在这里能少走弯路。</p>
+    <updated>2015-08-01T09:28:50.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="/img/2015/GC调优.png" alt=""></p>
+<h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is the garbage collector”，可见垃圾收集器的重要性。下面，我将总结一下GC调优的方方面面，希望以后在这里能少走弯路。</p>
 <h2 id="二，监控命令">二，监控命令</h2><h3 id="1，jdk命令">1，jdk命令</h3><h4 id="1-1_jps_进程状态信息">1.1 jps 进程状态信息</h4><pre><code>jps [options] [hostid]
 -<span class="ruby">q 不输出类名、<span class="constant">Jar</span>名和传入main方法的参数
 </span>-<span class="ruby">m 输出传入main方法的参数
@@ -96,7 +97,8 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
 </ul>
 <h2 id="五，分析工具">五，分析工具</h2><h2 id="六，参考资料">六，参考资料</h2><h3 id="1,http://bluedavy-me/-淘宝林昊对GC调优的分享">1,<a href="http://bluedavy.me/--淘宝林昊对GC调优的分享" target="_blank" rel="external">http://bluedavy.me/--淘宝林昊对GC调优的分享</a></h3><h3 id="2,JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解">2,<a href="http://my.oschina.net/feichexia/blog/196575" target="_blank" rel="external">JVM性能调优监控工具jps、jstack、jmap、jhat、jstat、hprof使用详解</a></h3>]]></content>
     <summary type="html">
-    <![CDATA[<h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is the garbage collector”，可见垃圾收集器的重要性。下面，我将总结一下GC]]>
+    <![CDATA[<p><img src="/img/2015/GC调优.png" alt=""></p>
+<h2 id="一，概述">一，概述</h2><p>twitter的一位工程师说过一句话，“Biggest threat  to responsiveness in the JVM is t]]>
     </summary>
     
       <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
