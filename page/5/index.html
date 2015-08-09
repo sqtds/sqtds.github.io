@@ -168,6 +168,115 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2015/java-reflection" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/10/2015/java-reflection/" class="article-date">
+  	<time datetime="2015-05-10T10:42:41.000Z" itemprop="datePublished">5月 10 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/10/2015/java-reflection/">java核心系列（二）—java反射</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
+<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
+<p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
+<h3 id="1,Methods">1,Methods</h3><ul>
+<li><p>public Method[] getMethods()<br>返回某个类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法。</p>
+</li>
+<li><p>public Method[] getDeclaredMethods()<br>返回某个类的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法。</p>
+</li>
+</ul>
+<h3 id="2,Constructors">2,Constructors</h3><ul>
+<li>public Constructor<t> getConstructor(Class&lt;?&gt;… parameterTypes)<br>根据参数返回公共构造方法。</t></li>
+<li>public Constructor&lt;?&gt;[] getConstructors()<br>得到所有的公共构造方法</li>
+<li>public Constructor&lt;?&gt;[] getDeclaredConstructors()<br>得到声明的构造方法</li>
+</ul>
+<h3 id="3,Fields">3,Fields</h3><p>同上</p>
+<h3 id="4,Annotations">4,Annotations</h3><p>同上，只能获取注解集合，暂时不能获取指定参数注解。</p>
+<h2 id="三，AccessibleObject">三，AccessibleObject</h2><p><img src="/img/2015/AccessibleObject.png" alt=""><br>从图中我们可以看到Methods，Constructors，Fields继承了这个类。<br>我们看这个类的方法：<br><img src="/img/2015/AccessibleObjectMethod.png" alt=""><br>从图中可以看出，这个对象主要包含了2类方法：</p>
+<ul>
+<li>第一类是获取对象注解，getAnnotations()。</li>
+<li>第二类是设置对象是否可访问，setAccessible(boolean flag),通过设置访问标志来访问非public对象（方法，构造方法，属性）。</li>
+</ul>
+<h2 id="五-Modifiers">五.Modifiers</h2><p>我们可以看到修饰符使用的是二进制来表示的，访问修饰符用01,10,100，1000来表示的，总共容纳32个修饰符，每一位使用mod&amp;修饰符来判断当前值是否包含修饰符。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PUBLIC</span>           = <span class="number">0</span>x00000001;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PRIVATE</span>          = <span class="number">0</span>x00000002;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PROTECTED</span>        = <span class="number">0</span>x00000004;
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">STATIC</span>           = <span class="number">0</span>x00000008;
+...
+Modifier.isAbstract(<span class="keyword">int</span> modifiers)
+Modifier.isFinal(<span class="keyword">int</span> modifiers)
+Modifier.isInterface(<span class="keyword">int</span> modifiers)
+Modifier.isNative(<span class="keyword">int</span> modifiers)
+Modifier.isPrivate(<span class="keyword">int</span> modifiers)
+Modifier.isProtected(<span class="keyword">int</span> modifiers)
+Modifier.isPublic(<span class="keyword">int</span> modifiers)
+Modifier.isStatic(<span class="keyword">int</span> modifiers)
+Modifier.isStrict(<span class="keyword">int</span> modifiers)
+Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
+Modifier.isTransient(<span class="keyword">int</span> modifiers)
+Modifier.isVolatile(<span class="keyword">int</span> modifiers)
+</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
+<h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
+<h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
+</code></pre><p>创建一个大小为3，类型为int的数组。</p>
+<h3 id="2，访问数组">2，访问数组</h3><pre><code><span class="keyword">Array</span>.<span class="keyword">set</span>(intArray, <span class="number">0</span>, <span class="number">123</span>);
+</code></pre><p>设置数组的第一个值为123。</p>
+<h3 id="3，从数组中获取类对象">3，从数组中获取类对象</h3><pre><code><span class="keyword">Class</span> stringArrayClass = <span class="built_in">String</span>[].<span class="keyword">class</span>;
+<span class="keyword">Class</span> intArray = <span class="keyword">Class</span>.forName(<span class="string">"[I"</span>);
+<span class="keyword">Class</span> stringArrayClass = <span class="keyword">Class</span>.forName(<span class="string">"[Ljava.lang.String;"</span>);
+</code></pre><h2 id="八，jdk8改进">八，jdk8改进</h2><p>反射异常ClassNotFoundException、NoSuchMethodException、IllegalAccessException，InvocationTargetExcetpion等有一个父类异常叫ReflectiveOperationExcetpion。</p>
+<p>旧版JDK，还有个很莫名其妙的地方，就是所有反射，都拿不到参数名，无论名字叫啥，都返回arg0，arg1，所以在CXF，SpringMVC里，你都要把参数名字用annotation再写一遍：<br>    Person getEmployee(@PathParam(“dept”) Long dept, @QueryParam(“id”) Long id)<br>现在，JDK8新提供的类java.lang.reflect.Parameter可以反射参数名了，编译时要加参数，如 javac -parameters xxx.java，或者Eclipse里设置。然后就可以写成:<br>    Person getEmployee(@PathParam Long dept, @QueryParam Long id)</p>
+<h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2015/java-core" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -715,83 +824,6 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/nosql-distilled" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/04/05/2014/nosql-distilled/" class="article-date">
-  	<time datetime="2015-04-05T07:43:14.000Z" itemprop="datePublished">4月 5 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/05/2014/nosql-distilled/">Nosql精粹读书笔记（一）——聚合数据模型</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="聚合数据模型">聚合数据模型</h2><p><strong>数据模型是认知和操作数据时所用的模型。</strong>对于使用数据库的人来说， 数据模型描述了我们如何同数据库中的数据打交道。 它与存储模型不同， 后者描述了数据库内部存储及操作数据的机制。 </p>
-<p>大家日常所说的“ 数据模型” 一词， 一般指应用程序的特定数据所具备的模型。 开发者可能会指着一张数据库的“ 实体 - 关系图 ”（ entity-relationship diagram）， 把这个包含客户、 订单、 产品等信息的东西叫做他们的数据模型。然而本书的“ 数据模型” 通常表示数据库组织数据的方式， 它的正式名称是“ 元模型”（ metamodel）。</p>
-<p>NoSQL 技术与传统的关系型数据库相比， 一个最明显的转变就是抛弃了关系模型。 每种 NoSQL 解决方案的模型都不同， 本书把 NoSQL 生态系统中广泛使用的模型分为四类 ：“ 键值”、“ 文档”、“ 列族” 和“ 图”。 前三类数据模型有一个共同特征， 我们称其为“ 面向聚合”（ aggregate orientation）。</p>
-<h3 id="聚合">聚合</h3><p><strong>关系模型把待存储的信息分隔成元组（ 行）。</strong> 元组是种受限的数据结构 ： 它只能包含一系列的值， 因此不能在元组中嵌套另一个元组， 也不能包含由值或元组所组成的列表。 这种简单的数据结构支撑着关系模型 ： 所有操作都必须以元组为目标， 而且其返回值也必须是元组。</p>
-<p>面向聚合所用的方式与之不同， 我们通常操作数据时所用的单元， 其结构都比元组集合复杂得多。 如果能够以这种复杂的结构来存放列表或嵌套其他记录结构就好了。大家在后面的章节中将会看到，“键值数据库”、“ 文档数据库”、“ 列族数据库” 都使用这种更为复杂的记录。 然而， 没有公认的术语来称呼这种复杂的记录， 在本书中， 把它叫做“聚合”（ aggregate）。</p>
-<p>聚合是“ 领域驱动设计”［ Evans］ 中的术语。 <strong>在领域驱动设计中， 我们想把一组相互关联的对象视为一个整体单元来操作， 而这个单元就叫聚合。</strong> 在涉及数据操作与一致性管理时， 更是如此。 一般情况下， 我们通过原子操作（ atomic operation） 更新聚合的值， 并且在与数据存储通信时， 也以聚合为单位。 这个定义也非常符合“ 键值数据库”、“ 文档数据库” 和“ 列族数据库” 的工作方式。 因为用聚合为单位来复制和分片显得比较自然， 所以在集群中操作数据库时， 还是使用聚合比较简单一些。 此外，由于程序员经常通过聚合结构来操作数据， 故而采用聚合也能让其工作更为轻松。</p>
-<h4 id="关系模型与聚合模型示例">关系模型与聚合模型示例</h4><p><img src="/img/2014/QQ图片20150405155439.png" alt=""><br><img src="/img/2014/QQ图片20150405155535.png" alt=""><br>现在我们再来看看， 如果用面向聚合的思路来做， 那么数据模型会是什么样子<br><img src="/img/2014/QQ图片20150405155628.png" alt=""><br>这次也要用一些范例数据， 我们使用 JSON 格式来表示， 因为它是 NoSQL 领域中常用的数据格式。<br><img src="/img/2014/QQ图片20150405155833.png" alt=""></p>
-<h4 id="面向聚合的影响">面向聚合的影响</h4><p>关系型数据库的数据模型中， 没有“ 聚合” 这一概念， 因此我们称之为“ 聚合无知”（ aggregate-ignorant）。 NoSQL 领域中的“ 图数据库” 也是聚合无知的。 这一特征并不是坏事。 聚合的边界一般都很难正确划分出来， 当不同场景要使用同一份数据时，更是如此。 </p>
-<p>选用面向聚合模型的决定性因素， 就在于它非常适合在集群上运行。 大家应该还记得， 这正是 NoSQL 崛起的杀手锏。在集群上运行时， 我们需要把采集数据时所需的节点数降至最小。如果在数据库中明确包含聚合结构， 那么它就可以根据这一重要信息， 知道哪些数据需要一起操作了， 而且这些数据应该放在同一个节点中。</p>
-<p>聚合对于事务处理有一个重要影响。 通常情况下， 面向聚合的数据库确实不支持跨越多个聚合的ACID 事务。 取而代之的是， 它每次只能在一个聚合结构上执行原子操作。 也就是说，如果我们想以原子方式操作多个聚合， 那么就必须自己组织应用程序的代码。</p>
-<h3 id="键值数据模型与文档数据模型">键值数据模型与文档数据模型</h3><p>键值数据库的聚合不透明 ， 只包含一些没有太多意义的大块信息 ； 与此相反， 在文档数据库的聚合中， 可以看到其结构。 不透明的优势在于， 聚合中可以存储任意数据。文档数据库则要限制其中存放的内容， 它定义了其允许的结构与数据类型， 而这样做的好处是， 能够更加灵活地访问数据。</p>
-<p>在键值数据库中， 要访问聚合内容， 只能通过键来查找。 而使用文档数据库时，则可以用聚合中的字段查询。 我们可以只获取一部分聚合， 而不用获取全部内容， 此外， 数据库还可以按照聚合内容创建索引 。</p>
-<h3 id="列族存储">列族存储</h3><p>理解列族模型的最好方式也许就是将其视为两级聚合结构（ two-level aggregate<br>structure）。 与“ 键值存储” 相同，第一个键通常代表行标识符， 可以用它来获取想要的聚合。 列族结构与“ 键值存储” 的区别在于， 其“ 行聚合”（ row aggregate） 本身又是一个映射， 其中包含一些更为详细的值。 这些“ 二级值”（ second-level value）就叫做“ 列”。 与整体访问某行数据一样， 我们也可以操作特定的列。</p>
-<p>列族数据库将列组织为列族。 每一列都必须是某个列族的一部分， 而且访问数据的单元也得是列。 这样设计的前提是， 某个列族中的数据经常需要一起访问。<br><img src="/img/2014/QQ图片20150405161008.png" alt=""><br>于是， 我们也得出了两种数据组织方式。</p>
-<ul>
-<li>面向行（ row-oriented）： 每一行都是一个聚合（ 例如 ID 为 1234 的顾客就是一个聚合）， 该聚合内部存有一些包含有用数据块（ 客户信息、 订单记录） 的列族。</li>
-<li>面向列（ column-oriented）： 每个列族都定义了一种记录类型（ 例如客户信息），其中每行都表示一条记录 。 你可以将数据库中的大“ 行” 理解为列族中每一个短行记录的串接。</li>
-</ul>
-<h3 id="总结">总结</h3><p>键值数据模型将聚合看作不透明的整体，这意味着只能根据键来查出整个聚合， 而不能仅仅查询或获取其中的一部分。</p>
-<p>文档模型的聚合对数据库透明， 于是就可以只查询并获取其中一部分数据了， 不过， 由于文档没有模式， 因此在想优化存储并获取聚合中的部分内容时， 数据库不太好调整文档结构。</p>
-<p>列族模型把聚合分为列族， 让数据库将其视为行聚合内的一个数据单元。 此类聚合的结构有某种限制， 但是数据库可利用此种结构的优点来提高其易访问性。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nosql/">nosql</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/数据库/">数据库</a>
 	</div>
 
 

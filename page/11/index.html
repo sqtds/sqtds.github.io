@@ -230,6 +230,93 @@ var _hmt = _hmt || [];
 
 
   
+    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
+  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
+<ul>
+<li>PROPAGATION_REQUIRED</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_SUPPORTS</li>
+</ul>
+<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
+<ul>
+<li>PROPAGATION_MANDATORY </li>
+</ul>
+<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
+<ul>
+<li>PROPAGATION_REQUIRES_NEW</li>
+</ul>
+<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
+<ul>
+<li>PROPAGATION_NOT_SUPPORTED</li>
+</ul>
+<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
+<ul>
+<li>PROPAGATION_NEVER</li>
+</ul>
+<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
+<ul>
+<li>PROPAGATION_NESTED</li>
+</ul>
+<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
+<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
+<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -525,85 +612,6 @@ public <span class="keyword">interface</span> <span class="type">AfterReturningA
 </ul>
 <p>活动生存期是指OnResume及对应的OnPause之间的那段时间。</p>
 <p>一个处于活动状态的Activity是在前台的，并且正在接受用户输入事件。一定要让OnPause和OnResume中的代码执行迅速，并且其中的代码尽可能的少，以保证在前台和后台之间进行切换的时候应用程序能够迅速响应。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/android-intent" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/25/2014/android-intent/" class="article-date">
-  	<time datetime="2014-05-25T10:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/25/2014/android-intent/">Intent和Broadcast Receiver</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Intent简介">Intent简介</h2><p>Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：</p>
-<ul>
-<li>使用类名显示启动一个特定的Service或Activity</li>
-<li>启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。</li>
-<li>广播某个事件的发生。</li>
-</ul>
-<h3 id="使用Intent来启动Activity">使用Intent来启动Activity</h3><p>显示：</p>
-<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Intent</span> <span class="type">intent</span> = new <span class="type">Intent</span>(MyActivity.this, MyOtherActivity.<span class="keyword">class</span>);</span><br><span class="line">startActivity(<span class="type">intent</span>);</span><br></pre></td></tr></table></figure>
-<p>隐式：<br>隐式的Intent提供了一种机制，可以让匿名的应用程序组件响应动作请求。这意味着可以要求系统启动一个可执行给定动作的Activity，而不必知道需要启动哪个应用程序或Activity。</p>
-<p>例如：如果希望用户从应用程序中打电话，可以实现一个新的拨号程序，也可以使用一个隐式的Intent来请求一个在电话号码（表示为一个URI）上执行动作（拨号）。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(somethingWeird&amp;&amp;itDontLookGood)&#123;</span><br><span class="line">	<span class="type">Intent</span> <span class="type">intent</span> = </span><br><span class="line">      new <span class="type">Intent</span> (<span class="type">Intent</span>.Action_DLL,Uri.parse(<span class="string">"tel:555-2368"</span>));</span><br><span class="line">	startActivity(<span class="type">intent</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Android就会解析这个Intent，并启动一个新的Activity，该Activity会提供对这个电话号码进行拨号的动作—-在这种情况下，通常是Phone Dialer.</p>
-<h2 id="Linfify简介">Linfify简介</h2><p>Linkify是一个辅助类，它会自动地在TextView类（或者TextView的派生类）中通过RegEx模型匹配来创建超链接。</p>
-<p>那些匹配一个指定的RegEx模式的文本都将会被转换为一个可以单击的超链接，这些超链接可以隐式使用匹配的文本作为目标URI来触发startActivity（new Intent(Intent.ACTION_VIEW，uri)）。</p>
-<h3 id="原生Linkify链接类型">原生Linkify链接类型</h3><p>Linkify类有一些预设值可以检测到Web URL，电子邮件地址和电话号码，并把他们转换为链接。要应用一个预设值，需要使用静态的Linkify.addLinks方法，并传入要建立的链接的视图，以及以下的一个活更多个自描述的Linkify类常量的位掩码:WEB_URLS，EMAIL_ADDRESS,PHONE_NUMBERS和ALL。</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextView textView = (TextView)findViewById(R.id.myTextView);</span><br><span class="line">Linkify.addLinks(textView,Linkify.WEB_URLS<span class="string">|Linkify.EMAIL_ADDRESSES);</span></span><br></pre></td></tr></table></figure>
-<p>也可以使用Android:autoLink属性来在一个布局内部链接视图。<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	android:<span class="variable">layout_width =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">layout_height =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">text =</span> <span class="string">"@string/linkify_name"</span></span><br><span class="line">	android:<span class="variable">autoLink =</span> <span class="string">"phone|email"</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
-<h3 id="创建定制的链接字符串">创建定制的链接字符串</h3><h3 id="使用Match_Filter">使用Match Filter</h3><h3 id="使用Transform_Filter">使用Transform Filter</h3><p>Transform Filter 允许修改匹配的链接文本生成的隐式URI。把链接文本和目标URI分离开，你能够更自由的决定如何把数据字符串显示给用户。</p>
-<h2 id="使用Intent广播事件">使用Intent广播事件</h2><p>作为一个系统级的消息传递机制，Intent可以在进程之间发送结构化的消息。因此，可以通过实现Broadcast Receiver来监听和响应应用程序内的这些Broadcast Intent。</p>
-<p>Broadcast Intent 用于向监听器通知系统的应用程序或应用事件，从而可以扩展应用程序间的事件驱动的编程模型。</p>
-<p>Broadcast Intent 可以是应用程序更加开发：通过使用Intent来广播一个事件，可以在不用修改原始应用程序的情况下，让你和第三方开发人员对事件做出反应。在应用程序中，可以通过监听Broadcast Intent来对设备状态变化和第三方应用程序事件做出反应。</p>
-<h3 id="使用_Intent广播事件">使用 Intent广播事件</h3><p>在应用程序组件中，可以构建希望广播的Intent，然后使用sendBroadcast方法来发送它。</p>
-<p>可以对Intent的动作，数据和分类进行设置，从而使Broadcast Receiver能够精确的确定他们的需求。</p>
-<h3 id="使用Broadcast_Receiver来监听广播">使用Broadcast Receiver来监听广播</h3><p>Broadcast Receiver可以用来监听Broadcast Intent。要使Broadcast Receiver 能够接受广播，就需要对其进行注册，即可以使用代码，也可以在应用程序的manifest文件中注册。无论怎么注册，都要使用一个Intent Filter来指定它要监听哪些Intent和数据。</p>
 
       
     </div>

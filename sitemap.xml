@@ -2,7 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://sqtds.github.io/2015/08/01/GC-turing/</loc>
+    <loc>http://sqtds.github.io/2015/08/08/hessian/</loc>
+    <lastmod>2015-08-09T02:53:23.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://sqtds.github.io/2015/08/01/2015/GC-turing/</loc>
     <lastmod>2015-08-01T09:31:35.000Z</lastmod>
   </url>
   
@@ -227,7 +232,7 @@
   </url>
   
   <url>
-    <loc>http://sqtds.github.io/2014/11/02/2014/mondrian-source-code-7/</loc>
+    <loc>http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/</loc>
     <lastmod>2015-05-09T04:12:09.000Z</lastmod>
   </url>
   
@@ -262,7 +267,7 @@
   </url>
   
   <url>
-    <loc>http://sqtds.github.io/2015/04/04/2014/mondrian-source-code-8/</loc>
+    <loc>http://sqtds.github.io/2014/11/02/2014/mondrian-source-code-7/</loc>
     <lastmod>2015-05-09T04:12:09.000Z</lastmod>
   </url>
   

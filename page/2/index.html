@@ -168,6 +168,63 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2015/网络协议-应用层" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/06/21/2015/网络协议-应用层/" class="article-date">
+  	<time datetime="2015-06-21T08:49:37.000Z" itemprop="datePublished">6月 21 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/21/2015/网络协议-应用层/">计算机网络协议(2)-应用层</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/img/2015/应用层.png" alt=""></p>
+<h2 id="待续">待续</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/计算机原理/">计算机原理</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2015/网络协议" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -497,109 +554,6 @@ var _hmt = _hmt || [];
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/分布式-一致性协议" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/23/2015/分布式-一致性协议/" class="article-date">
-  	<time datetime="2015-05-23T08:38:14.000Z" itemprop="datePublished">5月 23 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/23/2015/分布式-一致性协议/">分布式一致性协议</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，概述">一，概述</h2><p>为了解决分布式一致性问题，出现了大量的一致性协议和算法，本文主要介绍2pc，3pc，paxos和zab算法。</p>
-<h2 id="二，二阶段提交（2pc）">二，二阶段提交（2pc）</h2><p>参与者将操作成败通知协调者，再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</p>
-<h3 id="2-1_基本算法">2.1 基本算法</h3><ul>
-<li><p>a,第一阶段(请求阶段)<br>在请求阶段，协调者通知事务参与者准备提交或者取消事务，然后进入表决过程。在表决过程中，参与者将报告协调者自己的决策：同意或者取消。</p>
-</li>
-<li><p>b,第二阶段(提交阶段)<br>在提交阶段，协调者将基于第一个阶段的投票进行决策：提交或取消。当所有的参与者同意提交事务时，协调者才通知所有的参与者提交事务，否者通知所有的参与者取消事务。</p>
-</li>
-</ul>
-<h3 id="2-2缺点">2.2缺点</h3><ul>
-<li>同步阻塞，所有参与该事务的逻辑都将进入阻塞状态</li>
-<li>单点问题，协调者故障</li>
-<li>数据不一致，网络原因只有部分参与者收到commit请求</li>
-</ul>
-<h2 id="三，三阶段提交(3pc)">三，三阶段提交(3pc)</h2><p>2pc的改进版本，将请求阶段一分为二，形成能否提交，预提交，提交三个阶段。</p>
-<h3 id="3-1基本算法">3.1基本算法</h3><ul>
-<li><p>a,第一阶段（能否提交阶段）<br>协调者询问参与者事务能否执行，参与者在正常情况下返回Yes状态，否者返回No。</p>
-</li>
-<li><p>b,第二阶段（预提交阶段）<br>协调者根据反馈情况选择执行的预提交操作。</p>
-</li>
-<li><p>c,第三阶段（提交阶段）<br>协调者发送提交请求，通知所有的参与者进行提交或者回滚。</p>
-</li>
-</ul>
-<h3 id="3-2_改进">3.2 改进</h3><p>3pc相对与2pc最大的优点就是减少了参与者的阻塞范围。</p>
-<h2 id="四，Paxos协议">四，Paxos协议</h2><p>paxos用于解决多个节点间的一致性问题。2pc与3pc用于保证属于多个数据分片上的操作的原子性。</p>
-<h3 id="4-1_基本算法">4.1 基本算法</h3><h4 id="4-1-1情况一">4.1.1情况一</h4><p>在大多数情况下，proposer只有一个,它的步骤如下：</p>
-<ol>
-<li>批准(accpet):Proposer发送accept消息要求所有其他节点接受某个提议值，acceptor可以接受或者拒绝。</li>
-<li>确认（acknowledge）：如果超过一半的acceptor接受，意味着提议值已经生效，proposer发送acknowledge消息通知所有的acceptor提议生效。</li>
-</ol>
-<h4 id="4-2-1情况二">4.2.1情况二</h4><p>如果系统中出现了多个proposer的时候，他们各自发送不同的提议。如果proposer第一次发起的accept请求没有被acceptor中的多数派批准，那么，需要进行一轮完整的paxos协议：</p>
-<ol>
-<li>准备（prepare）: proposer首先选择一个提议号n给其他的acceptor节点发送prepare消息。acceptor接受消息后，如果提议号大于它已经回复的所有prepare消息，则acceptor将自己的上次接受的提议回复给proposer，并且不再回复小与n的提议。</li>
-<li>批准（accept）：Proposer收到了acceptor中的多数派对prepare的回复后，就进入批准阶段。如果之前的prepare阶段acceptor回复了上次接受的提议，那么，proposer选择其中一个最大的提议值发给acceptor批准：否者，proposer生成一个新的提议值发给acceptor批准。acceptor在不违背它之前prepare阶段的承诺下，接受这个请求。</li>
-<li>确认（acknowledge）： 如果超过一半的acceptor接受，提议值生效。proposer发送acknowledge消息通知给所有的acceptor。</li>
-</ol>
-<h3 id="4-2缺点">4.2缺点</h3><p>当有多个 proposer交错提交时，有可能互相排斥导致没有一个proposer能提交成功。</p>
-<h2 id="五，ZAP协议">五，ZAP协议</h2><p>构建高可用的分布式主备系统。</p>
-<h3 id="5-1_基本算法">5.1 基本算法</h3><ol>
-<li>选举Leader<br> a,Leader要具有最高的zxid<br> b,集群中大多数的机器得到响应并follow选出的Leader</li>
-<li>同步数据<br> a,发送数据同步指令<br> b,follow事务回退</li>
-<li>广播</li>
-</ol>
-<h2 id="六，参考资料">六，参考资料</h2><ol>
-<li>《从Paxos到Zookeeper-分布式一致性原理与实践》-倪超</li>
-<li>《大规模分布式存储系统-原理解析与架构实践》-杨传辉</li>
-<li><a href="http://zh.wikipedia.org/zh-cn/Paxos%E7%AE%97%E6%B3%95" target="_blank" rel="external">Paxos算法</a></li>
-</ol>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式/">分布式</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/分布式/">分布式</a>
 	</div>
 
 

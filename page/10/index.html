@@ -168,6 +168,91 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/24/2014/antlr4-start/" class="article-date">
+  	<time datetime="2014-08-24T10:04:40.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/2014/antlr4-start/">antlr4快速开始（一）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="antlr是什么？">antlr是什么？</h2><p>ANTLR (ANother Tool for Language Recognition) 是一个强大的解析生成器，它可以读，处理，执行或者转换格式化的文本或者二进制文件。它被广泛的用于构建语言，工具，和框架。从语法上来说，antlr生成了一个能够构建和遍历解析树的解析器。</p>
+<h2 id="快速开始">快速开始</h2><pre><code>Windows
+Download http:<span class="comment">//antlr.org/download/antlr-4.4-complete.jar.</span>
+<span class="keyword">Add</span> antlr4-complete.jar <span class="keyword">to</span> CLASSPATH, either:
+Permanently: <span class="keyword">Using</span> System Properties dialog &gt; Environment variables &gt; <span class="keyword">Create</span> <span class="keyword">or</span> append <span class="keyword">to</span> CLASSPATH variable
+Temporarily, at command line:
+<span class="keyword">SET</span> CLASSPATH=.;C:\Javalib\antlr4-complete.jar;%CLASSPATH%
+<span class="keyword">Create</span> batch commands <span class="keyword">for</span> ANTLR Tool, TestRig <span class="keyword">in</span> dir <span class="keyword">in</span> PATH
+ antlr4.bat: java org.antlr.v4.Tool %*
+ grun.bat:   java org.antlr.v4.runtime.misc.TestRig %*
+</code></pre><h2 id="例子">例子</h2><pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;        
+<span class="rule"><span class="attribute">prog</span>:<span class="value">    (expr NEWLINE)* </span></span>;
+<span class="rule"><span class="attribute">expr</span>:<span class="value">    expr (<span class="string">'*'</span>|<span class="string">'/'</span>) expr
+    |    expr (<span class="string">'+'</span>|<span class="string">'-'</span>) expr
+    |    INT
+    |    <span class="string">'('</span> expr <span class="string">')'</span>
+    </span></span>;
+<span class="rule"><span class="attribute">NEWLINE </span>:<span class="value"> [\r\n]+ </span></span>;
+<span class="rule"><span class="attribute">INT     </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+
+
+$ <span class="tag">antlr4</span> <span class="tag">Expr</span><span class="class">.g4</span>
+$ <span class="tag">javac</span> <span class="tag">Expr</span>*<span class="class">.java</span>
+$ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">prog</span> <span class="tag">-gui</span>
+100+2*34
+^<span class="tag">D</span>
+</code></pre><p><img src="http://pic.browser.360.cn/t012e3d32f2057cb701.png" alt=""></p>
+<p>注意：(That ^D means EOF on unix; it’s ^Z in Windows.) The -tree option prints the parse tree in LISP notation.</p>
+<p>更多请参考：<a href="https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4" target="_blank" rel="external">https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/branch_prdeiction" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -668,93 +753,6 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
 <li>通过setRollbackOnly() 方法标记当前事务以使其回滚。</li>
 <li>如果相应的PlatformTransactionManager支持Savepoint，可以通过TransactionStatus 在当前事务中创建内部嵌套事务。</li>
 </ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
-<ul>
-<li>PROPAGATION_REQUIRED</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_SUPPORTS</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
-<ul>
-<li>PROPAGATION_MANDATORY </li>
-</ul>
-<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
-<ul>
-<li>PROPAGATION_REQUIRES_NEW</li>
-</ul>
-<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_NOT_SUPPORTED</li>
-</ul>
-<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
-<ul>
-<li>PROPAGATION_NEVER</li>
-</ul>
-<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
-<ul>
-<li>PROPAGATION_NESTED</li>
-</ul>
-<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
-<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
-<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
 
       
     </div>
