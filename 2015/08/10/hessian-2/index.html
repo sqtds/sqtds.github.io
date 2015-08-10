@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>hessian协议解析--hessian反序列化 | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一，前言上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。
+二，常规反序列化反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hessian协议解析--hessian反序列化">
+<meta property="og:url" content="http://sqtds.github.io/2015/08/10/hessian-2/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="一，前言上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。
+二，常规反序列化反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hessian协议解析--hessian反序列化">
+<meta name="twitter:description" content="一，前言上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。
+二，常规反序列化反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?1bd1f966e3148e2b59e4b159067ad372";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="/img/photo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">sqtds</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/随笔">随笔</a></li>
+				        
+							<li><a href="/about">关于我</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+					        
+								<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+					        
+								<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">sqtds</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/photo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">sqtds</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/随笔">随笔</a></li>
+		        
+					<li><a href="/about">关于我</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+			        
+						<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+			        
+						<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/10/hessian-2/" class="article-date">
+  	<time datetime="2015-08-10T13:31:16.000Z" itemprop="datePublished">8月 10 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hessian协议解析--hessian反序列化
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
+<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。<a id="more"></a></p>
+<pre><code>Hessian2Input
+<span class="keyword">public</span> <span class="function">Object <span class="title">readObject</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>{
+    <span class="keyword">int</span> tag = _offset &lt; _length ? (_buffer[_offset++] &amp; <span class="number">0xff</span>) : read();
+
+    <span class="keyword">switch</span> (tag) {
+    <span class="keyword">case</span> <span class="string">'N'</span>:
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+
+    <span class="keyword">case</span> <span class="string">'T'</span>:
+        <span class="keyword">return</span> Boolean.valueOf(<span class="keyword">true</span>);
+
+    <span class="keyword">case</span> <span class="string">'F'</span>:
+        <span class="keyword">return</span> Boolean.valueOf(<span class="keyword">false</span>);
+
+        <span class="comment">// direct integer</span>
+    <span class="keyword">case</span> <span class="number">0x80</span>:
+    ....//略
+    <span class="keyword">case</span> 0xbf:
+        <span class="keyword">return</span> Integer.valueOf(tag - BC_INT_ZERO);
+
+        <span class="comment">/* byte int */</span>
+    <span class="keyword">case</span> <span class="number">0xc0</span>:
+    ....//略
+    <span class="keyword">case</span> 0xcf:
+        <span class="keyword">return</span> Integer.valueOf(((tag - BC_INT_BYTE_ZERO) &lt;&lt; 8) + read());
+
+        <span class="comment">/* short int */</span>
+    <span class="keyword">case</span> <span class="number">0xd0</span>:
+    <span class="keyword">case</span> 0xd1:
+    <span class="keyword">case</span> 0xd2:
+    <span class="keyword">case</span> 0xd3:
+    <span class="keyword">case</span> 0xd4:
+    <span class="keyword">case</span> 0xd5:
+    <span class="keyword">case</span> 0xd6:
+    <span class="keyword">case</span> 0xd7:
+        <span class="keyword">return</span> Integer.valueOf(((tag - BC_INT_SHORT_ZERO) &lt;&lt; 16) + 256
+                * read() + read());
+
+    <span class="keyword">case</span> <span class="string">'I'</span>:
+        <span class="keyword">return</span> Integer.valueOf(parseInt());
+
+        <span class="comment">// direct long</span>
+    <span class="keyword">case</span> <span class="number">0xd8</span>:
+    ...//略
+    <span class="keyword">case</span> 0xef:
+        <span class="keyword">return</span> Long.valueOf(tag - BC_LONG_ZERO);
+
+        <span class="comment">/* byte long */</span>
+    <span class="keyword">case</span> <span class="number">0xf0</span>:
+    ...//略
+    <span class="keyword">case</span> 0xff:
+        <span class="keyword">return</span> Long.valueOf(((tag - BC_LONG_BYTE_ZERO) &lt;&lt; 8) + read());
+
+        <span class="comment">/* short long */</span>
+    <span class="keyword">case</span> <span class="number">0x38</span>:
+    <span class="keyword">case</span> 0x39:
+    <span class="keyword">case</span> 0x3a:
+    <span class="keyword">case</span> 0x3b:
+    <span class="keyword">case</span> 0x3c:
+    <span class="keyword">case</span> 0x3d:
+    <span class="keyword">case</span> 0x3e:
+    <span class="keyword">case</span> 0x3f:
+        <span class="keyword">return</span> Long.valueOf(((tag - BC_LONG_SHORT_ZERO) &lt;&lt; 16) + 256
+                * read() + read());
+
+    <span class="keyword">case</span> BC_LONG_INT:
+        <span class="keyword">return</span> Long.valueOf(parseInt());
+
+    <span class="keyword">case</span> <span class="string">'L'</span>:
+        <span class="keyword">return</span> Long.valueOf(parseLong());
+
+    <span class="keyword">case</span> BC_DOUBLE_ZERO:
+        <span class="keyword">return</span> Double.valueOf(0);
+
+    <span class="keyword">case</span> BC_DOUBLE_ONE:
+        <span class="keyword">return</span> Double.valueOf(1);
+
+    <span class="keyword">case</span> BC_DOUBLE_BYTE:
+        <span class="keyword">return</span> Double.valueOf((<span class="keyword">byte</span>) read());
+
+    <span class="keyword">case</span> BC_DOUBLE_SHORT:
+        <span class="keyword">return</span> Double.valueOf((<span class="keyword">short</span>) (256 * read() + read()));
+
+    <span class="keyword">case</span> BC_DOUBLE_MILL: {
+        <span class="keyword">int</span> mills = parseInt();
+
+        <span class="function"><span class="keyword">return</span> Double.<span class="title">valueOf</span><span class="params">(<span class="number">0.001</span> * mills)</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="string">'D'</span>:
+        <span class="keyword">return</span> Double.valueOf(parseDouble());
+
+    <span class="keyword">case</span> BC_DATE:
+        <span class="keyword">return</span> <span class="keyword">new</span> Date(parseLong());
+
+    <span class="keyword">case</span> BC_DATE_MINUTE:
+        <span class="keyword">return</span> <span class="keyword">new</span> Date(parseInt() * 60000L);
+
+    <span class="keyword">case</span> BC_STRING_CHUNK:
+    <span class="keyword">case</span> 'S': {
+        _isLastChunk = tag == <span class="string">'S'</span>;
+        _chunkLength = (read() &lt;&lt; <span class="number">8</span>) + read();
+
+        <span class="keyword">int</span> data;
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">while</span> ((data = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) data);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x00</span>:
+    ...//略
+    <span class="keyword">case</span> 0x1f: {
+        _isLastChunk = <span class="keyword">true</span>;
+        _chunkLength = tag - <span class="number">0x00</span>;
+
+        <span class="keyword">int</span> data;
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">while</span> ((data = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) data);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x30</span>:
+    <span class="keyword">case</span> 0x31:
+    <span class="keyword">case</span> 0x32:
+    <span class="keyword">case</span> 0x33: {
+        _isLastChunk = <span class="keyword">true</span>;
+        _chunkLength = (tag - <span class="number">0x30</span>) * <span class="number">256</span> + read();
+
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">int</span> ch;
+        <span class="keyword">while</span> ((ch = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) ch);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> BC_BINARY_CHUNK:
+    <span class="keyword">case</span> 'B': {
+        _isLastChunk = tag == <span class="string">'B'</span>;
+        _chunkLength = (read() &lt;&lt; <span class="number">8</span>) + read();
+
+        <span class="keyword">int</span> data;
+        ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();
+
+        <span class="keyword">while</span> ((data = parseByte()) &gt;= <span class="number">0</span>)
+            bos.write(data);
+
+        <span class="function"><span class="keyword">return</span> bos.<span class="title">toByteArray</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x20</span>:
+    ...//略
+    <span class="keyword">case</span> 0x2f: {
+        _isLastChunk = <span class="keyword">true</span>;
+        <span class="keyword">int</span> len = tag - <span class="number">0x20</span>;
+        _chunkLength = <span class="number">0</span>;
+
+        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[len];
+
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)
+            data[i] = (<span class="keyword">byte</span>) read();
+
+        <span class="keyword">return</span> data;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x34</span>:
+    <span class="keyword">case</span> 0x35:
+    <span class="keyword">case</span> 0x36:
+    <span class="keyword">case</span> 0x37: {
+        _isLastChunk = <span class="keyword">true</span>;
+        <span class="keyword">int</span> len = (tag - <span class="number">0x34</span>) * <span class="number">256</span> + read();
+        _chunkLength = <span class="number">0</span>;
+
+        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[len];
+
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) {
+            buffer[i] = (<span class="keyword">byte</span>) read();
+        }
+
+        <span class="keyword">return</span> buffer;
+    }
+
+    <span class="keyword">case</span> BC_LIST_VARIABLE: {
+        <span class="comment">// variable length list</span>
+        String type = readType();
+
+        <span class="keyword">return</span> findSerializerFactory().readList(<span class="keyword">this</span>, -<span class="number">1</span>, type);
+    }
+
+    <span class="keyword">case</span> BC_LIST_VARIABLE_UNTYPED: {
+        <span class="keyword">return</span> findSerializerFactory().readList(<span class="keyword">this</span>, -<span class="number">1</span>, <span class="keyword">null</span>);
+    }
+
+    <span class="keyword">case</span> BC_LIST_FIXED: {
+        <span class="comment">// fixed length lists</span>
+        String type = readType();
+        <span class="keyword">int</span> length = readInt();
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(type, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+    <span class="keyword">case</span> BC_LIST_FIXED_UNTYPED: {
+        <span class="comment">// fixed length lists</span>
+        <span class="keyword">int</span> length = readInt();
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(<span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+        <span class="comment">// compact fixed list</span>
+    <span class="keyword">case</span> <span class="number">0x70</span>:
+    <span class="keyword">case</span> 0x71:
+    <span class="keyword">case</span> 0x72:
+    <span class="keyword">case</span> 0x73:
+    <span class="keyword">case</span> 0x74:
+    <span class="keyword">case</span> 0x75:
+    <span class="keyword">case</span> 0x76:
+    <span class="keyword">case</span> 0x77: {
+        <span class="comment">// fixed length lists</span>
+        String type = readType();
+        <span class="keyword">int</span> length = tag - <span class="number">0x70</span>;
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(type, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+        <span class="comment">// compact fixed untyped list</span>
+    <span class="keyword">case</span> <span class="number">0x78</span>:
+    <span class="keyword">case</span> 0x79:
+    <span class="keyword">case</span> 0x7a:
+    <span class="keyword">case</span> 0x7b:
+    <span class="keyword">case</span> 0x7c:
+    <span class="keyword">case</span> 0x7d:
+    <span class="keyword">case</span> 0x7e:
+    <span class="keyword">case</span> 0x7f: {
+        <span class="comment">// fixed length lists</span>
+        <span class="keyword">int</span> length = tag - <span class="number">0x78</span>;
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(<span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="string">'H'</span>: {
+      String type = GenericTypeUtil.getCurrentGenericType()==<span class="keyword">null</span>?<span class="keyword">null</span>:GenericTypeUtil.getCurrentGenericType().getName();<span class="comment">//added by lG 2010-5-9</span>
+      <span class="keyword">return</span> findSerializerFactory().readMap(<span class="keyword">this</span>, type);
+</code></pre><p>//          return findSerializerFactory().readMap(this,null);<br>        }</p>
+<pre><code>    <span class="keyword">case</span> 'M': {
+        <span class="type">String</span> <span class="keyword">type</span> = readType();
+
+        <span class="keyword">return</span> findSerializerFactory().readMap(this, <span class="keyword">type</span>);
+    }
+
+    <span class="keyword">case</span> 'C': {
+        readObjectDefinition(null);
+
+        <span class="keyword">return</span> readObject();
+    }
+
+    <span class="keyword">case</span> <span class="number">0x60</span>:
+    ...//略
+    <span class="keyword">case</span> <span class="number">0x6f</span>: {
+        <span class="type">int</span> <span class="keyword">ref</span> = tag - <span class="number">0x60</span>;
+
+        <span class="keyword">if</span> (_classDefs.size() &lt;= <span class="keyword">ref</span>)
+            throw error(<span class="string">"No classes defined at reference '"</span>
+                    + <span class="type">Integer</span>.toHexString(tag) + <span class="string">"'"</span>);
+
+        <span class="type">ObjectDefinition</span> def = _classDefs.get(<span class="keyword">ref</span>);
+
+        <span class="keyword">return</span> readObjectInstance(null, def);
+    }
+
+    <span class="keyword">case</span> 'O': {
+        <span class="type">int</span> <span class="keyword">ref</span> = readInt();
+
+        <span class="keyword">if</span> (_classDefs.size() &lt;= <span class="keyword">ref</span>)
+            throw error(<span class="string">"Illegal object reference #"</span> + <span class="keyword">ref</span>);
+
+        <span class="type">ObjectDefinition</span> def = _classDefs.get(<span class="keyword">ref</span>);
+
+        <span class="keyword">return</span> readObjectInstance(null, def);
+    }
+
+    <span class="keyword">case</span> <span class="type">BC_REF</span>: {
+        <span class="type">int</span> <span class="keyword">ref</span> = readInt();
+
+        <span class="keyword">return</span> _refs.get(<span class="keyword">ref</span>);
+    }
+
+    default:
+        <span class="keyword">if</span> (tag &lt; <span class="number">0</span>)
+            throw new <span class="type">EOFException</span>(<span class="string">"readObject: unexpected end of file"</span>);
+        <span class="keyword">else</span>
+            throw error(<span class="string">"readObject: unknown code "</span> + codeName(tag));
+    }
+}
+</code></pre><h2 id="引用反序列化">引用反序列化</h2><p>在上篇文章中，我们是否记得，当我们遇到相同的引用对象时，直接写入了x51+引用对象所在的位置。<br>那么，我们如何在反序列化的时候找到所对应的引用呢？</p>
+<p>我们看序列化时的引用处理逻辑：</p>
+<pre><code>public boolean addRef(<span class="type">Object</span> <span class="keyword">object</span>)
+  throws <span class="type">IOException</span>
+{ //拿到引用map的大小，即新对象放在map中的value
+  <span class="type">int</span> newRef = _refs.size();
+  //将<span class="keyword">object</span>放到引用map中，如果不存在，则新增，返回新增的value，
+  //否者，将返回与<span class="keyword">object</span>相同引用的value
+  <span class="type">int</span> <span class="keyword">ref</span> = _refs.put(<span class="keyword">object</span>, newRef, <span class="literal">false</span>);
+  //如果引用值不相等，则表示查找到引用
+  <span class="keyword">if</span> (<span class="keyword">ref</span> != newRef) {
+    //写引用标记
+    writeRef(<span class="keyword">ref</span>);
+    <span class="keyword">return</span> <span class="literal">true</span>;
+  }
+  <span class="keyword">else</span> {
+    <span class="keyword">return</span> <span class="literal">false</span>;
+  }
+}
+</code></pre><p>即每次生成一个对象时，它在map中映射的值都会加1，除非遇到相同的引用对象。<br>然后我们再看看反序列化的时候如何处理：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">Object</span> readRef() <span class="keyword">throws</span> IOException {
+    <span class="keyword">return</span> _refs.<span class="built_in">get</span>(parseInt());
+}
+</code></pre><p>很简单的一句话，根据当前的引用列表_refs获取对应的引用对象。那这个_refs是怎么生成的呢，我们接着UnsafeDeserializer中查看：</p>
+<pre><code> <span class="type">UnsafeDeserializer</span>
+ public <span class="type">Object</span> readObject(<span class="type">AbstractHessianInput</span> <span class="keyword">in</span>,
+                           <span class="type">Object</span> obj,
+                           <span class="type">FieldDeserializer</span> []fields)
+    throws <span class="type">IOException</span>
+  {
+    <span class="keyword">try</span> {
+      //先将实例化对象添加到引用中
+      <span class="type">int</span> <span class="keyword">ref</span> = <span class="keyword">in</span>.addRef(obj);
+      //反序列化对象的字段
+      <span class="keyword">for</span> (<span class="type">FieldDeserializer</span> reader : fields) {
+        reader.deserialize(<span class="keyword">in</span>, obj);
+      }
+      //调用readResolve方法
+      <span class="type">Object</span> resolve = resolve(<span class="keyword">in</span>, obj);
+       //最后设置到引用中
+      <span class="keyword">if</span> (obj != resolve)
+        <span class="keyword">in</span>.setRef(<span class="keyword">ref</span>, resolve);
+
+      <span class="keyword">return</span> resolve;
+    } catch (<span class="type">IOException</span> e) {
+      throw e;
+    } catch (<span class="type">Exception</span> e) {
+      throw new <span class="type">IOExceptionWrapper</span>(obj.getClass().getName() + <span class="string">":"</span> + e, e);
+    }
+  }
+
+//<span class="type">Hessian2Input</span>  添加一个引用
+public <span class="type">int</span> addRef(<span class="type">Object</span> <span class="keyword">ref</span>) {
+    _refs.add(<span class="keyword">ref</span>);
+    <span class="keyword">return</span> _refs.size() - <span class="number">1</span>;
+}
+</code></pre><p>我们可以看到，假设有如下对象</p>
+<pre><code><span class="class"><span class="keyword">Class</span> <span class="title">A</span>{</span>
+  <span class="class"><span class="keyword">Class</span> <span class="title">B</span>;</span>
+  <span class="class"><span class="keyword">Class</span> <span class="title">C</span>;</span>
+}
+<span class="class"><span class="keyword">Class</span> <span class="title">B</span>{</span>
+   <span class="class"><span class="keyword">Class</span> <span class="title">A</span>;</span>
+} 
+C c = <span class="keyword">new</span> C();
+B b = <span class="keyword">new</span> B();
+A a = <span class="keyword">new</span> A(b,c);
+b.setA(a);
+</code></pre><p>序列化a时，首先map中添加a:0,接着b:1,然后在流中添加‘Q’+0（引用标志位于引用位置）,接着c:2。<br>反序列化的时候，首先添加list中添加a,然后添加b,将b设置到a上,接着获取引用a，然后添加c，将c设置到a上，最后判断是否有readResolve方法，如果有，替换引用对象。<br>不知道大家发现这里会有一个bug产生没？当readResolve存在的时候，当外围存在一个d引用a时，b设置的引用跟c设置的引用会存在不一致的情况。</p>
+<h2 id="三，总结">三，总结</h2><p>总体来说，hessian序列化机制还是非常巧妙的，用前8位(一个字节)表示了不同的含义，然后再分情况解析。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/08/08/2015/hessian-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">hessian协议解析--hessian序列化</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="hessian-2" data-title="hessian协议解析--hessian反序列化" data-url="http://sqtds.github.io/2015/08/10/hessian-2/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 sqtds
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/mobile.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

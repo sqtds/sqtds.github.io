@@ -3,26 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>hessian协议解析--hessian序列化 | 蜻蜓点水</title>
+  <title>蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一，前言本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 Hessian 2.0 Serialization Protocol
-二，基本类型序列化我们先从最简单的看起，int是如何序列化的。首先我们看官方文档定义。
-           # 32-bit signed integer
-int">
-<meta property="og:type" content="article">
-<meta property="og:title" content="hessian协议解析--hessian序列化">
-<meta property="og:url" content="http://sqtds.github.io/2015/08/08/hessian/index.html">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="蜻蜓点水">
+<meta property="og:url" content="http://sqtds.github.io/tags/java/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description" content="一，前言本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 Hessian 2.0 Serialization Protocol
-二，基本类型序列化我们先从最简单的看起，int是如何序列化的。首先我们看官方文档定义。
-           # 32-bit signed integer
-int">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hessian协议解析--hessian序列化">
-<meta name="twitter:description" content="一，前言本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 Hessian 2.0 Serialization Protocol
-二，基本类型序列化我们先从最简单的看起，int是如何序列化的。首先我们看官方文档定义。
-           # 32-bit signed integer
-int">
+<meta name="twitter:title" content="蜻蜓点水">
+<meta name="twitter:description">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -119,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -175,10 +166,73 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-hessian" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap">
+  
+    <article id="post-hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/08/08/hessian/" class="article-date">
+      <a href="/2015/08/10/hessian-2/" class="article-date">
+  	<time datetime="2015-08-10T13:31:16.000Z" itemprop="datePublished">8月 10 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/10/hessian-2/">hessian协议解析--hessian反序列化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
+<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/08/10/hessian-2/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/hessian-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/08/2015/hessian-1/" class="article-date">
   	<time datetime="2015-08-08T03:12:08.000Z" itemprop="datePublished">8月 8 2015</time>
 </a>
     </div>
@@ -191,19 +245,12 @@ var _hmt = _hmt || [];
       <header class="article-header">
         
   
-    <h1 class="article-title" itemprop="name">
-      hessian协议解析--hessian序列化
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/08/2015/hessian-1/">hessian协议解析--hessian序列化</a>
     </h1>
   
 
       </header>
-      
-      <div class="article-info article-info-post">
-        
-        
-
-        <div class="clearfix"></div>
-      </div>
       
     
     <div class="article-entry" itemprop="articleBody">
@@ -530,61 +577,33 @@ xf0 - xff    <span class="array"># two</span>-octet compact long (-x800 to x7ff,
       
     </div>
     
-  </div>
-  
-    
-<nav id="article-nav">
-  
-  
-    <a href="/2015/08/01/2015/GC-turing/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">GC调优总结</div>
-      <strong class="article-nav-caption">></strong>
-    </a>
-  
-</nav>
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+	</div>
 
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
   
 </article>
 
 
-<div class="share">
-	<!-- JiaThis Button BEGIN -->
-	<div class="jiathis_style">
-		<span class="jiathis_txt">分享到：</span>
-		<a class="jiathis_button_tsina"></a>
-		<a class="jiathis_button_cqq"></a>
-		<a class="jiathis_button_douban"></a>
-		<a class="jiathis_button_weixin"></a>
-		<a class="jiathis_button_tumblr"></a>
-		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	</div>
-	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
-	<!-- JiaThis Button END -->
-</div>
 
 
 
-<div class="duoshuo">
-	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="hessian" data-title="hessian协议解析--hessian序列化" data-url="http://sqtds.github.io/2015/08/08/hessian/"></div>
-	<!-- 多说评论框 end -->
-	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-	<script type="text/javascript">
-	var duoshuoQuery = {short_name:"sqtds"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-	</script>
-	<!-- 多说公共JS代码 end -->
-</div>
 
-
-
+  
+  
 </div>
       <footer id="footer">
   <div class="outer">

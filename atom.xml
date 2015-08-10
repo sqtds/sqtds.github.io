@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-08-09T02:53:23.000Z</updated>
+  <updated>2015-08-10T14:25:18.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -15,11 +15,414 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[hessian协议解析--hessian反序列化]]></title>
+    <link href="http://sqtds.github.io/2015/08/10/hessian-2/"/>
+    <id>http://sqtds.github.io/2015/08/10/hessian-2/</id>
+    <published>2015-08-10T13:31:16.000Z</published>
+    <updated>2015-08-10T14:25:18.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
+<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。<a id="more"></a></p>
+<pre><code>Hessian2Input
+<span class="keyword">public</span> <span class="function">Object <span class="title">readObject</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>{
+    <span class="keyword">int</span> tag = _offset &lt; _length ? (_buffer[_offset++] &amp; <span class="number">0xff</span>) : read();
+
+    <span class="keyword">switch</span> (tag) {
+    <span class="keyword">case</span> <span class="string">'N'</span>:
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+
+    <span class="keyword">case</span> <span class="string">'T'</span>:
+        <span class="keyword">return</span> Boolean.valueOf(<span class="keyword">true</span>);
+
+    <span class="keyword">case</span> <span class="string">'F'</span>:
+        <span class="keyword">return</span> Boolean.valueOf(<span class="keyword">false</span>);
+
+        <span class="comment">// direct integer</span>
+    <span class="keyword">case</span> <span class="number">0x80</span>:
+    ....//略
+    <span class="keyword">case</span> 0xbf:
+        <span class="keyword">return</span> Integer.valueOf(tag - BC_INT_ZERO);
+
+        <span class="comment">/* byte int */</span>
+    <span class="keyword">case</span> <span class="number">0xc0</span>:
+    ....//略
+    <span class="keyword">case</span> 0xcf:
+        <span class="keyword">return</span> Integer.valueOf(((tag - BC_INT_BYTE_ZERO) &lt;&lt; 8) + read());
+
+        <span class="comment">/* short int */</span>
+    <span class="keyword">case</span> <span class="number">0xd0</span>:
+    <span class="keyword">case</span> 0xd1:
+    <span class="keyword">case</span> 0xd2:
+    <span class="keyword">case</span> 0xd3:
+    <span class="keyword">case</span> 0xd4:
+    <span class="keyword">case</span> 0xd5:
+    <span class="keyword">case</span> 0xd6:
+    <span class="keyword">case</span> 0xd7:
+        <span class="keyword">return</span> Integer.valueOf(((tag - BC_INT_SHORT_ZERO) &lt;&lt; 16) + 256
+                * read() + read());
+
+    <span class="keyword">case</span> <span class="string">'I'</span>:
+        <span class="keyword">return</span> Integer.valueOf(parseInt());
+
+        <span class="comment">// direct long</span>
+    <span class="keyword">case</span> <span class="number">0xd8</span>:
+    ...//略
+    <span class="keyword">case</span> 0xef:
+        <span class="keyword">return</span> Long.valueOf(tag - BC_LONG_ZERO);
+
+        <span class="comment">/* byte long */</span>
+    <span class="keyword">case</span> <span class="number">0xf0</span>:
+    ...//略
+    <span class="keyword">case</span> 0xff:
+        <span class="keyword">return</span> Long.valueOf(((tag - BC_LONG_BYTE_ZERO) &lt;&lt; 8) + read());
+
+        <span class="comment">/* short long */</span>
+    <span class="keyword">case</span> <span class="number">0x38</span>:
+    <span class="keyword">case</span> 0x39:
+    <span class="keyword">case</span> 0x3a:
+    <span class="keyword">case</span> 0x3b:
+    <span class="keyword">case</span> 0x3c:
+    <span class="keyword">case</span> 0x3d:
+    <span class="keyword">case</span> 0x3e:
+    <span class="keyword">case</span> 0x3f:
+        <span class="keyword">return</span> Long.valueOf(((tag - BC_LONG_SHORT_ZERO) &lt;&lt; 16) + 256
+                * read() + read());
+
+    <span class="keyword">case</span> BC_LONG_INT:
+        <span class="keyword">return</span> Long.valueOf(parseInt());
+
+    <span class="keyword">case</span> <span class="string">'L'</span>:
+        <span class="keyword">return</span> Long.valueOf(parseLong());
+
+    <span class="keyword">case</span> BC_DOUBLE_ZERO:
+        <span class="keyword">return</span> Double.valueOf(0);
+
+    <span class="keyword">case</span> BC_DOUBLE_ONE:
+        <span class="keyword">return</span> Double.valueOf(1);
+
+    <span class="keyword">case</span> BC_DOUBLE_BYTE:
+        <span class="keyword">return</span> Double.valueOf((<span class="keyword">byte</span>) read());
+
+    <span class="keyword">case</span> BC_DOUBLE_SHORT:
+        <span class="keyword">return</span> Double.valueOf((<span class="keyword">short</span>) (256 * read() + read()));
+
+    <span class="keyword">case</span> BC_DOUBLE_MILL: {
+        <span class="keyword">int</span> mills = parseInt();
+
+        <span class="function"><span class="keyword">return</span> Double.<span class="title">valueOf</span><span class="params">(<span class="number">0.001</span> * mills)</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="string">'D'</span>:
+        <span class="keyword">return</span> Double.valueOf(parseDouble());
+
+    <span class="keyword">case</span> BC_DATE:
+        <span class="keyword">return</span> <span class="keyword">new</span> Date(parseLong());
+
+    <span class="keyword">case</span> BC_DATE_MINUTE:
+        <span class="keyword">return</span> <span class="keyword">new</span> Date(parseInt() * 60000L);
+
+    <span class="keyword">case</span> BC_STRING_CHUNK:
+    <span class="keyword">case</span> 'S': {
+        _isLastChunk = tag == <span class="string">'S'</span>;
+        _chunkLength = (read() &lt;&lt; <span class="number">8</span>) + read();
+
+        <span class="keyword">int</span> data;
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">while</span> ((data = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) data);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x00</span>:
+    ...//略
+    <span class="keyword">case</span> 0x1f: {
+        _isLastChunk = <span class="keyword">true</span>;
+        _chunkLength = tag - <span class="number">0x00</span>;
+
+        <span class="keyword">int</span> data;
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">while</span> ((data = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) data);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x30</span>:
+    <span class="keyword">case</span> 0x31:
+    <span class="keyword">case</span> 0x32:
+    <span class="keyword">case</span> 0x33: {
+        _isLastChunk = <span class="keyword">true</span>;
+        _chunkLength = (tag - <span class="number">0x30</span>) * <span class="number">256</span> + read();
+
+        _sbuf.setLength(<span class="number">0</span>);
+
+        <span class="keyword">int</span> ch;
+        <span class="keyword">while</span> ((ch = parseChar()) &gt;= <span class="number">0</span>)
+            _sbuf.append((<span class="keyword">char</span>) ch);
+
+        <span class="function"><span class="keyword">return</span> _sbuf.<span class="title">toString</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> BC_BINARY_CHUNK:
+    <span class="keyword">case</span> 'B': {
+        _isLastChunk = tag == <span class="string">'B'</span>;
+        _chunkLength = (read() &lt;&lt; <span class="number">8</span>) + read();
+
+        <span class="keyword">int</span> data;
+        ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();
+
+        <span class="keyword">while</span> ((data = parseByte()) &gt;= <span class="number">0</span>)
+            bos.write(data);
+
+        <span class="function"><span class="keyword">return</span> bos.<span class="title">toByteArray</span><span class="params">()</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x20</span>:
+    ...//略
+    <span class="keyword">case</span> 0x2f: {
+        _isLastChunk = <span class="keyword">true</span>;
+        <span class="keyword">int</span> len = tag - <span class="number">0x20</span>;
+        _chunkLength = <span class="number">0</span>;
+
+        <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[len];
+
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++)
+            data[i] = (<span class="keyword">byte</span>) read();
+
+        <span class="keyword">return</span> data;
+    }
+
+    <span class="keyword">case</span> <span class="number">0x34</span>:
+    <span class="keyword">case</span> 0x35:
+    <span class="keyword">case</span> 0x36:
+    <span class="keyword">case</span> 0x37: {
+        _isLastChunk = <span class="keyword">true</span>;
+        <span class="keyword">int</span> len = (tag - <span class="number">0x34</span>) * <span class="number">256</span> + read();
+        _chunkLength = <span class="number">0</span>;
+
+        <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[len];
+
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) {
+            buffer[i] = (<span class="keyword">byte</span>) read();
+        }
+
+        <span class="keyword">return</span> buffer;
+    }
+
+    <span class="keyword">case</span> BC_LIST_VARIABLE: {
+        <span class="comment">// variable length list</span>
+        String type = readType();
+
+        <span class="keyword">return</span> findSerializerFactory().readList(<span class="keyword">this</span>, -<span class="number">1</span>, type);
+    }
+
+    <span class="keyword">case</span> BC_LIST_VARIABLE_UNTYPED: {
+        <span class="keyword">return</span> findSerializerFactory().readList(<span class="keyword">this</span>, -<span class="number">1</span>, <span class="keyword">null</span>);
+    }
+
+    <span class="keyword">case</span> BC_LIST_FIXED: {
+        <span class="comment">// fixed length lists</span>
+        String type = readType();
+        <span class="keyword">int</span> length = readInt();
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(type, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+    <span class="keyword">case</span> BC_LIST_FIXED_UNTYPED: {
+        <span class="comment">// fixed length lists</span>
+        <span class="keyword">int</span> length = readInt();
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(<span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+        <span class="comment">// compact fixed list</span>
+    <span class="keyword">case</span> <span class="number">0x70</span>:
+    <span class="keyword">case</span> 0x71:
+    <span class="keyword">case</span> 0x72:
+    <span class="keyword">case</span> 0x73:
+    <span class="keyword">case</span> 0x74:
+    <span class="keyword">case</span> 0x75:
+    <span class="keyword">case</span> 0x76:
+    <span class="keyword">case</span> 0x77: {
+        <span class="comment">// fixed length lists</span>
+        String type = readType();
+        <span class="keyword">int</span> length = tag - <span class="number">0x70</span>;
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(type, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+        <span class="comment">// compact fixed untyped list</span>
+    <span class="keyword">case</span> <span class="number">0x78</span>:
+    <span class="keyword">case</span> 0x79:
+    <span class="keyword">case</span> 0x7a:
+    <span class="keyword">case</span> 0x7b:
+    <span class="keyword">case</span> 0x7c:
+    <span class="keyword">case</span> 0x7d:
+    <span class="keyword">case</span> 0x7e:
+    <span class="keyword">case</span> 0x7f: {
+        <span class="comment">// fixed length lists</span>
+        <span class="keyword">int</span> length = tag - <span class="number">0x78</span>;
+
+        Deserializer reader;
+        reader = findSerializerFactory().getListDeserializer(<span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="function"><span class="keyword">return</span> reader.<span class="title">readLengthList</span><span class="params">(<span class="keyword">this</span>, length)</span></span>;
+    }
+
+    <span class="keyword">case</span> <span class="string">'H'</span>: {
+      String type = GenericTypeUtil.getCurrentGenericType()==<span class="keyword">null</span>?<span class="keyword">null</span>:GenericTypeUtil.getCurrentGenericType().getName();<span class="comment">//added by lG 2010-5-9</span>
+      <span class="keyword">return</span> findSerializerFactory().readMap(<span class="keyword">this</span>, type);
+</code></pre><p>//          return findSerializerFactory().readMap(this,null);<br>        }</p>
+<pre><code>    <span class="keyword">case</span> 'M': {
+        <span class="type">String</span> <span class="keyword">type</span> = readType();
+
+        <span class="keyword">return</span> findSerializerFactory().readMap(this, <span class="keyword">type</span>);
+    }
+
+    <span class="keyword">case</span> 'C': {
+        readObjectDefinition(null);
+
+        <span class="keyword">return</span> readObject();
+    }
+
+    <span class="keyword">case</span> <span class="number">0x60</span>:
+    ...//略
+    <span class="keyword">case</span> <span class="number">0x6f</span>: {
+        <span class="type">int</span> <span class="keyword">ref</span> = tag - <span class="number">0x60</span>;
+
+        <span class="keyword">if</span> (_classDefs.size() &lt;= <span class="keyword">ref</span>)
+            throw error(<span class="string">"No classes defined at reference '"</span>
+                    + <span class="type">Integer</span>.toHexString(tag) + <span class="string">"'"</span>);
+
+        <span class="type">ObjectDefinition</span> def = _classDefs.get(<span class="keyword">ref</span>);
+
+        <span class="keyword">return</span> readObjectInstance(null, def);
+    }
+
+    <span class="keyword">case</span> 'O': {
+        <span class="type">int</span> <span class="keyword">ref</span> = readInt();
+
+        <span class="keyword">if</span> (_classDefs.size() &lt;= <span class="keyword">ref</span>)
+            throw error(<span class="string">"Illegal object reference #"</span> + <span class="keyword">ref</span>);
+
+        <span class="type">ObjectDefinition</span> def = _classDefs.get(<span class="keyword">ref</span>);
+
+        <span class="keyword">return</span> readObjectInstance(null, def);
+    }
+
+    <span class="keyword">case</span> <span class="type">BC_REF</span>: {
+        <span class="type">int</span> <span class="keyword">ref</span> = readInt();
+
+        <span class="keyword">return</span> _refs.get(<span class="keyword">ref</span>);
+    }
+
+    default:
+        <span class="keyword">if</span> (tag &lt; <span class="number">0</span>)
+            throw new <span class="type">EOFException</span>(<span class="string">"readObject: unexpected end of file"</span>);
+        <span class="keyword">else</span>
+            throw error(<span class="string">"readObject: unknown code "</span> + codeName(tag));
+    }
+}
+</code></pre><h2 id="引用反序列化">引用反序列化</h2><p>在上篇文章中，我们是否记得，当我们遇到相同的引用对象时，直接写入了x51+引用对象所在的位置。<br>那么，我们如何在反序列化的时候找到所对应的引用呢？</p>
+<p>我们看序列化时的引用处理逻辑：</p>
+<pre><code>public boolean addRef(<span class="type">Object</span> <span class="keyword">object</span>)
+  throws <span class="type">IOException</span>
+{ //拿到引用map的大小，即新对象放在map中的value
+  <span class="type">int</span> newRef = _refs.size();
+  //将<span class="keyword">object</span>放到引用map中，如果不存在，则新增，返回新增的value，
+  //否者，将返回与<span class="keyword">object</span>相同引用的value
+  <span class="type">int</span> <span class="keyword">ref</span> = _refs.put(<span class="keyword">object</span>, newRef, <span class="literal">false</span>);
+  //如果引用值不相等，则表示查找到引用
+  <span class="keyword">if</span> (<span class="keyword">ref</span> != newRef) {
+    //写引用标记
+    writeRef(<span class="keyword">ref</span>);
+    <span class="keyword">return</span> <span class="literal">true</span>;
+  }
+  <span class="keyword">else</span> {
+    <span class="keyword">return</span> <span class="literal">false</span>;
+  }
+}
+</code></pre><p>即每次生成一个对象时，它在map中映射的值都会加1，除非遇到相同的引用对象。<br>然后我们再看看反序列化的时候如何处理：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">Object</span> readRef() <span class="keyword">throws</span> IOException {
+    <span class="keyword">return</span> _refs.<span class="built_in">get</span>(parseInt());
+}
+</code></pre><p>很简单的一句话，根据当前的引用列表_refs获取对应的引用对象。那这个_refs是怎么生成的呢，我们接着UnsafeDeserializer中查看：</p>
+<pre><code> <span class="type">UnsafeDeserializer</span>
+ public <span class="type">Object</span> readObject(<span class="type">AbstractHessianInput</span> <span class="keyword">in</span>,
+                           <span class="type">Object</span> obj,
+                           <span class="type">FieldDeserializer</span> []fields)
+    throws <span class="type">IOException</span>
+  {
+    <span class="keyword">try</span> {
+      //先将实例化对象添加到引用中
+      <span class="type">int</span> <span class="keyword">ref</span> = <span class="keyword">in</span>.addRef(obj);
+      //反序列化对象的字段
+      <span class="keyword">for</span> (<span class="type">FieldDeserializer</span> reader : fields) {
+        reader.deserialize(<span class="keyword">in</span>, obj);
+      }
+      //调用readResolve方法
+      <span class="type">Object</span> resolve = resolve(<span class="keyword">in</span>, obj);
+       //最后设置到引用中
+      <span class="keyword">if</span> (obj != resolve)
+        <span class="keyword">in</span>.setRef(<span class="keyword">ref</span>, resolve);
+
+      <span class="keyword">return</span> resolve;
+    } catch (<span class="type">IOException</span> e) {
+      throw e;
+    } catch (<span class="type">Exception</span> e) {
+      throw new <span class="type">IOExceptionWrapper</span>(obj.getClass().getName() + <span class="string">":"</span> + e, e);
+    }
+  }
+
+//<span class="type">Hessian2Input</span>  添加一个引用
+public <span class="type">int</span> addRef(<span class="type">Object</span> <span class="keyword">ref</span>) {
+    _refs.add(<span class="keyword">ref</span>);
+    <span class="keyword">return</span> _refs.size() - <span class="number">1</span>;
+}
+</code></pre><p>我们可以看到，假设有如下对象</p>
+<pre><code><span class="class"><span class="keyword">Class</span> <span class="title">A</span>{</span>
+  <span class="class"><span class="keyword">Class</span> <span class="title">B</span>;</span>
+  <span class="class"><span class="keyword">Class</span> <span class="title">C</span>;</span>
+}
+<span class="class"><span class="keyword">Class</span> <span class="title">B</span>{</span>
+   <span class="class"><span class="keyword">Class</span> <span class="title">A</span>;</span>
+} 
+C c = <span class="keyword">new</span> C();
+B b = <span class="keyword">new</span> B();
+A a = <span class="keyword">new</span> A(b,c);
+b.setA(a);
+</code></pre><p>序列化a时，首先map中添加a:0,接着b:1,然后在流中添加‘Q’+0（引用标志位于引用位置）,接着c:2。<br>反序列化的时候，首先添加list中添加a,然后添加b,将b设置到a上,接着获取引用a，然后添加c，将c设置到a上，最后判断是否有readResolve方法，如果有，替换引用对象。<br>不知道大家发现这里会有一个bug产生没？当readResolve存在的时候，当外围存在一个d引用a时，b设置的引用跟c设置的引用会存在不一致的情况。</p>
+<h2 id="三，总结">三，总结</h2><p>总体来说，hessian序列化机制还是非常巧妙的，用前8位(一个字节)表示了不同的含义，然后再分情况解析。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
+<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。]]>
+    
+    </summary>
+    
+      <category term="java" scheme="http://sqtds.github.io/tags/java/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[hessian协议解析--hessian序列化]]></title>
-    <link href="http://sqtds.github.io/2015/08/08/hessian/"/>
-    <id>http://sqtds.github.io/2015/08/08/hessian/</id>
+    <link href="http://sqtds.github.io/2015/08/08/2015/hessian-1/"/>
+    <id>http://sqtds.github.io/2015/08/08/2015/hessian-1/</id>
     <published>2015-08-08T03:12:08.000Z</published>
-    <updated>2015-08-09T02:53:23.000Z</updated>
+    <updated>2015-08-10T13:35:25.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，前言">一，前言</h2><p>本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 <a href="http://hessian.caucho.com/doc/hessian-serialization.html" target="_blank" rel="external">Hessian 2.0 Serialization Protocol</a></p>
 <h2 id="二，基本类型序列化">二，基本类型序列化</h2><p>我们先从最简单的看起，int是如何序列化的。首先我们看官方文档定义。</p>
 <pre><code>           <span class="comment"># 32-bit signed integer</span>
@@ -342,6 +745,10 @@ xf0 - xff    <span class="array"># two</span>-octet compact long (-x800 to x7ff,
     <summary type="html">
     <![CDATA[<h2 id="一，前言">一，前言</h2><p>本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 <a href="http://hessian.caucho.com/doc/]]>
     </summary>
+    
+      <category term="java" scheme="http://sqtds.github.io/tags/java/"/>
+    
+      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
   </entry>
   
@@ -1114,46 +1521,6 @@ $ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
     <![CDATA[<h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
 <h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
 <li>ArrayBlockingQueu]]>
-    </summary>
-    
-      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[java核心系列（七）—java线程]]></title>
-    <link href="http://sqtds.github.io/2015/05/15/2015/java-thread/"/>
-    <id>http://sqtds.github.io/2015/05/15/2015/java-thread/</id>
-    <published>2015-05-15T10:01:58.000Z</published>
-    <updated>2015-05-24T07:19:49.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
-<h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
-<p>轻量级锁（Lightweight Locking）本意是为了减少多线程进入互斥的几率，并不是要替代互斥。</p>
-<p>轻量级锁也是一种多线程优化，它与偏向锁的区别在于，轻量级锁是通过CAS来避免进入开销较大的互斥操作，而偏向锁是在无竞争场景下完全消除同步，连CAS也不执行（CAS本身仍旧是一种操作系统同步原语，始终要在JVM与OS之间来回，有一定的开销）。</p>
-<h3 id="2，同步">2，同步</h3><p>wait:方法使当前线程暂停执行并释放对象锁标示，让其他线程可以进入synchronized数据块，当前线程被放入对象等待池中。</p>
-<p>notify:将从对象的等待池中移走一个任意的线程并放到锁标志等待池中，只有锁标志等待池中线程能够获取锁标志；如果锁标志等待池中没有线程，则notify()不起作用。</p>
-<p>notifyAll:从对象等待池中移走所有等待那个对象的线程并放到锁标志等待池中。</p>
-<p><strong>注意 这三个方法都是java.lang.Object的方法,调用时需要获取锁</strong></p>
-<h3 id="3，实例方法">3，实例方法</h3><p>join:主要是让调用改方法的thread完成run方法里面的东西后， 在执行join()方法后面的代码。</p>
-<pre><code class="java">t1.start();  
-t1.join(); <span class="comment">// wait t1 to be finished  </span>
-t2.start();  
-t2.join(); <span class="comment">// in this program, this may be removed</span>
-</code></pre>
-<p>interupt:中断是一种协作机制。当一个线程中断另一个线程时，被中断的线程不一定要立即停止正在做的事情。相反，中断是礼貌地请求另一个线程在它愿意并且方便的时候停止它正在做的事情。</p>
-<h3 id="4，静态方法">4，静态方法</h3><p>sleep：在指定的毫秒数内让当前正在执行的线程休眠（暂停执行），此操作受到系统计时器和调度程序精度和准确性的影响。该线程不丢失任何监视器的所属权。 通过调用sleep使任务进入休眠状态，在这种情况下，任务在指定的时间内不会运行。调用sleep的时候锁并没有被释放。</p>
-<p>yield：线程调用yield()方法后，表明自己做的事已经完成，让出自己的cpu时间给其他线程使用。让出后，该线程可以重新获得cpu分配的权利，状态变为了可执行状态。（yield并不意味着退出和暂停，只是，告诉线程调度如果有人需要，可以先拿去，我过会再执行，没人需要，我继续执行）调用yield的时候锁并没有被释放。</p>
-<h3 id="5，参考资料">5，参考资料</h3><ul>
-<li><a href="http://blog.csdn.net/hsuxu/article/details/9472371" target="_blank" rel="external">java中的Synchronized 实现</a></li>
-<li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp05236.html" target="_blank" rel="external">Java 理论与实践: 处理 InterruptedException</a></li>
-<li><a href="http://ifeve.com/java-concurrency-constructs/" target="_blank" rel="external">Java并发结构</a></li>
-</ul>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="thread">thread</h2><p><img src="/img/2015/thread.png" alt=""></p>
-<h3 id="1，锁">1，锁</h3><p>偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资]]>
     </summary>
     
       <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
