@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 11.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -168,10 +168,1128 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
-    <article id="post-tomcat7-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2015/tomcat8-sourcecode04" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/08/11/tomcat7-sourcecode01/" class="article-date">
+      <a href="/2015/08/12/2015/tomcat8-sourcecode04/" class="article-date">
+  	<time datetime="2015-08-12T13:40:47.000Z" itemprop="datePublished">8月 12 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/12/2015/tomcat8-sourcecode04/">tomcat8源码阅读(四)--启动三</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，回顾">一，回顾</h2><p>上文介绍了Server的启动过程，但是没有详细介绍Container和Connector的详细启动流程，下面我将介绍Container的启动流程。</p>
+<h2 id="二，Container的init">二，Container的init</h2><p>下面我看看Container的继承结构：<br><img src="/img/2015/container.png" alt=""><br>Engine，Host，Context，Wrapper都属于Container。下面，我们根据server.xml的默认配置结构来看看。</p>
+<pre><code><span class="tag">&lt;<span class="title">Engine</span> <span class="attribute">name</span>=<span class="value">"Catalina"</span> <span class="attribute">defaultHost</span>=<span class="value">"localhost"</span>&gt;</span>
+  <span class="comment">&lt;!--
+  &lt;Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/&gt;
+  --&gt;</span> 
+   //LockOutRealm防止暴力破解
+  <span class="tag">&lt;<span class="title">Realm</span> <span class="attribute">className</span>=<span class="value">"org.apache.catalina.realm.LockOutRealm"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Realm</span> <span class="attribute">className</span>=<span class="value">"org.apache.catalina.realm.UserDatabaseRealm"</span>
+           <span class="attribute">resourceName</span>=<span class="value">"UserDatabase"</span>/&gt;</span>
+  <span class="tag">&lt;/<span class="title">Realm</span>&gt;</span>
+
+  <span class="tag">&lt;<span class="title">Host</span> <span class="attribute">name</span>=<span class="value">"localhost"</span>  <span class="attribute">appBase</span>=<span class="value">"webapps"</span>
+        <span class="attribute">unpackWARs</span>=<span class="value">"true"</span> <span class="attribute">autoDeploy</span>=<span class="value">"true"</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">Valve</span> <span class="attribute">className</span>=<span class="value">"org.apache.catalina.valves.AccessLogValve"</span> <span class="attribute">directory</span>=<span class="value">"logs"</span>
+           <span class="attribute">prefix</span>=<span class="value">"localhost_access_log"</span> <span class="attribute">suffix</span>=<span class="value">".txt"</span>
+           <span class="attribute">pattern</span>=<span class="value">"%h %l %u %t &amp;quot;%r&amp;quot; %s %b"</span> /&gt;</span>
+
+  <span class="tag">&lt;/<span class="title">Host</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">Engine</span>&gt;</span>
+</code></pre><p>其中有Realm，这个是TOMCAT的安全域，我们暂时不关心，看其他的几个。</p>
+<h3 id="2-1_Engine的initInternal">2.1 Engine的initInternal</h3><pre><code> <span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="comment">//获取一个默认的安全域</span>
+    getRealm();
+    <span class="keyword">super</span>.initInternal();
+}
+</code></pre><p>方法比较简单，我们关注super.initInternal()方法：</p>
+<h3 id="2-2_ContainerBase的initInternal">2.2 ContainerBase的initInternal</h3><p>ContainerBase主要是创建一个startStopExecutor线程池用来启动停止子节点。<br>    ContainerBase<br>    protected void initInternal() throws LifecycleException {<br>        BlockingQueue<runnable> startStopQueue = new LinkedBlockingQueue&lt;&gt;();<br>        //创建线程池<br>        startStopExecutor = new ThreadPoolExecutor(<br>                getStartStopThreadsInternal(),<br>                getStartStopThreadsInternal(), 10, TimeUnit.SECONDS,<br>                startStopQueue,<br>                new StartStopThreadFactory(getName() + “-startStop-“));<br>        startStopExecutor.allowCoreThreadTimeOut(true);<br>        super.initInternal();<br>    }        </runnable></p>
+<h3 id="2-3_StandardHost的initInternal">2.3 StandardHost的initInternal</h3><pre><code><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="comment">//设置异常处理valve</span>
+    String errorValve = getErrorReportValveClass();
+    <span class="keyword">super</span>.startInternal();
+}
+</code></pre><h3 id="2-4_StandardContext的initInternal">2.4 StandardContext的initInternal</h3><pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="keyword">super</span>.initInternal();
+
+    <span class="comment">//注册命名服务</span>
+    <span class="keyword">if</span> (namingResources != <span class="keyword">null</span>) {
+        namingResources.init();
+    }
+    <span class="comment">//启动</span>
+    <span class="keyword">if</span> (resources != <span class="keyword">null</span>) {
+        resources.start();
+    }
+
+    <span class="comment">// Send j2ee.object.created notification</span>
+    <span class="keyword">if</span> (<span class="keyword">this</span>.getObjectName() != <span class="keyword">null</span>) {
+        Notification notification = <span class="keyword">new</span> Notification(<span class="string">"j2ee.object.created"</span>,
+                <span class="keyword">this</span>.getObjectName(), sequenceNumber.getAndIncrement());
+        broadcaster.sendNotification(notification);
+    }
+}
+</code></pre><h3 id="2-5_StandardWrapper的initInternal">2.5 StandardWrapper的initInternal</h3><p>StandardWrapper的initInternal继承的父类ContainerBase的initInternal。</p>
+<p>这样，初始化工作就告一段落了，下面，我们看start方法。</p>
+<h2 id="三，Container的start">三，Container的start</h2><p>上文中我们知道，Container的start最终会调用自己的startInternal方法，下面我们看具体实现。</p>
+<h3 id="3-1_StandardEngine的startInternal">3.1 StandardEngine的startInternal</h3><pre><code>StandardEngine
+<span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="keyword">super</span>.startInternal();
+}
+</code></pre><p>StandardEngine调用了父类ContainerBase的startInternal方法。</p>
+<h3 id="3-2_ContainerBase的startInternal">3.2 ContainerBase的startInternal</h3><pre><code>ContainerBase
+<span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> startInternal() <span class="keyword">throws</span> LifecycleException {
+    logger = <span class="keyword">null</span>;
+    getLogger();
+    <span class="comment">//获取并启动集群</span>
+    Cluster cluster = getClusterInternal();
+    <span class="keyword">if</span> (cluster <span class="keyword">instanceof</span> Lifecycle) {
+        ((Lifecycle) cluster).start();
+    }
+    <span class="comment">//获取并启动安全域</span>
+    Realm realm = getRealmInternal();
+    <span class="keyword">if</span> (realm <span class="keyword">instanceof</span> Lifecycle) {
+        ((Lifecycle) realm).start();
+    }
+
+    <span class="comment">//使用线程池启动子容器</span>
+    Container children[] = findChildren();
+    List&lt;Future&lt;Void&gt;&gt; results = <span class="keyword">new</span> ArrayList&lt;&gt;();
+    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; children.length; i++) {
+        results.<span class="built_in">add</span>(startStopExecutor.submit(<span class="keyword">new</span> StartChild(children[i])));
+    }
+    <span class="comment">//异步获取启动结果</span>
+    <span class="built_in">boolean</span> fail = <span class="keyword">false</span>;
+    <span class="keyword">for</span> (Future&lt;Void&gt; result : results) {
+        <span class="keyword">try</span> {
+            result.<span class="built_in">get</span>();
+        } <span class="keyword">catch</span> (Exception e) {
+            <span class="built_in">log</span>.error(sm.getString(<span class="string">"containerBase.threadedStartFailed"</span>), e);
+            fail = <span class="keyword">true</span>;
+        }
+
+    }
+    <span class="keyword">if</span> (fail) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> LifecycleException(
+                sm.getString(<span class="string">"containerBase.threadedStartFailed"</span>));
+    }
+
+    <span class="comment">// 启动pipeline中的Valves</span>
+    <span class="keyword">if</span> (pipeline <span class="keyword">instanceof</span> Lifecycle)
+        ((Lifecycle) pipeline).start();
+
+    setState(LifecycleState.STARTING);
+
+    <span class="comment">//启动后台线程，定期检查session超时</span>
+    threadStart();
+}
+</code></pre><p>就这样，ContainerBase会将它的子容器用线程池启动起来。</p>
+<h3 id="3-3_StandardHost的startInternal">3.3 StandardHost的startInternal</h3><pre><code>StandardHost
+<span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    String errorValve = getErrorReportValveClass();
+    <span class="keyword">super</span>.startInternal();
+}
+</code></pre><p>啥也没做，继续调用父类的startInternal方法。</p>
+<h3 id="3-4_StandardContext的startInternal">3.4 StandardContext的startInternal</h3><pre><code>StandardContext
+<span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> startInternal() <span class="keyword">throws</span> LifecycleException {
+    <span class="comment">// Send j2ee.state.starting notification</span>
+    <span class="keyword">if</span> (<span class="keyword">this</span>.getObjectName() != <span class="keyword">null</span>) {
+        Notification notification = <span class="keyword">new</span> Notification(<span class="string">"j2ee.state.starting"</span>,
+                <span class="keyword">this</span>.getObjectName(), sequenceNumber.getAndIncrement());
+        broadcaster.sendNotification(notification);
+    }
+
+    setConfigured(<span class="keyword">false</span>);
+    <span class="built_in">boolean</span> ok = <span class="keyword">true</span>;
+
+    <span class="comment">// Currently this is effectively a NO-OP but needs to be called to</span>
+    <span class="comment">// ensure the NamingResources follows the correct lifecycle</span>
+    <span class="keyword">if</span> (namingResources != <span class="keyword">null</span>) {
+        namingResources.start();
+    }
+
+    <span class="comment">// Add missing components as necessary</span>
+    <span class="keyword">if</span> (getResources() == <span class="keyword">null</span>) {   <span class="comment">// (1) Required by Loader</span>
+        <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled())
+            <span class="built_in">log</span>.debug(<span class="string">"Configuring default Resources"</span>);
+
+        <span class="keyword">try</span> {
+            setResources(<span class="keyword">new</span> StandardRoot(<span class="keyword">this</span>));
+        } <span class="keyword">catch</span> (IllegalArgumentException e) {
+            <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.resourcesInit"</span>), e);
+            ok = <span class="keyword">false</span>;
+        }
+    }
+    <span class="keyword">if</span> (ok) {
+        resourcesStart();
+    }
+
+    <span class="keyword">if</span> (getLoader() == <span class="keyword">null</span>) {
+        WebappLoader webappLoader = <span class="keyword">new</span> WebappLoader(getParentClassLoader());
+        webappLoader.setDelegate(getDelegate());
+        setLoader(webappLoader);
+    }
+
+    <span class="comment">// Initialize character set mapper</span>
+    getCharsetMapper();
+
+    <span class="comment">// Post work directory</span>
+    postWorkDirectory();
+
+    <span class="comment">// Validate required extensions</span>
+    <span class="built_in">boolean</span> dependencyCheck = <span class="keyword">true</span>;
+    <span class="keyword">try</span> {
+        dependencyCheck = ExtensionValidator.validateApplication
+            (getResources(), <span class="keyword">this</span>);
+    } <span class="keyword">catch</span> (IOException ioe) {
+        <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.extensionValidationError"</span>), ioe);
+        dependencyCheck = <span class="keyword">false</span>;
+    }
+
+    <span class="keyword">if</span> (!dependencyCheck) {
+        <span class="comment">// do not make application available if depency check fails</span>
+        ok = <span class="keyword">false</span>;
+    }
+
+    <span class="comment">// Reading the "catalina.useNaming" environment variable</span>
+    <span class="keyword">String</span> useNamingProperty = System.getProperty(<span class="string">"catalina.useNaming"</span>);
+    <span class="keyword">if</span> ((useNamingProperty != <span class="keyword">null</span>)
+        &amp;&amp; (useNamingProperty.equals(<span class="string">"false"</span>))) {
+        useNaming = <span class="keyword">false</span>;
+    }
+
+    <span class="keyword">if</span> (ok &amp;&amp; isUseNaming()) {
+        <span class="keyword">if</span> (getNamingContextListener() == <span class="keyword">null</span>) {
+            NamingContextListener ncl = <span class="keyword">new</span> NamingContextListener();
+            ncl.setName(getNamingContextName());
+            ncl.setExceptionOnFailedWrite(getJndiExceptionOnFailedWrite());
+            addLifecycleListener(ncl);
+            setNamingContextListener(ncl);
+        }
+    }
+
+    <span class="comment">// Standard container startup</span>
+    <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled())
+        <span class="built_in">log</span>.debug(<span class="string">"Processing standard container startup"</span>);
+
+
+    <span class="comment">// Binding thread</span>
+    ClassLoader oldCCL = bindThread();
+
+    <span class="keyword">try</span> {
+        <span class="keyword">if</span> (ok) {
+            <span class="comment">// Start our subordinate components, if any</span>
+            Loader loader = getLoader();
+            <span class="keyword">if</span> (loader <span class="keyword">instanceof</span> Lifecycle) {
+                ((Lifecycle) loader).start();
+            }
+
+            <span class="comment">// since the loader just started, the webapp classloader is now</span>
+            <span class="comment">// created.</span>
+            setClassLoaderProperty(<span class="string">"clearReferencesStatic"</span>,
+                    getClearReferencesStatic());
+            setClassLoaderProperty(<span class="string">"clearReferencesStopThreads"</span>,
+                    getClearReferencesStopThreads());
+            setClassLoaderProperty(<span class="string">"clearReferencesStopTimerThreads"</span>,
+                    getClearReferencesStopTimerThreads());
+            setClassLoaderProperty(<span class="string">"clearReferencesHttpClientKeepAliveThread"</span>,
+                    getClearReferencesHttpClientKeepAliveThread());
+
+            <span class="comment">// By calling unbindThread and bindThread in a row, we setup the</span>
+            <span class="comment">// current Thread CCL to be the webapp classloader</span>
+            unbindThread(oldCCL);
+            oldCCL = bindThread();
+
+            <span class="comment">// Initialize logger again. Other components might have used it</span>
+            <span class="comment">// too early, so it should be reset.</span>
+            logger = <span class="keyword">null</span>;
+            getLogger();
+
+            Cluster cluster = getClusterInternal();
+            <span class="keyword">if</span> (cluster <span class="keyword">instanceof</span> Lifecycle) {
+                ((Lifecycle) cluster).start();
+            }
+            Realm realm = getRealmInternal();
+            <span class="keyword">if</span> (realm <span class="keyword">instanceof</span> Lifecycle) {
+                ((Lifecycle) realm).start();
+            }
+
+            <span class="comment">// Notify our interested LifecycleListeners</span>
+            fireLifecycleEvent(Lifecycle.CONFIGURE_START_EVENT, <span class="keyword">null</span>);
+
+            <span class="comment">// Start our child containers, if not already started</span>
+            <span class="keyword">for</span> (Container child : findChildren()) {
+                <span class="keyword">if</span> (!child.getState().isAvailable()) {
+                    child.start();
+                }
+            }
+
+            <span class="comment">// Start the Valves in our pipeline (including the basic),</span>
+            <span class="comment">// if any</span>
+            <span class="keyword">if</span> (pipeline <span class="keyword">instanceof</span> Lifecycle) {
+                ((Lifecycle) pipeline).start();
+            }
+
+            <span class="comment">// Acquire clustered manager</span>
+            Manager contextManager = <span class="keyword">null</span>;
+            Manager manager = getManager();
+            <span class="keyword">if</span> (manager == <span class="keyword">null</span>) {
+                <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled()) {
+                    <span class="built_in">log</span>.debug(sm.getString(<span class="string">"standardContext.cluster.noManager"</span>,
+                            Boolean.valueOf((getCluster() != <span class="keyword">null</span>)),
+                            Boolean.valueOf(distributable)));
+                }
+                <span class="keyword">if</span> ( (getCluster() != <span class="keyword">null</span>) &amp;&amp; distributable) {
+                    <span class="keyword">try</span> {
+                        contextManager = getCluster().createManager(getName());
+                    } <span class="keyword">catch</span> (Exception ex) {
+                        <span class="built_in">log</span>.error(<span class="string">"standardContext.clusterFail"</span>, ex);
+                        ok = <span class="keyword">false</span>;
+                    }
+                } <span class="keyword">else</span> {
+                    contextManager = <span class="keyword">new</span> StandardManager();
+                }
+            }
+
+            <span class="comment">// Configure default manager if none was specified</span>
+            <span class="keyword">if</span> (contextManager != <span class="keyword">null</span>) {
+                <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled()) {
+                    <span class="built_in">log</span>.debug(sm.getString(<span class="string">"standardContext.manager"</span>,
+                            contextManager.getClass().getName()));
+                }
+                setManager(contextManager);
+            }
+
+            <span class="keyword">if</span> (manager!=<span class="keyword">null</span> &amp;&amp; (getCluster() != <span class="keyword">null</span>) &amp;&amp; distributable) {
+                <span class="comment">//let the cluster know that there is a context that is distributable</span>
+                <span class="comment">//and that it has its own manager</span>
+                getCluster().registerManager(manager);
+            }
+        }
+
+        <span class="keyword">if</span> (!getConfigured()) {
+            <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.configurationFail"</span>));
+            ok = <span class="keyword">false</span>;
+        }
+
+        <span class="comment">// We put the resources into the servlet context</span>
+        <span class="keyword">if</span> (ok)
+            getServletContext().setAttribute
+                (Globals.RESOURCES_ATTR, getResources());
+
+        <span class="keyword">if</span> (ok ) {
+            <span class="keyword">if</span> (getInstanceManager() == <span class="keyword">null</span>) {
+                javax.naming.Context context = <span class="keyword">null</span>;
+                <span class="keyword">if</span> (isUseNaming() &amp;&amp; getNamingContextListener() != <span class="keyword">null</span>) {
+                    context = getNamingContextListener().getEnvContext();
+                }
+                Map&lt;<span class="keyword">String</span>, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;&gt; injectionMap = buildInjectionMap(
+                        getIgnoreAnnotations() ? <span class="keyword">new</span> NamingResourcesImpl(): getNamingResources());
+                setInstanceManager(<span class="keyword">new</span> DefaultInstanceManager(context,
+                        injectionMap, <span class="keyword">this</span>, <span class="keyword">this</span>.getClass().getClassLoader()));
+                getServletContext().setAttribute(
+                        InstanceManager.class.getName(), getInstanceManager());
+            }
+        }
+
+        <span class="comment">// Create context attributes that will be required</span>
+        <span class="keyword">if</span> (ok) {
+            getServletContext().setAttribute(
+                    JarScanner.class.getName(), getJarScanner());
+        }
+
+        <span class="comment">// Set up the context init params</span>
+        mergeParameters();
+
+        <span class="comment">// Call ServletContainerInitializers</span>
+        <span class="keyword">for</span> (Map.Entry&lt;ServletContainerInitializer, Set&lt;Class&lt;?&gt;&gt;&gt; entry :
+            initializers.entrySet()) {
+            <span class="keyword">try</span> {
+                entry.getKey().onStartup(entry.getValue(),
+                        getServletContext());
+            } <span class="keyword">catch</span> (ServletException e) {
+                <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.sciFail"</span>), e);
+                ok = <span class="keyword">false</span>;
+                <span class="keyword">break</span>;
+            }
+        }
+
+        <span class="comment">// Configure and call application event listeners</span>
+        <span class="keyword">if</span> (ok) {
+            <span class="keyword">if</span> (!listenerStart()) {
+                <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.listenerFail"</span>));
+                ok = <span class="keyword">false</span>;
+            }
+        }
+
+        <span class="comment">// Check constraints for uncovered HTTP methods</span>
+        <span class="comment">// Needs to be after SCIs and listeners as they may programatically</span>
+        <span class="comment">// change constraints</span>
+        <span class="keyword">if</span> (ok) {
+            checkConstraintsForUncoveredMethods(findConstraints());
+        }
+
+        <span class="keyword">try</span> {
+            <span class="comment">// Start manager</span>
+            Manager manager = getManager();
+            <span class="keyword">if</span> (manager <span class="keyword">instanceof</span> Lifecycle) {
+                ((Lifecycle) manager).start();
+            }
+        } <span class="keyword">catch</span>(Exception e) {
+            <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.managerFail"</span>), e);
+            ok = <span class="keyword">false</span>;
+        }
+
+        <span class="comment">// Configure and call application filters</span>
+        <span class="keyword">if</span> (ok) {
+            <span class="keyword">if</span> (!filterStart()) {
+                <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.filterFail"</span>));
+                ok = <span class="keyword">false</span>;
+            }
+        }
+
+        <span class="comment">// Load and initialize all "load on startup" servlets</span>
+        <span class="keyword">if</span> (ok) {
+            <span class="keyword">if</span> (!loadOnStartup(findChildren())){
+                <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.servletFail"</span>));
+                ok = <span class="keyword">false</span>;
+            }
+        }
+
+        <span class="comment">// Start ContainerBackgroundProcessor thread</span>
+        <span class="keyword">super</span>.threadStart();
+    } <span class="keyword">finally</span> {
+        <span class="comment">// Unbinding thread</span>
+        unbindThread(oldCCL);
+    }
+
+    <span class="comment">// Set available status depending upon startup success</span>
+    <span class="keyword">if</span> (ok) {
+        <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled())
+            <span class="built_in">log</span>.debug(<span class="string">"Starting completed"</span>);
+    } <span class="keyword">else</span> {
+        <span class="built_in">log</span>.error(sm.getString(<span class="string">"standardContext.startFailed"</span>, getName()));
+    }
+
+    startTime=System.currentTimeMillis();
+
+    <span class="comment">// Send j2ee.state.running notification</span>
+    <span class="keyword">if</span> (ok &amp;&amp; (<span class="keyword">this</span>.getObjectName() != <span class="keyword">null</span>)) {
+        Notification notification =
+            <span class="keyword">new</span> Notification(<span class="string">"j2ee.state.running"</span>, <span class="keyword">this</span>.getObjectName(),
+                             sequenceNumber.getAndIncrement());
+        broadcaster.sendNotification(notification);
+    }
+
+    <span class="comment">// The WebResources implementation caches references to JAR files. On</span>
+    <span class="comment">// some platforms these references may lock the JAR files. Since web</span>
+    <span class="comment">// application start is likely to have read from lots of JARs, trigger</span>
+    <span class="comment">// a clean-up now.</span>
+    getResources().gc();
+
+    <span class="comment">// Reinitializing if something went wrong</span>
+    <span class="keyword">if</span> (!ok) {
+        setState(LifecycleState.FAILED);
+    } <span class="keyword">else</span> {
+        setState(LifecycleState.STARTING);
+    }
+}
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/tomcat8-sourcecode03" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/12/2015/tomcat8-sourcecode03/" class="article-date">
+  	<time datetime="2015-08-12T03:59:22.000Z" itemprop="datePublished">8月 12 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/12/2015/tomcat8-sourcecode03/">tomcat8源码阅读(三)--启动二</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，Catalina启动">一，Catalina启动</h2><p>接上文，BootStart启动后会启动Catalina的start方法：</p>
+<pre><code> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>{
+    <span class="comment">//加载服务    </span>
+    <span class="keyword">if</span> (getServer() == <span class="keyword">null</span>) {
+        load();
+    }
+    <span class="comment">//启动服务</span>
+    <span class="keyword">try</span> {
+        getServer().start();
+    } <span class="keyword">catch</span> (LifecycleException e) {
+        <span class="keyword">return</span>;
+    }
+    <span class="comment">// 注册关闭钩子，做一些资源清理处理等。</span>
+    <span class="keyword">if</span> (useShutdownHook) {
+        <span class="keyword">if</span> (shutdownHook == <span class="keyword">null</span>) {
+            shutdownHook = <span class="keyword">new</span> CatalinaShutdownHook();
+        }
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+    <span class="comment">//监听tomcat关闭事件</span>
+    <span class="keyword">if</span> (<span class="keyword">await</span>) {
+        <span class="keyword">await</span>();
+        stop();
+    }
+}
+</code></pre><p>在代码中我们看到Catalina做了4件事，分别是加载服务配置，启动服务，注册关闭钩子，监听关闭事件。下面我们重点介绍前面2个步骤。</p>
+<h2 id="二，Catalina加载配置服务">二，Catalina加载配置服务</h2><p>我们查看load方法：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">void</span> load() {
+    <span class="comment">// 初始化命名</span>
+    initNaming();
+
+    <span class="comment">// 创建和执行Digester</span>
+    Digester digester = createStartDigester();
+
+    InputSource inputSource = <span class="keyword">null</span>;
+    InputStream inputStream = <span class="keyword">null</span>;
+    <span class="keyword">File</span> <span class="keyword">file</span> = <span class="keyword">null</span>;
+    <span class="keyword">try</span> {
+        <span class="comment">//读取conf/server.xml文件</span>
+        <span class="keyword">file</span> = configFile();
+        inputStream = <span class="keyword">new</span> FileInputStream(<span class="keyword">file</span>);
+        inputSource = <span class="keyword">new</span> InputSource(<span class="keyword">file</span>.toURI().toURL().toString());
+    } <span class="keyword">catch</span> (Exception e) {
+    }
+    ...<span class="comment">//略，读取配置文件</span>
+    <span class="keyword">try</span> {
+        inputSource.setByteStream(inputStream);
+        digester.<span class="keyword">push</span>(<span class="keyword">this</span>);
+        digester.parse(inputSource);
+    } <span class="keyword">catch</span> (SAXParseException spe) {
+    } <span class="keyword">finally</span> {
+        <span class="keyword">try</span> {
+            inputStream.close();
+        } <span class="keyword">catch</span> (IOException e) {
+            <span class="comment">// Ignore</span>
+        }
+    }
+
+    getServer().setCatalina(<span class="keyword">this</span>);
+    getServer().setCatalinaHome(Bootstrap.getCatalinaHomeFile());
+    getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
+
+    <span class="comment">// 初始化server</span>
+    <span class="keyword">try</span> {
+        getServer().init();
+    } <span class="keyword">catch</span> (LifecycleException e) {
+
+    }
+}
+</code></pre><p>这里我们重点关注createStartDigester()方法，它加载了Server的配置文件。</p>
+<pre><code><span class="keyword">protected</span> Digester createStartDigester() {
+    <span class="keyword">long</span> t1=System.currentTimeMillis();
+    <span class="comment">// Initialize the digester</span>
+    Digester digester = <span class="keyword">new</span> Digester();
+    digester.setValidating(<span class="keyword">false</span>);
+    digester.setRulesValidation(<span class="keyword">true</span>);
+    <span class="keyword">HashMap</span>&lt;Class&lt;?&gt;, List&lt;<span class="keyword">String</span>&gt;&gt; fakeAttributes = <span class="keyword">new</span> <span class="keyword">HashMap</span>&lt;&gt;();
+    ArrayList&lt;<span class="keyword">String</span>&gt; attrs = <span class="keyword">new</span> ArrayList&lt;&gt;();
+    attrs.<span class="built_in">add</span>(<span class="string">"className"</span>);
+    fakeAttributes.put(<span class="keyword">Object</span>.class, attrs);
+    digester.setFakeAttributes(fakeAttributes);
+    digester.setUseContextClassLoader(<span class="keyword">true</span>);
+
+    <span class="comment">// Configure the actions we will be using</span>
+    digester.addObjectCreate(<span class="string">"Server"</span>,
+                             <span class="string">"org.apache.catalina.core.StandardServer"</span>,
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server"</span>);
+    digester.addSetNext(<span class="string">"Server"</span>,
+                        <span class="string">"setServer"</span>,
+                        <span class="string">"org.apache.catalina.Server"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/GlobalNamingResources"</span>,
+                             <span class="string">"org.apache.catalina.deploy.NamingResourcesImpl"</span>);
+    digester.addSetProperties(<span class="string">"Server/GlobalNamingResources"</span>);
+    digester.addSetNext(<span class="string">"Server/GlobalNamingResources"</span>,
+                        <span class="string">"setGlobalNamingResources"</span>,
+                        <span class="string">"org.apache.catalina.deploy.NamingResourcesImpl"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Listener"</span>,
+                             <span class="keyword">null</span>, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Listener"</span>);
+    digester.addSetNext(<span class="string">"Server/Listener"</span>,
+                        <span class="string">"addLifecycleListener"</span>,
+                        <span class="string">"org.apache.catalina.LifecycleListener"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Service"</span>,
+                             <span class="string">"org.apache.catalina.core.StandardService"</span>,
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service"</span>);
+    digester.addSetNext(<span class="string">"Server/Service"</span>,
+                        <span class="string">"addService"</span>,
+                        <span class="string">"org.apache.catalina.Service"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Service/Listener"</span>,
+                             <span class="keyword">null</span>, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service/Listener"</span>);
+    digester.addSetNext(<span class="string">"Server/Service/Listener"</span>,
+                        <span class="string">"addLifecycleListener"</span>,
+                        <span class="string">"org.apache.catalina.LifecycleListener"</span>);
+
+    <span class="comment">//Executor</span>
+    digester.addObjectCreate(<span class="string">"Server/Service/Executor"</span>,
+                     <span class="string">"org.apache.catalina.core.StandardThreadExecutor"</span>,
+                     <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service/Executor"</span>);
+
+    digester.addSetNext(<span class="string">"Server/Service/Executor"</span>,
+                        <span class="string">"addExecutor"</span>,
+                        <span class="string">"org.apache.catalina.Executor"</span>);
+
+
+    digester.addRule(<span class="string">"Server/Service/Connector"</span>,
+                     <span class="keyword">new</span> ConnectorCreateRule());
+    digester.addRule(<span class="string">"Server/Service/Connector"</span>,
+                     <span class="keyword">new</span> SetAllPropertiesRule(<span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">"executor"</span>, <span class="string">"sslImplementationName"</span>}));
+    digester.addSetNext(<span class="string">"Server/Service/Connector"</span>,
+                        <span class="string">"addConnector"</span>,
+                        <span class="string">"org.apache.catalina.connector.Connector"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Service/Connector/SSLHostConfig"</span>,
+                             <span class="string">"org.apache.tomcat.util.net.SSLHostConfig"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service/Connector/SSLHostConfig"</span>);
+    digester.addSetNext(<span class="string">"Server/Service/Connector/SSLHostConfig"</span>,
+            <span class="string">"addSslHostConfig"</span>,
+            <span class="string">"org.apache.tomcat.util.net.SSLHostConfig"</span>);
+
+    digester.addRule(<span class="string">"Server/Service/Connector/SSLHostConfig/Certificate"</span>,
+                     <span class="keyword">new</span> CertificateCreateRule());
+    digester.addRule(<span class="string">"Server/Service/Connector/SSLHostConfig/Certificate"</span>,
+                     <span class="keyword">new</span> SetAllPropertiesRule(<span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">"type"</span>}));
+    digester.addSetNext(<span class="string">"Server/Service/Connector/SSLHostConfig/Certificate"</span>,
+                        <span class="string">"addCertificate"</span>,
+                        <span class="string">"org.apache.tomcat.util.net.SSLHostConfigCertificate"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Service/Connector/Listener"</span>,
+                             <span class="keyword">null</span>, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service/Connector/Listener"</span>);
+    digester.addSetNext(<span class="string">"Server/Service/Connector/Listener"</span>,
+                        <span class="string">"addLifecycleListener"</span>,
+                        <span class="string">"org.apache.catalina.LifecycleListener"</span>);
+
+    digester.addObjectCreate(<span class="string">"Server/Service/Connector/UpgradeProtocol"</span>,
+                              <span class="keyword">null</span>, <span class="comment">// MUST be specified in the element</span>
+                              <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="string">"Server/Service/Connector/UpgradeProtocol"</span>);
+    digester.addSetNext(<span class="string">"Server/Service/Connector/UpgradeProtocol"</span>,
+                        <span class="string">"addUpgradeProtocol"</span>,
+                        <span class="string">"org.apache.coyote.UpgradeProtocol"</span>);
+
+<span class="comment">// Add RuleSets for nested elements</span>
+    digester.addRuleSet(<span class="keyword">new</span> NamingRuleSet(<span class="string">"Server/GlobalNamingResources/"</span>));
+    digester.addRuleSet(<span class="keyword">new</span> EngineRuleSet(<span class="string">"Server/Service/"</span>));
+    digester.addRuleSet(<span class="keyword">new</span> HostRuleSet(<span class="string">"Server/Service/Engine/"</span>));
+    digester.addRuleSet(<span class="keyword">new</span> ContextRuleSet(<span class="string">"Server/Service/Engine/Host/"</span>));
+    addClusterRuleSet(digester, <span class="string">"Server/Service/Engine/Host/Cluster/"</span>);
+    digester.addRuleSet(<span class="keyword">new</span> NamingRuleSet(<span class="string">"Server/Service/Engine/Host/Context/"</span>));
+
+    <span class="comment">// When the 'engine' is found, set the parentClassLoader.</span>
+    digester.addRule(<span class="string">"Server/Service/Engine"</span>,
+                     <span class="keyword">new</span> SetParentClassLoaderRule(parentClassLoader));
+    addClusterRuleSet(digester, <span class="string">"Server/Service/Engine/Cluster/"</span>);
+
+    <span class="keyword">long</span> t2=System.currentTimeMillis();
+    <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled()) {
+        <span class="built_in">log</span>.debug(<span class="string">"Digester for server.xml created "</span> + ( t2-t1 ));
+    }
+    <span class="keyword">return</span> (digester);
+}
+</code></pre><p>这个有点长，我们可以看到它其实就是针对Server.xml进行了实例化。它的原理是利用sax的DefaultHandler2来解析各个不同的对象。</p>
+<h2 id="三，Lifecycle初始化init方法">三，Lifecycle初始化init方法</h2><p>当Server实例化之后，接下来就需要调用它的init方法了。我们看到init实现了Lifecycle的init接口。那么Lifecycle是什么呢？从字面意思来看就是生命周期。它有初始化，启动，停止，销毁等状态。容器里的Server，Service，Engine，Host，Context等都有自己的生命周期。<br>下面我们看看它的init方法。</p>
+<h3 id="3-1_LifecycleBase的init">3.1 LifecycleBase的init</h3><pre><code>LifecycleBase
+<span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="comment">//检查当前状态</span>
+    <span class="keyword">if</span> (!state.equals(LifecycleState.NEW)) {
+        invalidTransition(Lifecycle.BEFORE_INIT_EVENT);
+    }
+    <span class="comment">//生命周期的状态，设置标志位表示当前正在初始化中，状态改变的时候可能会触发监听器做一些事情</span>
+    setStateInternal(LifecycleState.INITIALIZING, <span class="keyword">null</span>, <span class="keyword">false</span>);
+
+    <span class="keyword">try</span> {
+        initInternal();
+    } <span class="keyword">catch</span> (Throwable t) {
+
+    }
+    <span class="comment">//生命周期的状态，设置标志位表示当前正在初始化完成</span>
+    setStateInternal(LifecycleState.INITIALIZED, <span class="keyword">null</span>, <span class="keyword">false</span>);
+}
+</code></pre><h3 id="3-2_StandardServer的initInternal">3.2 StandardServer的initInternal</h3><p>我们看initInternal方法：</p>
+<pre><code>StandardServer
+<span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    <span class="comment">//初始化Mbean服务并注册mbean </span>
+    <span class="keyword">super</span>.initInternal();
+    <span class="comment">//注册命名服务</span>
+    globalNamingResources.init();
+    <span class="comment">//初始化Service</span>
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; services.length; i++) {
+        services[i].init();
+    }
+}
+</code></pre><p>我们可以看到Server接着又初始化了Service的init方法。</p>
+<h3 id="3-3_StandardService的initInternal">3.3 StandardService的initInternal</h3><p>StandardService的initInternal主要做的就是初始化Connector和Container。</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+
+    <span class="keyword">super</span>.initInternal();
+
+    <span class="comment">//container初始化</span>
+    <span class="keyword">if</span> (container != <span class="keyword">null</span>) {
+        container.init();
+    }
+
+    <span class="comment">// 初始化Executors</span>
+    <span class="keyword">for</span> (Executor executor : findExecutors()) {
+        <span class="keyword">if</span> (executor <span class="keyword">instanceof</span> JmxEnabled) {
+            ((JmxEnabled) executor).setDomain(getDomain());
+        }
+        executor.init();
+    }
+
+    <span class="comment">// Initialize mapper listener</span>
+    mapperListener.init();
+
+    <span class="comment">// Initialize our defined Connectors</span>
+    <span class="keyword">synchronized</span> (connectorsLock) {
+        <span class="keyword">for</span> (Connector connector : connectors) {
+            <span class="keyword">try</span> {
+                <span class="comment">//connector初始化</span>
+                connector.init();
+            } <span class="keyword">catch</span> (Exception e) {
+            }
+        }
+    }
+}
+</code></pre><p>我们可以看到，一个Service对于一个Container和多个Connector。<br>在server.xml文件中。有2个Connector：</p>
+<pre><code> server.xml
+&lt;Connector <span class="variable">port=</span><span class="string">"8080"</span> <span class="variable">protocol=</span><span class="string">"HTTP/1.1"</span>
+           <span class="variable">connectionTimeout=</span><span class="string">"20000"</span>
+           <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
+
+ &lt;Connector <span class="variable">port=</span><span class="string">"8009"</span> <span class="variable">protocol=</span><span class="string">"AJP/1.3"</span> <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
+</code></pre><p>他们分别接受Http和Ajp协议。由于Container和Connector的初始化流程太长，放到下一节讲。</p>
+<h2 id="六，启动服务Server">六，启动服务Server</h2><p>初始化所有的节点后，接下来就是启动Server了。我们先看Server的start方法。同样的，Server继承了LifecycleBase的start方法。</p>
+<h3 id="6-1_Lifecycle的start">6.1 Lifecycle的start</h3><pre><code>LifecycleBase
+public final synchronized void start() throws LifecycleException {
+
+    if (LifecycleState.STARTING_PREP.equals(<span class="keyword">state</span>) ||
+            LifecycleState.STARTING.equals(<span class="keyword">state</span>) ||
+            LifecycleState.STARTED.equals(<span class="keyword">state</span>)) {
+
+        return;
+    }
+
+    if (<span class="keyword">state</span>.equals(LifecycleState.NEW)) {
+        init();
+    } else if (<span class="keyword">state</span>.equals(LifecycleState.FAILED)){
+        stop();
+    } else if (!<span class="keyword">state</span>.equals(LifecycleState.INITIALIZED) &amp;&amp;
+            !<span class="keyword">state</span>.equals(LifecycleState.STOPPED)) {
+        invalidTransition(Lifecycle.BEFORE_START_EVENT);
+    }
+
+    <span class="built_in">set</span>StateInternal(LifecycleState.STARTING_PREP, null, false);
+
+    try {
+        startInternal();
+    } catch (Throwable t) {
+
+    }
+
+    if (<span class="keyword">state</span>.equals(LifecycleState.FAILED) ||
+            <span class="keyword">state</span>.equals(LifecycleState.MUST_STOP)) {
+        stop();
+    } else {
+        // Shouldn't be necessary but acts as a check that sub-classes are
+        // doing what they are supposed <span class="keyword">to</span>.
+        if (!<span class="keyword">state</span>.equals(LifecycleState.STARTING)) {
+            invalidTransition(Lifecycle.AFTER_START_EVENT);
+        }
+        <span class="built_in">set</span>StateInternal(LifecycleState.STARTED, null, false);
+    }
+}
+</code></pre><p>我们看到start会根据当前的状态做判断，我们只看startInternal方法，由于这个方法是个抽象方法，由之类实现，所以接下来我们看Server的startInternal。</p>
+<h3 id="6-2_Server的startInternal">6.2 Server的startInternal</h3><pre><code>StandardServer
+<span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+
+    fireLifecycleEvent(CONFIGURE_START_EVENT, <span class="keyword">null</span>);
+    setState(LifecycleState.STARTING);
+
+    globalNamingResources.start();
+
+    <span class="comment">// Start our defined Services</span>
+    <span class="keyword">synchronized</span> (servicesLock) {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; services.length; i++) {
+            services[i].start();
+        }
+    }
+}
+</code></pre><p>Server的startInternal方法会启动Service的start方法。同样，会触发Service的startInternal方法。</p>
+<h3 id="6-3_Service的startInternal">6.3 Service的startInternal</h3><pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    setState(LifecycleState.STARTING);
+    <span class="comment">// Start our defined Container first</span>
+    <span class="keyword">if</span> (container != <span class="keyword">null</span>) {
+        <span class="keyword">synchronized</span> (container) {
+            container.start();
+        }
+    }
+
+    <span class="keyword">synchronized</span> (executors) {
+        <span class="keyword">for</span> (Executor executor: executors) {
+            executor.start();
+        }
+    }
+
+    mapperListener.start();
+
+    <span class="comment">// Start our defined Connectors second</span>
+    <span class="keyword">synchronized</span> (connectorsLock) {
+        <span class="keyword">for</span> (Connector connector: connectors) {
+            <span class="keyword">try</span> {
+                <span class="comment">// If it has already failed, don't try and start it</span>
+                <span class="keyword">if</span> (connector.getState() != LifecycleState.FAILED) {
+                    connector.start();
+                }
+            } <span class="keyword">catch</span> (Exception e) {
+                log.<span class="keyword">error</span>(sm.getString(
+                        <span class="string">"standardService.connector.startFailed"</span>,
+                        connector), e);
+            }
+        }
+    }
+}
+</code></pre><p>同样，在这段代码中，也调用了container和connector的start方法。在接下来的文章中，我将详细介绍container和connector的启动方式。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/tomcat8-sourcecode02" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/12/2015/tomcat8-sourcecode02/" class="article-date">
+  	<time datetime="2015-08-12T00:25:49.000Z" itemprop="datePublished">8月 12 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/12/2015/tomcat8-sourcecode02/">tomcat8源码阅读(二)--启动一</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>在本文中，我将主要介绍tomcat的启动阶段，包括main方法的运行，配置文件的加载，对象的实例化关联等。</p>
+<h2 id="二，Bootstrap的mian">二，Bootstrap的mian</h2><p>当我们调试tomcat的时候，是从Bootstrap的main方法开始启动的。那这个main方法主要做了哪些工作，我们看看内部实现。</p>
+<pre><code><span class="keyword">Bootstrap</span>    
+public static void main(String <span class="keyword">args</span>[]) {
+     <span class="keyword">Bootstrap</span> <span class="keyword">bootstrap</span> = new <span class="keyword">Bootstrap</span>();
+     <span class="comment">//初始化</span>
+     <span class="keyword">bootstrap</span>.init();
+     daemon = <span class="keyword">bootstrap</span>;
+
+    try {
+        String command = <span class="string">"start"</span>;
+        <span class="keyword">if</span> (<span class="keyword">args</span>.length &gt; 0) {
+            command = <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1];
+        }
+        <span class="keyword">if</span> (command.equals(<span class="string">"startd"</span>)) {
+            <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1] = <span class="string">"start"</span>;
+            daemon.load(<span class="keyword">args</span>);
+            daemon.start();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"stopd"</span>)) {
+            <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1] = <span class="string">"stop"</span>;
+            daemon.stop();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"start"</span>)) {
+            daemon.setAwait(true);
+            daemon.load(<span class="keyword">args</span>);
+            daemon.start();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"stop"</span>)) {
+            daemon.stopServer(<span class="keyword">args</span>);
+        }<span class="keyword">else</span> other ...                 
+    } catch (Throwable t) {
+        ...<span class="comment">//异常</span>
+        System.<span class="keyword">exit</span>(1);
+    }
+
+}
+</code></pre><p>代码很简单，创建一个Bootstrap，然后初始化init，最后调用start方法启动。</p>
+<h2 id="三，init方法">三，init方法</h2><p>那么初始化方法做了什么呢？我们接下来看看：</p>
+<pre><code><span class="type">Bootstrap</span>
+public <span class="type">void</span> init() throws <span class="type">Exception</span> {
+    //初始化类加载器
+    initClassLoaders();
+    //设置当前上下文类加载器为catalinaLoader
+    <span class="type">Thread</span>.currentThread().setContextClassLoader(catalinaLoader);
+
+    ...//略
+    <span class="type">Class</span>&lt;?&gt; startupClass =
+        catalinaLoader.loadClass
+        (<span class="string">"org.apache.catalina.startup.Catalina"</span>);
+    //加载类<span class="type">Catalina</span>，并实例化
+    <span class="type">Object</span> startupInstance = startupClass.newInstance();
+    <span class="type">String</span> methodName = <span class="string">"setParentClassLoader"</span>;
+    <span class="type">Class</span>&lt;?&gt; paramTypes[] = new <span class="type">Class</span>[<span class="number">1</span>];
+    paramTypes[<span class="number">0</span>] = <span class="type">Class</span>.forName(<span class="string">"java.lang.ClassLoader"</span>);
+    <span class="type">Object</span> paramValues[] = new <span class="type">Object</span>[<span class="number">1</span>];
+    paramValues[<span class="number">0</span>] = sharedLoader;
+    <span class="type">Method</span> <span class="keyword">method</span> =
+        startupInstance.getClass().getMethod(methodName, paramTypes);
+    //调用<span class="type">Catalina</span>的setParentClassLoader方法设置父类加载器为catalinaLoader
+    <span class="keyword">method</span>.invoke(startupInstance, paramValues);
+
+    catalinaDaemon = startupInstance;
+}
+</code></pre><p>初始化做了2件事，第一件事是初始化类加载器，并设置了线程上下文类加载器。第二件事是初始化Catalina，并设置它的父类加载器为当前线程上下文类加载器。</p>
+<h3 id="3-1，初始化类加载器">3.1，初始化类加载器</h3><p>接下来我们就看看类加载器是如何初始化的。</p>
+<pre><code>Bootstrap
+<span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">initClassLoaders</span><span class="params">()</span> </span>{
+    <span class="keyword">try</span> {
+        commonLoader = createClassLoader(<span class="string">"common"</span>, <span class="keyword">null</span>);
+        <span class="keyword">if</span>( commonLoader == <span class="keyword">null</span> ) {
+            commonLoader=<span class="keyword">this</span>.getClass().getClassLoader();
+        }
+        catalinaLoader = createClassLoader(<span class="string">"server"</span>, commonLoader);
+        sharedLoader = createClassLoader(<span class="string">"shared"</span>, commonLoader);
+    } <span class="keyword">catch</span> (Throwable t) {
+        <span class="comment">//....异常</span>
+        System.exit(<span class="number">1</span>);
+    }
+}
+</code></pre><p>上面代码创建了3个类加载器，至于这3个的用处，以后再说，我们看是如何实现的。</p>
+<pre><code><span class="keyword">private</span> ClassLoader createClassLoader(<span class="keyword">String</span> name, ClassLoader parent)
+    <span class="keyword">throws</span> Exception {
+
+    <span class="keyword">String</span> value = CatalinaProperties.getProperty(name + <span class="string">".loader"</span>);<span class="comment">//第一处</span>
+    <span class="keyword">if</span> ((value == <span class="keyword">null</span>) || (value.equals(<span class="string">""</span>)))
+        <span class="keyword">return</span> parent;
+
+    value = replace(value);
+
+    List&lt;Repository&gt; repositories = <span class="keyword">new</span> ArrayList&lt;&gt;();
+
+    <span class="keyword">String</span>[] repositoryPaths = getPaths(value);
+
+    <span class="keyword">for</span> (<span class="keyword">String</span> repository : repositoryPaths) {
+        <span class="comment">// Check for a JAR URL repository</span>
+        <span class="keyword">try</span> {
+            @SuppressWarnings(<span class="string">"unused"</span>)
+            URL url = <span class="keyword">new</span> URL(repository);
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.URL));
+            <span class="keyword">continue</span>;
+        } <span class="keyword">catch</span> (MalformedURLException e) {
+            <span class="comment">// Ignore</span>
+        }
+
+        <span class="comment">// Local repository</span>
+        <span class="keyword">if</span> (repository.endsWith(<span class="string">"*.jar"</span>)) {
+            repository = repository.substring
+                (<span class="number">0</span>, repository.length() - <span class="string">"*.jar"</span>.length());
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.GLOB));
+        } <span class="keyword">else</span> <span class="keyword">if</span> (repository.endsWith(<span class="string">".jar"</span>)) {
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.JAR));
+        } <span class="keyword">else</span> {
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.DIR));
+        }
+    }
+
+    <span class="keyword">return</span> ClassLoaderFactory.createClassLoader(repositories, parent);
+}
+</code></pre><p>我们看上面代码第一处，从属性文件中获取值。<br>我们打开conf/catalina.properties文件，发现</p>
+<pre><code>catalina.properties
+common.<span class="variable">loader=</span><span class="string">"<span class="subst">${catalina.base}</span>/lib"</span>,<span class="string">"<span class="subst">${catalina.base}</span>/lib/*.jar"</span>,<span class="string">"<span class="subst">${catalina.home}</span>/lib"</span>,<span class="string">"<span class="subst">${catalina.home}</span>/lib/*.jar"</span>
+server.<span class="variable">loader=</span>
+shared.<span class="variable">loader=</span>
+</code></pre><p>只有common.loader才有值，表示加载的是tomcatlib目录下的jar包。由于server.loader和shared.loader为空，catalinaLoader和sharedLoader都会引用的commonLoader。<br>最后我们看具体的创建过程，即ClassLoaderFactory.createClassLoader（repositories, parent）方法。</p>
+<pre><code>    <span class="keyword">public</span> <span class="keyword">static</span> ClassLoader createClassLoader(List&lt;Repository&gt; repositories,
+                                            <span class="keyword">final</span> ClassLoader parent)
+    <span class="keyword">throws</span> Exception {
+    Set&lt;URL&gt; <span class="built_in">set</span> = <span class="keyword">new</span> LinkedHashSet&lt;&gt;();
+    <span class="keyword">if</span> (repositories != <span class="keyword">null</span>) {
+        <span class="keyword">for</span> (Repository repository : repositories)  {
+            ...<span class="comment">//略去其他类型</span>
+            File directory = <span class="keyword">new</span> File(repository.getLocation());
+            directory = directory.getCanonicalFile();
+            <span class="keyword">if</span> (!validateFile(directory, RepositoryType.DIR)) {
+                <span class="keyword">continue</span>;
+            }
+            URL url = directory.toURI().toURL();
+            <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled())
+                <span class="built_in">log</span>.debug(<span class="string">"  Including directory "</span> + url);
+            <span class="built_in">set</span>.<span class="built_in">add</span>(url);
+        }
+    }
+
+    <span class="comment">// Construct the class loader itself</span>
+    <span class="keyword">final</span> URL[] array = <span class="built_in">set</span>.toArray(<span class="keyword">new</span> URL[<span class="built_in">set</span>.<span class="built_in">size</span>()]);
+
+    <span class="keyword">return</span> AccessController.doPrivileged(
+            <span class="keyword">new</span> PrivilegedAction&lt;URLClassLoader&gt;() {
+                @Override
+                <span class="keyword">public</span> URLClassLoader run() {
+                    <span class="keyword">if</span> (parent == <span class="keyword">null</span>)
+                        <span class="keyword">return</span> <span class="keyword">new</span> URLClassLoader(array);
+                    <span class="keyword">else</span>
+                        <span class="keyword">return</span> <span class="keyword">new</span> URLClassLoader(array, parent);
+                }
+            });
+}
+</code></pre><p>最后我们从代码中可以看到，生成了一个URLClassLoader加载器。记得tomcat6的时候这里生成的StandardClassLoader，看来StandardClassLoader没啥作用，在后面的tomcat中移除了。</p>
+<h2 id="3-2，初始化Catalina">3.2，初始化Catalina</h2><p>初始化Catalina用反射即可，不多说了。</p>
+<h2 id="四，start启动">四，start启动</h2><p>初始化完成之后，就可以启动了。我们看看启动start方法。</p>
+<pre><code><span class="type">Bootstrap</span>
+//设置等待标志，为关闭做准备，暂时不关注
+daemon.setAwait(<span class="literal">true</span>);
+//加载参数，无参数，暂时不关注
+daemon.load(args);
+//启动
+daemon.start();
+
+public <span class="type">void</span> start()
+    throws <span class="type">Exception</span> {
+    <span class="keyword">if</span>( catalinaDaemon==null ) init();
+    <span class="type">Method</span> <span class="keyword">method</span> = catalinaDaemon.getClass().getMethod(<span class="string">"start"</span>, (<span class="type">Class</span> [] )null);
+    <span class="keyword">method</span>.invoke(catalinaDaemon, (<span class="type">Object</span> [])null);
+}
+</code></pre><p>start方法很简单，利用反射调用了catalina的start方法。<br>Catalina的start方法做了哪些事情呢？我们下文继续。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/tomcat8-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/11/2015/tomcat8-sourcecode01/" class="article-date">
   	<time datetime="2015-08-11T07:51:00.000Z" itemprop="datePublished">8月 11 2015</time>
 </a>
     </div>
@@ -185,7 +1303,7 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/11/tomcat7-sourcecode01/">tomcat8源码阅读(一)</a>
+      <a class="article-title" href="/2015/08/11/2015/tomcat8-sourcecode01/">tomcat8源码阅读(一)--准备</a>
     </h1>
   
 

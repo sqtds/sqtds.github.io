@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 11.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,233 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/antlr4-core-notation" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/24/2014/antlr4-core-notation/" class="article-date">
+  	<time datetime="2014-08-24T10:17:27.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/2014/antlr4-core-notation/">antlr4-核心符号（二）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="符号">符号</h2><p>语言的本质都是一样的，他们都具有各种表达式。下图是antlr的作者总结的antlr的核心语法符号，大部分语言都是其中一种或者多种。<br><img src="img/2014/QQ截图20140824182207.png" alt=""></p>
+<h2 id="通用语言模式">通用语言模式</h2><h3 id="序列">序列</h3><p>这是一个有限的或者循环的长序列符号或者子句。例如包含变量声明（输入在标识符后面）和整形列表。<br>下面是一些例子：</p>
+<pre><code>x y ... z <span class="comment">// x followed by y, ..., z</span>
+<span class="string">'['</span> <span class="keyword">INT</span>+ <span class="string">']'</span> <span class="comment">// Matlab vector of integers</span>
+</code></pre><h3 id="带终止符的序列">带终止符的序列</h3><p>这是一个被符号分离的循环的序列符号或者子句。这个符号通常是分号或者新行。<br>例如python以新行结束，java以分号结束。</p>
+<pre><code>(statement <span class="string">';'</span> )* <span class="comment">// Java statement list</span>
+(row <span class="string">'\n'</span>)* <span class="comment">// Lines of data</span>
+</code></pre><h3 id="带分离符的序列">带分离符的序列</h3><p>这是一个非空的长序列。通常被标识符，逗号，分号或者周期性的分离。</p>
+<pre><code>expr (<span class="string">','</span> expr)* // <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+( expr (<span class="string">','</span> expr)* )? // <span class="type">optional</span> <span class="function"><span class="keyword">function</span></span> <span class="keyword">call</span> arguments
+<span class="string">'/'</span> ? <span class="keyword">name</span> (<span class="string">'/'</span> <span class="keyword">name</span>)* // simplified directory <span class="keyword">name</span>
+stat (<span class="string">'.'</span> stat)* // SmallTalk statement list
+</code></pre><h3 id="可选">可选</h3><p>这是一系列可选的短语。<br>例如包含不同种类的类型，语句，表达式，或者xml标签。</p>
+<pre><code><span class="rule"><span class="attribute">type </span>:<span class="value"> <span class="string">'int'</span> | <span class="string">'float'</span> </span></span>;
+<span class="rule"><span class="attribute">stat </span>:<span class="value"> ifstat | whilestat | <span class="string">'return'</span> expr <span class="string">';'</span> </span></span>;
+<span class="rule"><span class="attribute">expr </span>:<span class="value"> <span class="string">'('</span> expr <span class="string">')'</span> | INT | ID </span></span>;
+<span class="rule"><span class="attribute">tag </span>:<span class="value"> <span class="string">'&lt;'</span> Name attribute* <span class="string">'&gt;'</span> | <span class="string">'&lt;'</span> <span class="string">'/'</span> Name <span class="string">'&gt;'</span> </span></span>;
+</code></pre><h3 id="符号依赖">符号依赖</h3><p>一个标准符的存在要求更多的标准符。<br>例如（），{}，等。</p>
+<pre><code><span class="string">'('</span> expr <span class="string">')'</span> <span class="comment">// nested expression</span>
+ID <span class="string">'['</span> expr <span class="string">']'</span> <span class="comment">// array index</span>
+<span class="string">'{'</span> stat* <span class="string">'}'</span> <span class="comment">// statements grouped in curlies</span>
+<span class="string">'&lt;'</span> ID (<span class="string">','</span> ID)* <span class="string">'&gt;'</span> <span class="comment">// generic type specifier</span>
+</code></pre><h3 id="嵌套语句">嵌套语句</h3><p>这是一个自相似性的语言结构。例如表达式，嵌套java类，嵌套的代码块，和嵌套的python功能定义等。</p>
+<pre><code>expr : <span class="string">'('</span> expr <span class="string">')'</span> | ID ;
+classDef : <span class="string">'class'</span> ID <span class="string">'{'</span> (classDef|<span class="function"><span class="keyword">method</span>|<span class="title">field</span>) '}' ;</span>
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/antlr4-start" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/24/2014/antlr4-start/" class="article-date">
+  	<time datetime="2014-08-24T10:04:40.000Z" itemprop="datePublished">8月 24 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/24/2014/antlr4-start/">antlr4快速开始（一）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="antlr是什么？">antlr是什么？</h2><p>ANTLR (ANother Tool for Language Recognition) 是一个强大的解析生成器，它可以读，处理，执行或者转换格式化的文本或者二进制文件。它被广泛的用于构建语言，工具，和框架。从语法上来说，antlr生成了一个能够构建和遍历解析树的解析器。</p>
+<h2 id="快速开始">快速开始</h2><pre><code>Windows
+Download http:<span class="comment">//antlr.org/download/antlr-4.4-complete.jar.</span>
+<span class="keyword">Add</span> antlr4-complete.jar <span class="keyword">to</span> CLASSPATH, either:
+Permanently: <span class="keyword">Using</span> System Properties dialog &gt; Environment variables &gt; <span class="keyword">Create</span> <span class="keyword">or</span> append <span class="keyword">to</span> CLASSPATH variable
+Temporarily, at command line:
+<span class="keyword">SET</span> CLASSPATH=.;C:\Javalib\antlr4-complete.jar;%CLASSPATH%
+<span class="keyword">Create</span> batch commands <span class="keyword">for</span> ANTLR Tool, TestRig <span class="keyword">in</span> dir <span class="keyword">in</span> PATH
+ antlr4.bat: java org.antlr.v4.Tool %*
+ grun.bat:   java org.antlr.v4.runtime.misc.TestRig %*
+</code></pre><h2 id="例子">例子</h2><pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;        
+<span class="rule"><span class="attribute">prog</span>:<span class="value">    (expr NEWLINE)* </span></span>;
+<span class="rule"><span class="attribute">expr</span>:<span class="value">    expr (<span class="string">'*'</span>|<span class="string">'/'</span>) expr
+    |    expr (<span class="string">'+'</span>|<span class="string">'-'</span>) expr
+    |    INT
+    |    <span class="string">'('</span> expr <span class="string">')'</span>
+    </span></span>;
+<span class="rule"><span class="attribute">NEWLINE </span>:<span class="value"> [\r\n]+ </span></span>;
+<span class="rule"><span class="attribute">INT     </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
+
+
+$ <span class="tag">antlr4</span> <span class="tag">Expr</span><span class="class">.g4</span>
+$ <span class="tag">javac</span> <span class="tag">Expr</span>*<span class="class">.java</span>
+$ <span class="tag">grun</span> <span class="tag">Expr</span> <span class="tag">prog</span> <span class="tag">-gui</span>
+100+2*34
+^<span class="tag">D</span>
+</code></pre><p><img src="http://pic.browser.360.cn/t012e3d32f2057cb701.png" alt=""></p>
+<p>注意：(That ^D means EOF on unix; it’s ^Z in Windows.) The -tree option prints the parse tree in LISP notation.</p>
+<p>更多请参考：<a href="https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4" target="_blank" rel="external">https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Getting+Started+with+ANTLR+v4</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2014/java-jdbc" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/10/2014/java-jdbc/" class="article-date">
+  	<time datetime="2014-08-10T09:50:39.000Z" itemprop="datePublished">8月 10 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/10/2014/java-jdbc/">jdbc连接数据库一定要用Class.forName吗？</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一来源">一来源</h3><p>上周，在调试使用jdbc连接infobright的时候，遇到了一个奇怪的问题，当我使用Class.forName加载myslq jdbc的驱动的进行连接数据库的时候，连接缺报异常了。奇怪的是异常信息并不是mysql驱动抛出来的，而是另一个数据库驱动，达梦的驱动异常。</p>
+<h3 id="二好奇心">二好奇心</h3><p>为什么会这样呢，我明明没有加载达梦的数据集驱动呀？连不上也就算了，还抛了个其他的异常，百思不得其解。于是，我debug到了DriverManager中的源码看了看，发现已经加载了各种不同的jdbc驱动有6,7种之多。就这样，顺带的，我凑了眼DriverManager的源码。<br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java源码阅读/">java源码阅读</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/08/10/2014/java-jdbc/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/java-int" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -508,93 +735,6 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
 
 
   
-    <article id="post-2014/spring-tx3" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-tx3/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-tx3/">spring事务原理3-事务的传播行为</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="事务的传播行为">事务的传播行为</h3><p>在spring管理的事务中，需要认识到物理和逻辑事务的不同，并且如何设置这些不同。</p>
-<ul>
-<li>PROPAGATION_REQUIRED</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果不存在任何事务，则创建一个新的事务。总之，要至少保证在一个事务中运行。PROPAGATION_REQUIRED通常作为默认的事务传播行为。<br><img src="/img/2014/QQ图片20140609223017.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_SUPPORTS</li>
-</ul>
-<p>如果当前存在一个事务，则加入当前事务。如果当前不存在事务，则直接执行。对于一些查询方法来说，PROPAGATION_SUPPORTS通常是比较合适的传播行为选择。</p>
-<ul>
-<li>PROPAGATION_MANDATORY </li>
-</ul>
-<p>PROPAGATION_MANDATORY 强制要求当前存在一个事务，如果不存在，则抛出异常.</p>
-<ul>
-<li>PROPAGATION_REQUIRES_NEW</li>
-</ul>
-<p>不管当前是否存在事务，都会创建新的事务。如果当前存在事务，会将当前的事务挂起（Suspend）。如果某个业务对象所做的事情不想影响到外层事务，PROPAGATION_REQUIRES_NEW 应该是合适的选择。比如，假设当前的业务方法需要向数据库中更新某些日志信息，但即使这些日志信息更新失败，我们也不想因为该业务方法的事务回滚，而影响到外层事务的成功提交。因为这种情况下，当前业务方法的事务成功与否对外层事务来说是无关紧要的。<br><img src="/img/2014/QQ图片20140609223105.jpg" alt=""></p>
-<ul>
-<li>PROPAGATION_NOT_SUPPORTED</li>
-</ul>
-<p>不支持当前事务，而是在没有事务的情况下执行。如果当前存在事务的话，当前事务原则上将被挂起（Suspend）.</p>
-<ul>
-<li>PROPAGATION_NEVER</li>
-</ul>
-<p>永远不需要当前存在事务，如果存在当前事务，则抛出异常。 </p>
-<ul>
-<li>PROPAGATION_NESTED</li>
-</ul>
-<p>如果存在当前事务，则在当前事务的一个嵌套事务中执行，否则与PROPAGATION_REQUIRED 的行为类似，即创建新的事务，在新创建的事务中执行.<br><img src="/img/2014/QQ图片20140609223801.jpg" alt=""></p>
-<p>PROPAGATION_NESTED事务是依赖的吧，不可分割的，PROPAGATION_REQUIRES_NEW是独立的，相互分离的。</p>
-<p>PROPAGATION_NESTED uses a single physical transaction with multiple savepoints that it can roll back to. Such partial rollbacks allow an inner transaction scope to trigger a rollback for its scope, with the outer transaction being able to continue the physical transaction despite some operations having been rolled back. This setting is typically mapped onto JDBC savepoints, so will only work with JDBC resource transactions. See Spring’s DataSourceTransactionManager.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
     <article id="post-2014/spring-tx2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -657,143 +797,9 @@ public <span class="keyword">static</span> <span class="type">int</span> parseIn
 
 
   
-    <article id="post-2014/spring-aop1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/06/09/2014/spring-aop1/" class="article-date">
-  	<time datetime="2014-06-09T14:40:09.000Z" itemprop="datePublished">6月 9 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/09/2014/spring-aop1/">spring aop</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Advice通知">Advice通知</h1><p>提示：为了理解advice，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-examples-advice/">http://www.mkyong.com/spring/spring-aop-examples-advice/</a></p>
-<p>通知，制定在连接点做什么，在Sping中，他主要描述Spring围绕方法调用注入的额外的行为，Spring提供的通知类型有：<br>beforeadvice,AfterReturningAdvice,ThrowAdvice,MethodBeforeAdvice，这些都是Spring AOP定义的接口类，具体的动作实现需要用<br>户程序来完成。</p>
-<pre><code>public <span class="keyword">interface</span> <span class="type">Advice</span> {
-
-}
-
-public <span class="keyword">interface</span> <span class="type">MethodBeforeAdvice</span> extends <span class="type">BeforeAdvice</span> {
-    <span class="type">void</span> before(<span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-
-}
-
-public <span class="keyword">interface</span> <span class="type">AfterReturningAdvice</span> extends <span class="type">AfterAdvice</span> {
-    <span class="type">void</span> afterReturning(<span class="type">Object</span> returnValue, <span class="type">Method</span> <span class="keyword">method</span>, <span class="type">Object</span>[] args, <span class="type">Object</span> target) throws <span class="type">Throwable</span>;
-}
-</code></pre><h1 id="Pointcut连接点">Pointcut连接点</h1><p>提示:为了理解Pointcut和Advisor，我们可以参考下面的例子：<br><a href="http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/">http://www.mkyong.com/spring/spring-aop-example-pointcut-advisor/</a></p>
-<p>切点，其决定一个advice应该应用于哪个连接点，也就是需要插入额外处理的地方的集合，例如，被某个advice作为目标的一组方法。Spring pointcut通常意味着标示方法，可以选择一组方法调用作为pointcut,Spring提供了具体的切点来给用户使用，比如正则表达式切点 JdkRegexpMethodPointcut通过正则表达式对方法名进行匹配，其通过使用 AbstractJdkRegexpMethodPointcut中的对MethodMatcher接口的实现来完成pointcut功能.<br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/06/09/2014/spring-aop1/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/exception-idea" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/21/2014/exception-idea/" class="article-date">
-  	<time datetime="2014-05-21T14:50:27.000Z" itemprop="datePublished">5月 21 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/21/2014/exception-idea/">exception idea Server is not connected. Deploy is not available.</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <pre><code><span class="comment"><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Server</span> <span class="keyword">is</span> <span class="keyword">not</span> connected. Deploy <span class="keyword">is</span> <span class="keyword">not</span> available.</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>当在idea启动tomcat的时候，报如上错误。经过google，是由于在tomcat的bin目录下设置了java_opts指向了其他方向，导致环境变量改变。</p>
-<p>解决的方式就是将自己设置的java_opts去掉即可。 </p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异常/">异常</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/categories/java/page/7/">&laquo; Prev</a><a class="page-number" href="/categories/java/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/java/page/6/">6</a><a class="page-number" href="/categories/java/page/7/">7</a><span class="page-number current">8</span>
+      <a class="extend prev" rel="prev" href="/categories/java/page/7/">&laquo; Prev</a><a class="page-number" href="/categories/java/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/java/page/6/">6</a><a class="page-number" href="/categories/java/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/categories/java/page/9/">9</a><a class="extend next" rel="next" href="/categories/java/page/9/">Next &raquo;</a>
     </nav>
   
 </div>
