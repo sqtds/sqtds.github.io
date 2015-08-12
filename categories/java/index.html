@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 11.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -168,10 +168,74 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
-    <article id="post-hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-tomcat7-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/08/10/hessian-2/" class="article-date">
+      <a href="/2015/08/11/tomcat7-sourcecode01/" class="article-date">
+  	<time datetime="2015-08-11T07:51:00.000Z" itemprop="datePublished">8月 11 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/11/tomcat7-sourcecode01/">tomcat8源码阅读(一)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。</p>
+<h2 id="二，搭建源码包">二，搭建源码包</h2><p>其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。<br>我们可以参考<a href="http://developer.51cto.com/art/201207/346156.htm" target="_blank" rel="external">Tomcat7调试运行环境搭建与源代码分析入门</a>的方法进行tomcat8的搭建。<br>搭建比较简单，我也备份了一份到github上<a href="https://github.com/sqtds/tomcat8。" target="_blank" rel="external">https://github.com/sqtds/tomcat8。</a> 如果觉得搭建麻烦，可以直接下载使用我的即可。</p>
+<h2 id="三，tomcat8整体架构">三，tomcat8整体架构</h2><p>参考我的wiki页面<a href="https://github.com/sqtds/tomcat8/wiki，这里不不多说了。" target="_blank" rel="external">https://github.com/sqtds/tomcat8/wiki，这里不不多说了。</a><br>本文主要研究的是tomcat的catalina架构，其他有时间再进行研究。</p>
+<h2 id="四，参考指南">四，参考指南</h2><ul>
+<li>how tomcat works ——不说了，大名鼎鼎的，读源码都是从它开始</li>
+<li><a href="http://tyrion.iteye.com/category/285081" target="_blank" rel="external">Tomcat7源码分析</a>——分析的挺多，还不错</li>
+<li><a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-1/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（上）</a>，<a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-2/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（下）</a>——分析了http的请求</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-2015/hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/10/2015/hessian-2/" class="article-date">
   	<time datetime="2015-08-10T13:31:16.000Z" itemprop="datePublished">8月 10 2015</time>
 </a>
     </div>
@@ -185,7 +249,7 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/10/hessian-2/">hessian协议解析--hessian反序列化</a>
+      <a class="article-title" href="/2015/08/10/2015/hessian-2/">hessian协议解析--hessian反序列化</a>
     </h1>
   
 
@@ -213,7 +277,7 @@ var _hmt = _hmt || [];
 
       
         <p class="article-more-link">
-          <a  href="/2015/08/10/hessian-2/#more">more >></a>
+          <a  href="/2015/08/10/2015/hessian-2/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -842,72 +906,6 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
 <h3 id="2，参考资料">2，参考资料</h3><ul>
 <li><a href="http://www.importnew.com/14948.html" target="_blank" rel="external">一个Java对象到底占多大内存？</a></li>
 <li><a href="http://www.infoq.com/presentations/JVM-Performance-Tuning-twitter" target="_blank" rel="external">everything-i-ever-learned-about-jvm-performance-tuning-twitter</a></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-jmm" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/23/2015/java-jmm/" class="article-date">
-  	<time datetime="2015-05-23T00:10:03.000Z" itemprop="datePublished">5月 23 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/23/2015/java-jmm/">java核心系列（十一）-java内存模型</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
-<h3 id="参考资料">参考资料</h3><ul>
-<li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
-<li><a href="&quot;http://www.importnew.com/2057.html&quot;">成为JavaGC专家Part II — 如何监控Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3146.html" target="_blank" rel="external">成为Java GC专家系列Part III–如何优化Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3151.html" target="_blank" rel="external">成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响</a></li>
-<li><a href="http://www.importnew.com/13954.html" target="_blank" rel="external">成为Java GC专家（5）—Java性能调优原则</a></li>
-<li><a href="http://ju.outofmemory.cn/entry/65368" target="_blank" rel="external">G1垃圾收集器</a></li>
-<li><a href="http://ifeve.com/jvm-permgen-where-art-thou/" target="_blank" rel="external">JVM的持久代——何去何从？</a></li>
 </ul>
 
       

@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 11.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,119 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/java-serizable" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/13/2015/java-serizable/" class="article-date">
+  	<time datetime="2015-05-13T00:32:49.000Z" itemprop="datePublished">5月 13 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/13/2015/java-serizable/">java核心系列（四）—java序列化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，概述">一，概述</h2><p>本文主要介绍java序列化方面的一些基础知识。<br><img src="/img/2015/序列化.png" alt=""></p>
+<h2 id="二，java序列化类介绍">二，java序列化类介绍</h2><h3 id="1，Serializable接口">1，Serializable接口</h3><h4 id="1-1-triansant">1.1.triansant</h4><p>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p>
+<h4 id="1-2-serialVersionUID">1.2.serialVersionUID</h4><p>序列化版本号，用来保证两个类是否是兼容的。默认情况下应该给一个值，不然系统会在运行的时候调用一个复杂的过程来生成这个值。</p>
+<h4 id="1-3writeObject和readObject">1.3writeObject和readObject</h4><p>通过实现这2个方法来生成自己的自定义序列化方式。</p>
+<h4 id="1-4readObjectNoData">1.4readObjectNoData</h4><p>当没有获取到对象数据时，默认的初始化行为。</p>
+<h4 id="1-5writeReplace和readResolve">1.5writeReplace和readResolve</h4><p>控制实例化对象的写入写出，可以指定任意对象。可通过此接口来禁止单例对象的多态化。</p>
+<h3 id="2，ObjectOutputStream和ObjectInputStream">2，ObjectOutputStream和ObjectInputStream</h3><p>实际的序列化和反序列化工作是通过ObjectOuputStream和ObjectInputStream来完成的。</p>
+<p>ObjectInputStream：</p>
+<ul>
+<li>readObject ： 从流中读取一个Java对象</li>
+<li>defaultWriteObject：默认的写入方法，注意这不是说默认会调用，而是采用默认的算法。</li>
+</ul>
+<p>ObjectOutputStream：</p>
+<ul>
+<li>writeObject：把一个Java对象写入到流中</li>
+<li>defaultReadObject： 默认的读取算法。</li>
+</ul>
+<h3 id="3，Externalizable接口">3，Externalizable接口</h3><p>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口—Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。</p>
+<ul>
+<li>writeExternal：把一个Java对象写入到流中</li>
+<li>readExternal：从流中读取一个Java对象</li>
+</ul>
+<h2 id="三，其他序列化器">三，其他序列化器</h2><h3 id="1，json">1，json</h3><p>json的序列化框架有fastjson,jackson,gson等。</p>
+<p>适用性：</p>
+<ul>
+<li>公司之间传输数据量相对小，实时性要求相对低（例如秒级别）的服务。</li>
+<li>基于Web browser的Ajax请求。</li>
+<li>由于JSON具有非常强的前后兼容性，对于接口经常发生变化，并对可调式性要求高的场景，例如Mobile app与服务端的通讯。</li>
+</ul>
+<h3 id="2,xml">2,xml</h3><p>xml的序列化框架有XStream。</p>
+<p>XML的序列化和反序列化的空间和时间开销都比较大，对于对性能要求在ms级别的服务，不推荐使用。</p>
+<h3 id="3,hessian">3,hessian</h3><p>hessian主要用于java序列化。它的实现机制是着重于数据，附带简单的类型信息的方法：</p>
+<ol>
+<li>对于简单的数据类型。就像Integer a = 1，hessian会序列化成I 1这样的流，I表示int or Integer，1就是数据内容。</li>
+<li>对于复杂对象，通过Java的反射机制，<strong>hessian把对象所有的属性当成一个Map来序列化</strong>，产生类似M className propertyName1 I 1 propertyName S stringValue</li>
+<li>对于引用对象，在序列化过程中，如果一个对象之前出现过，hessian会直接插入一个R index这样的块来表示一个引用位置，从而省去再次序列化和反序列化的时间。</li>
+</ol>
+<h3 id="4,thift">4,thift</h3><p>Thrift是Facebook开源提供的一个高性能，轻量级RPC服务框架，其产生正是为了满足当前大数据量、分布式、跨语言、跨平台数据通讯的需求。 但是，Thrift并不仅仅是序列化协议，而是一个RPC框架。相对于JSON和XML而言，Thrift在空间开销和解析性能上有了比较大的提升，对于对性能要求比较高的分布式系统，它是一个优秀的RPC解决方案；但是由于Thrift的序列化被嵌入到Thrift框架里面，Thrift框架本身并没有透出序列化和反序列化接口，这导致其很难和其他传输层协议共同使用（例如HTTP）。</p>
+<h3 id="5,protobuf">5,protobuf</h3><ul>
+<li>序列化数据非常简洁，紧凑.</li>
+<li>解析速度非常快</li>
+<li>提供了非常友好的动态库，使用非常简介，反序列化只需要一行代码。</li>
+</ul>
+<h3 id="6,avro">6,avro</h3><p>Avro的产生解决了JSON的冗长和没有IDL的问题。 Avro提供两种序列化格式：JSON格式或者Binary格式。Binary格式在空间开销和解析性能方面可以和Protobuf媲美，JSON格式方便测试阶段的调试。 </p>
+<ul>
+<li>动态类型：Avro并不需要生成代码，模式和数据存放在一起，而模式使得整个数据的处理过程并不生成代码、静态数据类型等等。这方便了数据处理系统和语言的构造。</li>
+<li>未标记的数据：由于读取数据的时候模式是已知的，那么需要和数据一起编码的类型信息就很少了，这样序列化的规模也就小了。</li>
+<li>不需要用户指定字段号：即使模式改变，处理数据时新旧模式都是已知的，所以通过使用字段名称可以解决差异问题。</li>
+</ul>
+<h2 id="四，参考资料">四，参考资料</h2><ol>
+<li>序列化的秘密.pdf —-liujia</li>
+<li><a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="external">jvm-serializers</a></li>
+<li><a href="http://www.infoq.com/cn/articles/serialization-and-deserialization" target="_blank" rel="external">序列化和反序列化</a></li>
+<li><a href="http://www.infoq.com/cn/articles/cf-java-object-serialization-rmi" target="_blank" rel="external">Java对象序列化与RMI</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-gpb/" target="_blank" rel="external">Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://www.biaodianfu.com/avro.html" target="_blank" rel="external">Avro：大数据的二进制传输中间件</a></li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/java-classloader" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -762,127 +875,6 @@ System.out.<span class="built_in">println</span>(System.currentTimeMillis() - l1
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/04/25/2014/mysql-index/" class="article-date">
-  	<time datetime="2015-04-25T08:26:28.000Z" itemprop="datePublished">4月 25 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/25/2014/mysql-index/">mysql索引总结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>索引是什么？索引是存储引擎用于快速找到记录的一种数据结构。</p>
-<h2 id="索引分类">索引分类</h2><h3 id="B-Tree索引">B-Tree索引</h3><p>MyISAM使用前缀压缩技术使得索引更小。InnoDB按照原数据存储索引。<br>MyISAM索引通过数据的物理位置引用被索引的行。InnoDB根据主键引用被索引的行。<br>可以使用B-Tree索引的查询类型：</p>
-<ul>
-<li>全值匹配：和索引中的所有列进行匹配</li>
-<li>匹配最左前缀：匹配第一个索引</li>
-<li>匹配列前缀：匹配某一列的值的开头部分，只使用第一个索引</li>
-<li>匹配范围值：匹配某个范围，只使用第一个索引</li>
-<li>精确匹配某一列并范围匹配另外一列</li>
-<li>只访问索引的查询</li>
-<li>排序操作：索引的有序性</li>
-</ul>
-<h3 id="哈希索引">哈希索引</h3><p>哈希索引基于哈希表实现，只有精确匹配所有列的查询才有效。对于每一行数据，存储引擎会对所有的索引列计算一个hash值。<br>哈希索引的限制：</p>
-<ul>
-<li>哈希索引只能包含哈希值和行指针，不能使用索引的值避免行读取。</li>
-<li>哈希索引数据并不是按照索引值顺序存储的，无法用于排序。</li>
-<li>哈希索引也不支持部分索引列匹配查找，因为哈希索引始终是使用索引列的全部内容来计算哈希值的。</li>
-<li>哈希索引只支持等值查找。</li>
-<li>访问哈希索引的数据非常快，除非有很多哈希冲突。</li>
-</ul>
-<h3 id="空间数据索引">空间数据索引</h3><p>地理数据索引。（略）</p>
-<h3 id="全文索引">全文索引</h3><p>全文索引查找文本中的关键词，一般采用倒排索引。</p>
-<h3 id="其他">其他</h3><h2 id="索引的优点">索引的优点</h2><p>索引可以让服务器快速的定位到指定的位置。</p>
-<ul>
-<li>索引大大减少了服务器需要扫描的数量。</li>
-<li>索引可以帮助服务器避免排序和临时表。</li>
-<li>索引可以将随机IO变为顺序IO。</li>
-</ul>
-<p>参考:Relational Database Index Design and the Optimizers.</p>
-<p>索引是最好的解决方案吗？<br>对于非常小的表，大部分情况下简单的全表扫描更高效。<br>对于中大型的表，索引就非常有效。<br>对于特大型的表，建立和使用索引的代价随之增长。可以采用分区技术等。</p>
-<h2 id="索引策略">索引策略</h2><h3 id="独立的列">独立的列</h3><p>索引列不能是表达式的一部分，也不能使函数的参数。</p>
-<h3 id="前缀索引和索引选择性">前缀索引和索引选择性</h3><p>有时候需要索引很长的字符列，会让索引变得很大，这是我们可以使用哈希索引。我们是否还有更好的方法？</p>
-<p>通常可以索引开始的部分字符，这样可以节省索引空间，从而提高索引效率。但这样也会降低索引的选择性。</p>
-<h3 id="多列索引">多列索引</h3><p>很多人对多列索引的理解都不够。一个常见的错误就是，为每个列创建独立的索引，或者按照错误的顺序创建多列索引。</p>
-<p>在多个列上建立独立的单列索引大部分情况下并不能提高MySql的查询性能。MySql5.0以上引入了一种“索引合并”的策略，一定程度上可以使用表上的多个单列索引来定位指定的行。</p>
-<h3 id="选择合适的索引列顺序">选择合适的索引列顺序</h3><p>经验法则：将选择性最高的列放在索引最前列。</p>
-<h3 id="聚簇索引">聚簇索引</h3><p>聚簇索引并不是一种单独的索引类型，而是一种数据存储方式。InnoDB的聚簇索引索引实际上在同一个结构中保存了B-Tree索引和物理行。<br>当表有聚簇索引时，实际上它的数据行保存在索引的叶子节点中。所以，一个表中只能有一个聚簇索引。</p>
-<p>聚簇索引的优点：</p>
-<ul>
-<li>把相关数据保存在一起</li>
-<li>数据访问更快，提高了IO的性能</li>
-</ul>
-<p>缺点：</p>
-<ul>
-<li>插入速度依赖于插入顺序。</li>
-<li>更新索引的代价很高。</li>
-<li>插入新行，更新主键或者移动行的时候，面临“页分裂”的问题。</li>
-<li>可能导致全表扫描变慢，尤其是行稀疏，也分裂导致数据不连续</li>
-<li>二级索引（非聚簇索引）可能比想象的大，因为包含了主键列。</li>
-</ul>
-<h3 id="覆盖索引">覆盖索引</h3><p>如果索引的叶子节点已经包含了需要查询的字段，那么还有什么必要再回表查询？如果一个索引包含所有需要查询的字段的值，我们就称为“覆盖索引”。</p>
-<p>适应场景：</p>
-<ul>
-<li>索引条目通常远小于数据行的大小。</li>
-<li>对于IO密集型的范围查询会比随机从磁盘读取每一行数据的IO要小的多。</li>
-<li>可内存缓存索引，避免系统调用</li>
-</ul>
-<h3 id="使用索引进行排序">使用索引进行排序</h3><p>当索引的列序列和order by子句的顺序完全一致，并且所有列的排序方向（倒序或正序）都一样时，MySql才能够使用索引来对结果进行排序。如果查询关联多个表时，则只有当ORDER BY子句引用的字段全部为第一个表时，才能使用索引进行排序。ORDER BY 子句和查找型查询的限制是一样的：需要全部满足索引的最左前缀的要求；否则，MySql都需要执行排序操纵，而无法利用索引进行排序。</p>
-<p>有一种情况下ORDER BY子句可以不满足索引的最左前缀要求，就是前导列为常量的时候。如果WHERE子句或者JOIN子句中对这些列指定了常量，就可以“弥补”索引的不足。</p>
-<h3 id="索引和锁">索引和锁</h3><p>索引可以让查询锁定更少的行。如果你的查询不需要访问那些不需要的行，那么就会锁定更少的行。</p>
-<h2 id="设计原则">设计原则</h2><h3 id="选择性特别低，并且经常用到的的作为索引前列">选择性特别低，并且经常用到的的作为索引前列</h3><p>例如性别只有2种选择，但是我们经常会用到。如果没有用到性别查询，我们也可以使用 sex in（‘m’，‘f’）来让mysql选择该索引。</p>
-<p>有一点需要注意的是，使用in的方式覆盖不在where条件中查询的列，不能过度使用。因为每增加一个in条件，优化器都需要以指数的形式增加，a<em>b</em>c。</p>
-<h3 id="对于经常性范围查询，应放到索引后列">对于经常性范围查询，应放到索引后列</h3><p>对于范围查询，MySql无法再使用范围列后面的其他索引了，但是对于多个“等值条件查询”则没有这个限制。<br>例如年龄查询，可能是查询某个范围的，我们就要放到后面。</p>
-<h3 id="避免多个范围查询">避免多个范围查询</h3><p>使用in来代替多范围查询</p>
-<h3 id="优化排序">优化排序</h3><p>对于选择性非常低的列，可以添加一些特殊的索引进行排序。<br>例如sex进行排序时，可以使用(sex,rating)索引进行排序。<br>select <cols> from table where sex=’M’ order by rating ;</cols></p>
-<p>PS:本文总结来自《mysql高性能》一书</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/数据库/">数据库</a>
 	</div>
 
 

@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 10px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 11.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,68 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-1/" class="article-date">
+  	<time datetime="2014-10-26T03:11:04.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-1/">mondrian 源码解读（一）-部署mondrian项目</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="mondrian是什么？">mondrian是什么？</h2><p>mondrian是一款基于java的开源的多维分析olap服务器。更多资料请移步mondrian官方网站：<a href="http://community.pentaho.com/projects/mondrian/。">http://community.pentaho.com/projects/mondrian/。</a></p>
+<h2 id="如何部署mondrian？">如何部署mondrian？</h2><p>在mondrian官方文档中，已经有详细的步骤了，请移步：<a href="http://mondrian.pentaho.com/documentation/developers_guide.php">http://mondrian.pentaho.com/documentation/developers_guide.php</a></p>
+<p>可能部署的时候会有点问题，我将我遇到的问题分享给大家：
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-1/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/antlr4-tips" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -793,115 +855,6 @@ public void sync(<span class="type">Parser</span> recognizer) { }
 <li>基于栈： 栈字段模拟了java的参数和返回值。</li>
 <li>注解：map字段映射了节点和值的关系。</li>
 </ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-label-rule" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-label-rule/" class="article-date">
-  	<time datetime="2014-08-30T08:18:41.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-label-rule/">antlr4-添加标签（lable）(五)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="粒度问题">粒度问题</h2><p>由于以前生成的方法仅仅能够在规则上产生，当我们想要更小的粒度时，针对每个规则进行更小的粒度控制时，我们就显得力不从心了。</p>
-<p>这样，就产生了lable…</p>
-<h2 id="无标签情况下">无标签情况下</h2><p>下面是一个计算器。</p>
-<pre><code><span class="tag">grammar</span> <span class="tag">Expr</span>;
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e op=MULT e    // MULT is <span class="string">'*'</span>
-  | e op=ADD e     // ADD is <span class="string">'+'</span>
-  | INT
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p><img src="/img/2014/QQ图片20140830162901.jpg" alt=""></p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends ExprBaseListener {
-    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitE</span><span class="params">(ExprParser.EContext ctx)</span> </span>{
-        <span class="keyword">if</span> ( ctx.getChildCount()==<span class="number">3</span> ) { <span class="comment">// operations have 3 children</span>
-            <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
-            <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
-            <span class="keyword">if</span> ( ctx.op.getType()==ExprParser.MULT ) {
-                <span class="built_in">stack</span>.push( left * right );
-            }
-            <span class="keyword">else</span> {
-                <span class="built_in">stack</span>.push( left + right ); <span class="comment">// must be add</span>
-            }
-        }
-    }
-
-    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTerminal</span><span class="params">(TerminalNode node)</span> </span>{
-        Token symbol = node.getSymbol();
-        <span class="keyword">if</span> ( symbol.getType()==ExprParser.INT ) {
-            <span class="built_in">stack</span>.push( Integer.valueOf(symbol.getText()) );
-        }
-    }
-}
-</code></pre><p>从上面看出，原始的方式下，我们不得不对所有的操作符进行判断，即op=MULT和op=Add。</p>
-<h2 id="有标签情况下">有标签情况下</h2><pre><code><span class="tag">grammar</span> <span class="tag">LExpr</span>;
-
-<span class="rule"><span class="attribute">s </span>:<span class="value"> e </span></span>;
-
-<span class="rule"><span class="attribute">e </span>:<span class="value"> e MULT e         # Mult
-  | e ADD e         # Add
-  | INT                # Int
-  </span></span>;
-
-<span class="rule"><span class="attribute">MULT</span>:<span class="value"> <span class="string">'*'</span> </span></span>;
-<span class="rule"><span class="attribute">ADD </span>:<span class="value"> <span class="string">'+'</span> </span></span>;
-<span class="rule"><span class="attribute">INT </span>:<span class="value"> [<span class="number">0</span>-<span class="number">9</span>]+ </span></span>;
-<span class="rule"><span class="attribute">WS </span>:<span class="value"> [ \t\n]+ -&gt; skip </span></span>;
-</code></pre><p>注意不同点，我们使用#号来表示标签。这样，antlr就会对每个标签生成一个方法和特定的上下文对象。</p>
-<p><img src="/img/2014/QQ图片20140830164801.jpg" alt=""></p>
 
       
     </div>

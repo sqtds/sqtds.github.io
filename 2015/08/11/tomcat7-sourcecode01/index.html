@@ -3,17 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>蜻蜓点水</title>
+  <title>tomcat8源码阅读(一) | 蜻蜓点水</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="蜻蜓点水">
-<meta property="og:url" content="http://sqtds.github.io/tags/性能/index.html">
+  <meta name="description" content="一，前言以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。
+二，搭建源码包其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。我们可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tomcat8源码阅读(一)">
+<meta property="og:url" content="http://sqtds.github.io/2015/08/11/tomcat7-sourcecode01/index.html">
 <meta property="og:site_name" content="蜻蜓点水">
-<meta property="og:description">
+<meta property="og:description" content="一，前言以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。
+二，搭建源码包其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。我们可">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="蜻蜓点水">
-<meta name="twitter:description">
+<meta name="twitter:title" content="tomcat8源码阅读(一)">
+<meta name="twitter:description" content="一，前言以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。
+二，搭建源码包其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。我们可">
   
     <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
   
@@ -166,13 +169,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap">
-  
-    <article id="post-2014/性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-tomcat7-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/04/27/2014/性能调优总结/" class="article-date">
-  	<time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
+      <a href="/2015/08/11/tomcat7-sourcecode01/" class="article-date">
+  	<time datetime="2015-08-11T07:51:00.000Z" itemprop="datePublished">8月 11 2015</time>
 </a>
     </div>
   
@@ -184,65 +185,98 @@ var _hmt = _hmt || [];
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
+    <h1 class="article-title" itemprop="name">
+      tomcat8源码阅读(一)
     </h1>
   
 
       </header>
       
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
-<h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
-<p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
-<p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
-<ol>
-<li>挂起一个进程，将这个进程在 CPU 中的状态（上下文）存储于内存中的某处，</li>
-<li>在内存中检索下一个进程的上下文并 将其在 CPU 的寄存器中恢复，</li>
-<li>跳转到程序计数器所指向的位置（即跳转到进程被中断时的代码行），以恢复该进程。</li>
-</ol>
-<p>上下文切换的消耗</p>
-<p>上下文切换通常是计算密集型的。也就是说，它需要相当可观的处理器时间，在每秒几十上百次的切换中，每次切换都需要纳秒量级的时间。所以，上下文切换对系统来说意味着消耗大量的 CPU 时间，事实上，可能是操作系统中时间消耗最大的操作。<br>Linux 号称的相比于其他的操作系统（包括其他类 Unix 系统）的很多优点中，有一项就是，其上下文切换和模式切换的时间消耗非常少。</p>
-<h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
-<h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
-<h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
-<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/2014/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
-<h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
-<h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
-<p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
+      <div class="article-info article-info-post">
+        
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
 	</div>
 
-      
+        
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
 
+        <div class="clearfix"></div>
+      </div>
       
-      <div class="clearfix"></div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。</p>
+<h2 id="二，搭建源码包">二，搭建源码包</h2><p>其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。<br>我们可以参考<a href="http://developer.51cto.com/art/201207/346156.htm" target="_blank" rel="external">Tomcat7调试运行环境搭建与源代码分析入门</a>的方法进行tomcat8的搭建。<br>搭建比较简单，我也备份了一份到github上<a href="https://github.com/sqtds/tomcat8。" target="_blank" rel="external">https://github.com/sqtds/tomcat8。</a> 如果觉得搭建麻烦，可以直接下载使用我的即可。</p>
+<h2 id="三，tomcat8整体架构">三，tomcat8整体架构</h2><p>参考我的wiki页面<a href="https://github.com/sqtds/tomcat8/wiki，这里不不多说了。" target="_blank" rel="external">https://github.com/sqtds/tomcat8/wiki，这里不不多说了。</a><br>本文主要研究的是tomcat的catalina架构，其他有时间再进行研究。</p>
+<h2 id="四，参考指南">四，参考指南</h2><ul>
+<li>how tomcat works ——不说了，大名鼎鼎的，读源码都是从它开始</li>
+<li><a href="http://tyrion.iteye.com/category/285081" target="_blank" rel="external">Tomcat7源码分析</a>——分析的挺多，还不错</li>
+<li><a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-1/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（上）</a>，<a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-2/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（下）</a>——分析了http的请求</li>
+</ul>
+
+      
     </div>
     
   </div>
   
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/08/10/2015/hessian-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">hessian协议解析--hessian反序列化</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
 </article>
 
 
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
 
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="tomcat7-sourcecode01" data-title="tomcat8源码阅读(一)" data-url="http://sqtds.github.io/2015/08/11/tomcat7-sourcecode01/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
-  
-  
+
+
 </div>
       <footer id="footer">
   <div class="outer">
