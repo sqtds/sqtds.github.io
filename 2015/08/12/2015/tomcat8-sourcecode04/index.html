@@ -242,8 +242,20 @@ var _hmt = _hmt || [];
     <span class="keyword">super</span>.initInternal();
 }
 </code></pre><p>方法比较简单，我们关注super.initInternal()方法：</p>
-<h3 id="2-2_ContainerBase的initInternal">2.2 ContainerBase的initInternal</h3><p>ContainerBase主要是创建一个startStopExecutor线程池用来启动停止子节点。<br>    ContainerBase<br>    protected void initInternal() throws LifecycleException {<br>        BlockingQueue<runnable> startStopQueue = new LinkedBlockingQueue&lt;&gt;();<br>        //创建线程池<br>        startStopExecutor = new ThreadPoolExecutor(<br>                getStartStopThreadsInternal(),<br>                getStartStopThreadsInternal(), 10, TimeUnit.SECONDS,<br>                startStopQueue,<br>                new StartStopThreadFactory(getName() + “-startStop-“));<br>        startStopExecutor.allowCoreThreadTimeOut(true);<br>        super.initInternal();<br>    }        </runnable></p>
-<h3 id="2-3_StandardHost的initInternal">2.3 StandardHost的initInternal</h3><pre><code><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+<h3 id="2-2_ContainerBase的initInternal">2.2 ContainerBase的initInternal</h3><p>ContainerBase主要是创建一个startStopExecutor线程池用来启动停止子节点。</p>
+<pre><code>ContainerBase
+<span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    BlockingQueue&lt;Runnable&gt; startStopQueue = <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();
+    <span class="comment">//创建线程池 </span>
+    startStopExecutor = <span class="keyword">new</span> ThreadPoolExecutor(
+            getStartStopThreadsInternal(),
+            getStartStopThreadsInternal(), <span class="number">10</span>, TimeUnit.SECONDS,
+            startStopQueue,
+            <span class="keyword">new</span> StartStopThreadFactory(getName() + <span class="string">"-startStop-"</span>));
+    startStopExecutor.allowCoreThreadTimeOut(<span class="keyword">true</span>);
+    <span class="keyword">super</span>.initInternal();
+}        
+</code></pre><h3 id="2-3_StandardHost的initInternal">2.3 StandardHost的initInternal</h3><pre><code><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
     <span class="comment">//设置异常处理valve</span>
     String errorValve = getErrorReportValveClass();
     <span class="keyword">super</span>.startInternal();
@@ -632,7 +644,272 @@ var _hmt = _hmt || [];
         setState(LifecycleState.STARTING);
     }
 }
-</code></pre>
+</code></pre><p>上面代码有点长，主要是做了资源的设置，类加载器的设置，session管理的设置等。当然也启动了pipeline。但是有一点我们需要注意的是，子容器并不是在pipeline的StandardContextValve中传递执行的。那么是在哪里呢？其实就在StandardContext中的startInternal执行的。为什么要这样设计呢？我们发现，这是由于servlet在xml中的顺序决定了启动顺序。<br>接下来有人会不会有另一个疑惑，要是我在server.xml没有配置context，只是放在了webapps目录下面，那么这个context是如何加载的呢？接下来，我就讲讲这个。</p>
+<h2 id="四，Context调用时机">四，Context调用时机</h2><p>context可以有2种表现形式，一种是直接写在server.xml文件中，另一种是放在tomcat的webapps目录下。<br>第一种形式已经在前面介绍过了，下面，我们介绍第二中形式。</p>
+<h3 id="4-1_Host启动触发监听事件">4.1 Host启动触发监听事件</h3><p>大家还记得否，当我们每次调用LifecycleBase的start方法时，都会调用下面这句：</p>
+<blockquote>
+<p>setStateInternal(LifecycleState.STARTED, null, false);</p>
+</blockquote>
+<p>那这句话做了什么工作呢？我们看其源码实现：</p>
+<pre><code>LifecycleBase
+private synchronized void <span class="built_in">set</span>StateInternal(LifecycleState <span class="keyword">state</span>,
+        Object data, boolean check) throws LifecycleException {
+
+    ...//检查状态
+    this.<span class="keyword">state</span> = <span class="keyword">state</span>;
+    String lifecycleEvent = <span class="keyword">state</span>.getLifecycleEvent();
+    if (lifecycleEvent != null) {
+        fireLifecycleEvent(lifecycleEvent, data);
+    }
+}
+
+protected void fireLifecycleEvent(String type, Object data) {
+    LifecycleEvent event = new LifecycleEvent(this, type, data);
+    LifecycleListener interested[] = listeners;
+    <span class="keyword">for</span> (int i = <span class="number">0</span>; i <span class="variable">&lt; interested.length; i++) {
+        interested[i].lifecycleEvent(event);
+    }
+}</span>
+</code></pre><p>我们看到，这里会触犯监听器执行感兴趣的事件。那在StandardHost中有哪些监听器呢？</p>
+<h3 id="4-2_创建Host监听">4.2 创建Host监听</h3><p>我们要跳到Digester那一块了，大家还记得Digester那块嘛？在Catalina的createStartDigester() 方法中，我们看到下面一句话：</p>
+<blockquote>
+<p>digester.addRuleSet(new HostRuleSet(“Server/Service/Engine/“));</p>
+</blockquote>
+<p>那这句话内部干了什么呢？我们看其实现：</p>
+<pre><code><span class="type">Digester</span>
+public void addRuleSet(<span class="type">RuleSet</span> ruleSet) {
+
+    <span class="type">String</span> oldNamespaceURI = getRuleNamespaceURI();
+    <span class="type">String</span> newNamespaceURI = ruleSet.getNamespaceURI();
+
+    setRuleNamespaceURI(newNamespaceURI);
+    ruleSet.addRuleInstances(this); <span class="comment">//我们重点看这句</span>
+    setRuleNamespaceURI(oldNamespaceURI);
+}
+
+<span class="type">HostRuleSet</span>
+public void addRuleInstances(<span class="type">Digester</span> digester) {
+
+    digester.addObjectCreate(<span class="keyword">prefix</span> + <span class="string">"Host"</span>,
+                             <span class="string">"org.apache.catalina.core.StandardHost"</span>,
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="keyword">prefix</span> + <span class="string">"Host"</span>);
+    digester.addRule(<span class="keyword">prefix</span> + <span class="string">"Host"</span>,
+                     <span class="keyword">new</span> <span class="type">CopyParentClassLoaderRule</span>());
+
+    <span class="comment">//这里创建了HostConfig监听器</span>
+    digester.addRule(<span class="keyword">prefix</span> + <span class="string">"Host"</span>,
+                     <span class="keyword">new</span> <span class="type">LifecycleListenerRule</span>
+                     (<span class="string">"org.apache.catalina.startup.HostConfig"</span>,
+                      <span class="string">"hostConfigClass"</span>));
+    digester.addSetNext(<span class="keyword">prefix</span> + <span class="string">"Host"</span>,
+                        <span class="string">"addChild"</span>,
+                        <span class="string">"org.apache.catalina.Container"</span>);
+
+    digester.addCallMethod(<span class="keyword">prefix</span> + <span class="string">"Host/Alias"</span>,
+                           <span class="string">"addAlias"</span>, <span class="number">0</span>);
+
+    <span class="comment">//Cluster configuration start</span>
+    digester.addObjectCreate(<span class="keyword">prefix</span> + <span class="string">"Host/Cluster"</span>,
+                             null, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="keyword">prefix</span> + <span class="string">"Host/Cluster"</span>);
+    digester.addSetNext(<span class="keyword">prefix</span> + <span class="string">"Host/Cluster"</span>,
+                        <span class="string">"setCluster"</span>,
+                        <span class="string">"org.apache.catalina.Cluster"</span>);
+    <span class="comment">//Cluster configuration end</span>
+
+    digester.addObjectCreate(<span class="keyword">prefix</span> + <span class="string">"Host/Listener"</span>,
+                             null, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="keyword">prefix</span> + <span class="string">"Host/Listener"</span>);
+    digester.addSetNext(<span class="keyword">prefix</span> + <span class="string">"Host/Listener"</span>,
+                        <span class="string">"addLifecycleListener"</span>,
+                        <span class="string">"org.apache.catalina.LifecycleListener"</span>);
+
+    digester.addRuleSet(<span class="keyword">new</span> <span class="type">RealmRuleSet</span>(<span class="keyword">prefix</span> + <span class="string">"Host/"</span>));
+
+    digester.addObjectCreate(<span class="keyword">prefix</span> + <span class="string">"Host/Valve"</span>,
+                             null, <span class="comment">// MUST be specified in the element</span>
+                             <span class="string">"className"</span>);
+    digester.addSetProperties(<span class="keyword">prefix</span> + <span class="string">"Host/Valve"</span>);
+    digester.addSetNext(<span class="keyword">prefix</span> + <span class="string">"Host/Valve"</span>,
+                        <span class="string">"addValve"</span>,
+                        <span class="string">"org.apache.catalina.Valve"</span>);
+
+}
+</code></pre><p>好，在这里我们看到了HostConfig被添加到监听器里面了。那这个HostConfig干了什么呢？我们接下来继续看。</p>
+<h3 id="4-3_触发HostConfig调用start方法">4.3 触发HostConfig调用start方法</h3><p>我们看他的lifecycleEvent方法实现：</p>
+<pre><code><span class="function">HostConfig
+<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lifecycleEvent</span><span class="params">(LifecycleEvent <span class="keyword">event</span>)</span> </span>{
+
+    <span class="comment">// Identify the host we are associated with</span>
+    <span class="keyword">try</span> {
+        host = (Host) <span class="keyword">event</span>.getLifecycle();
+        <span class="keyword">if</span> (host instanceof StandardHost) {
+            setCopyXML(((StandardHost) host).isCopyXML());
+            setDeployXML(((StandardHost) host).isDeployXML());
+            setUnpackWARs(((StandardHost) host).isUnpackWARs());
+            setContextClass(((StandardHost) host).getContextClass());
+        }
+    } <span class="keyword">catch</span> (ClassCastException e) {
+        log.error(sm.getString(<span class="string">"hostConfig.cce"</span>, <span class="keyword">event</span>.getLifecycle()), e);
+        <span class="keyword">return</span>;
+    }
+
+    <span class="comment">// Process the event that has occurred</span>
+    <span class="keyword">if</span> (<span class="keyword">event</span>.getType().equals(Lifecycle.PERIODIC_EVENT)) {
+        check();
+    } <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(<span class="keyword">event</span>.getType()</span>.<span class="title">equals</span><span class="params">(Lifecycle.START_EVENT)</span>) </span>{
+        start();
+    } <span class="function"><span class="keyword">else</span> <span class="title">if</span> <span class="params">(<span class="keyword">event</span>.getType()</span>.<span class="title">equals</span><span class="params">(Lifecycle.STOP_EVENT)</span>) </span>{
+        stop();
+    }
+}
+</code></pre><p>我们看到，当传递了一个Lifecycle.START_EVENT事件时，调用了HostConfig的start方法，接下来，我们继续看start方法：</p>
+<pre><code><span class="type">HostConfig</span>
+public void start<span class="literal">()</span> {
+
+    <span class="keyword">if</span> (log.isDebugEnabled<span class="literal">()</span>)
+        log.debug(sm.getString(<span class="string">"hostConfig.start"</span>));
+
+    <span class="keyword">try</span> {
+        <span class="type">ObjectName</span> hostON = host.getObjectName<span class="literal">()</span>;
+        oname = <span class="keyword">new</span> <span class="type">ObjectName</span>
+            (hostON.getDomain<span class="literal">()</span> + <span class="string">":type=Deployer,host="</span> + host.getName<span class="literal">()</span>);
+        <span class="type">Registry</span>.getRegistry(null, null).registerComponent
+            (this, oname, this.getClass<span class="literal">()</span>.getName<span class="literal">()</span>);
+    } catch (<span class="type">Exception</span> e) {
+        log.error(sm.getString(<span class="string">"hostConfig.jmx.register"</span>, oname), e);
+    }
+
+    <span class="keyword">if</span> (host.getCreateDirs<span class="literal">()</span>) {
+        <span class="type">File</span><span class="literal">[]</span> dirs = <span class="keyword">new</span> <span class="type">File</span><span class="literal">[]</span> {host.getAppBaseFile<span class="literal">()</span>,host.getConfigBaseFile<span class="literal">()</span>};
+        <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;dirs.length; i++) {
+            <span class="keyword">if</span> (!dirs[i].mkdirs<span class="literal">()</span> &amp;&amp; !dirs[i].isDirectory<span class="literal">()</span>) {
+                log.error(sm.getString(<span class="string">"hostConfig.createDirs"</span>,dirs[i]));
+            }
+        }
+    }
+
+    <span class="keyword">if</span> (!host.getAppBaseFile<span class="literal">()</span>.isDirectory<span class="literal">()</span>) {
+        log.error(sm.getString(<span class="string">"hostConfig.appBase"</span>, host.getName<span class="literal">()</span>,
+                host.getAppBaseFile<span class="literal">()</span>.getPath<span class="literal">()</span>));
+        host.setDeployOnStartup(<span class="literal">false</span>);
+        host.setAutoDeploy(<span class="literal">false</span>);
+    }
+
+    <span class="keyword">if</span> (host.getDeployOnStartup<span class="literal">()</span>)
+        deployApps<span class="literal">()</span>;
+
+}
+</code></pre><p>start方法首先注册自己的mbean中，然后创建了一个目录，最后部署应用。</p>
+<h3 id="4-3_部署应用程序">4.3 部署应用程序</h3><p>HostConfig的start方法做了很多事，前面的我们都不关心，我们只看deployApps方法：</p>
+<pre><code><span class="function">HostConfig
+<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">deployApps</span><span class="params">()</span> </span>{
+    <span class="comment">//获取应用路径，即webapps目录</span>
+    File appBase = host.getAppBaseFile();
+    File configBase = host.getConfigBaseFile();
+    String[] filteredAppPaths = filterAppPaths(appBase.<span class="built_in">list</span>());
+    <span class="comment">// Deploy XML descriptors from configBase</span>
+    deployDescriptors(configBase, configBase.<span class="built_in">list</span>());
+    <span class="comment">// Deploy WARs</span>
+    deployWARs(appBase, filteredAppPaths);
+    <span class="comment">// Deploy expanded folders</span>
+    deployDirectories(appBase, filteredAppPaths);
+}
+</code></pre><p>前面的跟具体功能相关，就不解析了，我们只看最后一段deployDirectories：</p>
+<pre><code>    <span class="keyword">protected</span> <span class="keyword">void</span> deployDirectories(File appBase, <span class="keyword">String</span>[] files) {
+
+    <span class="keyword">if</span> (files == <span class="keyword">null</span>)
+        <span class="keyword">return</span>;
+
+    ExecutorService es = host.getStartStopExecutor();
+    List&lt;Future&lt;?&gt;&gt; results = <span class="keyword">new</span> ArrayList&lt;&gt;();
+
+    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; files.length; i++) {
+
+        <span class="keyword">if</span> (files[i].equalsIgnoreCase(<span class="string">"META-INF"</span>))
+            <span class="keyword">continue</span>;
+        <span class="keyword">if</span> (files[i].equalsIgnoreCase(<span class="string">"WEB-INF"</span>))
+            <span class="keyword">continue</span>;
+        File dir = <span class="keyword">new</span> File(appBase, files[i]);
+        <span class="keyword">if</span> (dir.isDirectory()) {
+            ContextName cn = <span class="keyword">new</span> ContextName(files[i], <span class="keyword">false</span>);
+
+            <span class="keyword">if</span> (isServiced(cn.getName()) || deploymentExists(cn.getName()))
+                <span class="keyword">continue</span>;
+
+            results.<span class="built_in">add</span>(es.submit(<span class="keyword">new</span> DeployDirectory(<span class="keyword">this</span>, cn, dir)));
+        }
+    }
+
+    <span class="keyword">for</span> (Future&lt;?&gt; result : results) {
+        <span class="keyword">try</span> {
+            result.<span class="built_in">get</span>();
+        } <span class="keyword">catch</span> (Exception e) {
+            <span class="built_in">log</span>.error(sm.getString(
+                    <span class="string">"hostConfig.deployDir.threaded.error"</span>), e);
+        }
+    }
+}
+</code></pre><p>我们看到，这里获取到了webapps目录下的所有目录，然后使用线程池进行加载每个子目录。</p>
+<h3 id="4-4_DeployDirectory内部实现">4.4 DeployDirectory内部实现</h3><p>由于使用的是线程池，我们看它的run方法：</p>
+<pre><code>DeployDirectory
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>{
+    config.deployDirectory(cn, dir);
+}
+</code></pre><p>返回来调用了HostConfig的deployDirectory方法，我们继续跟踪：</p>
+<pre><code>HostConfig
+<span class="keyword">protected</span> <span class="keyword">void</span> deployDirectory(ContextName cn, <span class="keyword">File</span> dir) {
+
+    Context context = <span class="keyword">null</span>;
+    <span class="keyword">File</span> xml = <span class="keyword">new</span> <span class="keyword">File</span>(dir, Constants.ApplicationContextXml);
+    <span class="keyword">File</span> xmlCopy =
+            <span class="keyword">new</span> <span class="keyword">File</span>(host.getConfigBaseFile(), cn.getBaseName() + <span class="string">".xml"</span>);
+
+    DeployedApplication deployedApp;
+    <span class="keyword">boolean</span> copyThisXml = copyXML;
+    <span class="comment">//获取web.xml文件，并创建一个Context</span>
+    <span class="keyword">try</span> {
+        <span class="keyword">if</span> (deployXML &amp;&amp; xml.exists()) {
+            <span class="keyword">synchronized</span> (digesterLock) {
+                <span class="keyword">try</span> {
+                    context = (Context) digester.parse(xml);
+                } <span class="keyword">catch</span> (Exception e) {
+                    context = <span class="keyword">new</span> FailedContext();
+                } <span class="keyword">finally</span> {
+                    <span class="keyword">if</span> (context == <span class="keyword">null</span>) {
+                        context = <span class="keyword">new</span> FailedContext();
+                    }
+                    digester.reset();
+                }
+            }
+
+            ...<span class="comment">//略</span>
+        } 
+         ....<span class="comment">//略</span>
+        <span class="comment">//加载ContextConfig并实例化    </span>
+        <span class="keyword">Class</span>&lt;?&gt; clazz = <span class="keyword">Class</span>.forName(host.getConfigClass());
+        LifecycleListener listener =
+            (LifecycleListener) clazz.newInstance();
+        context.addLifecycleListener(listener);
+
+        context.setName(cn.getName());
+        context.setPath(cn.getPath());
+        context.setWebappVersion(cn.getVersion());
+        context.setDocBase(cn.getBaseName());
+        <span class="comment">//将Context添加到host中。</span>
+        host.addChild(context);
+    } <span class="keyword">catch</span> (Throwable t) {
+        ExceptionUtils.handleThrowable(t);
+        log.error(sm.getString(<span class="string">"hostConfig.deployDir.error"</span>,
+                dir.getAbsolutePath()), t);
+    } <span class="keyword">finally</span> {
+        ...<span class="comment">//略</span>
+}
+</code></pre><p>在这里，我们发现，创建了一个Context，并将其添加到Host中，就完成了未在server.xml中配置Context也可以启动webapps目录下的工程了。好的，container启动部分就到此结束了，下文将介绍connector启动部分。</p>
+
       
     </div>
     

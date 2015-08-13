@@ -261,7 +261,8 @@ var _hmt = _hmt || [];
 }
 </code></pre><p>在代码中我们看到Catalina做了4件事，分别是加载服务配置，启动服务，注册关闭钩子，监听关闭事件。下面我们重点介绍前面2个步骤。</p>
 <h2 id="二，Catalina加载配置服务">二，Catalina加载配置服务</h2><p>我们查看load方法：</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">void</span> load() {
+<pre><code>Catalina
+<span class="keyword">public</span> <span class="keyword">void</span> load() {
     <span class="comment">// 初始化命名</span>
     initNaming();
 
@@ -304,7 +305,8 @@ var _hmt = _hmt || [];
     }
 }
 </code></pre><p>这里我们重点关注createStartDigester()方法，它加载了Server的配置文件。</p>
-<pre><code><span class="keyword">protected</span> Digester createStartDigester() {
+<pre><code>Catalina
+<span class="keyword">protected</span> Digester createStartDigester() {
     <span class="keyword">long</span> t1=System.currentTimeMillis();
     <span class="comment">// Initialize the digester</span>
     Digester digester = <span class="keyword">new</span> Digester();
