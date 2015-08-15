@@ -168,6 +168,67 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2015/hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/10/2015/hessian-2/" class="article-date">
+  	<time datetime="2015-08-10T13:31:16.000Z" itemprop="datePublished">8月 10 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/10/2015/hessian-2/">hessian协议解析--hessian反序列化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
+<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/08/10/2015/hessian-2/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2015/hessian-1" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -835,126 +896,6 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/exception/">exception</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/网络协议-传输层" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/06/22/2015/网络协议-传输层/" class="article-date">
-  	<time datetime="2015-06-22T08:50:26.000Z" itemprop="datePublished">6月 22 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/06/22/2015/网络协议-传输层/">计算机网络协议(3)-传输层</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/img/2015/传输层.png" alt=""></p>
-<h2 id="TCP">TCP</h2><h3 id="一，报文结构">一，报文结构</h3><p><img src="/img/2015/tcp_header.jpeg" alt=""></p>
-<ul>
-<li>TCP的包是没有IP地址的，那是IP层上的。但是有源端口和目标端口。</li>
-<li>Window又叫Advertised-Window，也就是滑动窗口（Sliding Window）</li>
-<li><p>TCP Flag ，也就是包的类型，主要是用于操控TCP的状态机的。</p>
-<pre><code><span class="title">SYN</span> 同步序号
-FIN 发送方完成数据发送
-RST 复位连接
-PSH 尽可能的将数据送往接收进程
-</code></pre></li>
-</ul>
-<h3 id="二，建立与关闭连接">二，建立与关闭连接</h3><p><img src="/img/2015/tcpfsm.png" alt=""><br><img src="/img/2015/tcp_open_close.jpeg" alt=""></p>
-<ul>
-<li><p>关于建连接时SYN超时<br>在Linux下，默认重试次数为5次，重试的间隔时间从1s开始每次都翻售，5次的重试时间间隔为1s, 2s, 4s, 8s, 16s，总共31s，第5次发出后还要等32s都知道第5次也超时了，所以，总共需要 1s + 2s + 4s+ 8s+ 16s + 32s = 2^6 -1 = 63s，TCP才会把断开这个连接。</p>
-</li>
-<li><p>TIME_WAIT<br>TIME_WAIT状态也称2MSL（报文段最大生存时间）等待状态。<br>从TIME_WAIT状态到CLOSED状态，有一个超时设置，这个超时设置是 2*MSL（RFC793定义了MSL为2分钟，Linux设置成了30s）</p>
-</li>
-</ul>
-<h3 id="三，可靠数据传输">三，可靠数据传输</h3><h4 id="1,MSS">1,MSS</h4><p>最大报文段长度表示TCP传往另一端的最大数据库的长度。当一个连接建立的时候，连接的双发都要告知各自的MSS。</p>
-<p>报文段越大允许每个报文段传送的数据就越多，相对IP和TCP首部就有更高的利用率。</p>
-<h4 id="2，序号">2，序号</h4><p>用来解决网络包乱序（reordering）问题</p>
-<h4 id="3，确认号">3，确认号</h4><p>用来解决不丢包的问题</p>
-<h4 id="4，滑动窗口">4，滑动窗口</h4><p>TCP头里有一个字段叫Window，又叫Advertised-Window，这个字段是接收端告诉发送端自己还有多少缓冲区可以接收数据。于是发送端就可以根据这个接收端的处理能力来发送数据，而不会导致接收端处理不过来。</p>
-<h4 id="5,超时重传">5,超时重传</h4><p>根据RTT（Round Trip Time）设置RTO（Retransmission TimeOut）。</p>
-<h4 id="6，快速重传">6，快速重传</h4><p>如果发送方连续收到3次相同的ack，就立即重传。</p>
-<h4 id="7，Nagle算法">7，Nagle算法</h4><p>延迟小分组的发送</p>
-<h3 id="四，拥塞控制">四，拥塞控制</h3><h3 id="1,慢启动">1,慢启动</h3><ol>
-<li>连接建好的开始先初始化cwnd = 1，表明可以传一个MSS大小的数据。</li>
-<li>每当收到一个ACK，cwnd++; 呈线性上升</li>
-<li>每当过了一个RTT，cwnd = cwnd*2; 呈指数让升</li>
-<li>还有一个ssthresh（slow start threshold），是一个上限，当cwnd &gt;= ssthresh时，就会进入“拥塞避免算法”</li>
-</ol>
-<h3 id="2,拥塞避免">2,拥塞避免</h3><p>一般来说ssthresh的值是65535，单位是字节，当cwnd达到这个值时后</p>
-<ol>
-<li>收到一个ACK时，cwnd = cwnd + 1/cwnd</li>
-<li>当每过一个RTT时，cwnd = cwnd + 1</li>
-</ol>
-<h3 id="3,快速恢复">3,快速恢复</h3><p>3个重复的Ack会进入快速恢复算法，进入Fast Recovery之前，cwnd 和 sshthresh已被更新：</p>
-<ul>
-<li>cwnd = cwnd /2</li>
-<li>sshthresh = cwnd</li>
-</ul>
-<p>算法描述：</p>
-<ol>
-<li>cwnd = sshthresh  + 3 * MSS （3的意思是确认有3个数据包被收到了）</li>
-<li>重传Duplicated ACKs指定的数据包</li>
-<li>如果再收到 duplicated Acks，那么cwnd = cwnd +1</li>
-<li>如果收到了新的Ack，那么，cwnd = sshthresh ，然后就进入了拥塞避免的算法了。</li>
-</ol>
-<p><img src="/img/2015/拥塞控制.jpeg" alt=""></p>
-<h2 id="UDP">UDP</h2><h3 id="1，报文结构">1，报文结构</h3><p><img src="/img/2015/UDP报文.jpg" alt=""></p>
-<h3 id="2，优势">2，优势</h3><ul>
-<li>实时发送，由应用程序精确控制发送时间</li>
-<li>无需连接建立，发送效率高</li>
-<li>无连接状态，连接开销下，可创建更多连接</li>
-<li>分组首部开销小，tcp首部20字节，udp只需8字节</li>
-</ul>
-<h2 id="参考资料">参考资料</h2><ul>
-<li><a href="TCP 的那些事儿（上）" title="http://coolshell.cn/articles/11564.html">TCP 的那些事儿（上）</a></li>
-<li><a href="http://coolshell.cn/articles/11609.html" target="_blank" rel="external">TCP 的那些事儿（下）</a></li>
-<li>《TCP/IP 详解 卷1：协议》</li>
-<li>《计算机网络-自顶向下方法》—陈鸣译</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/计算机原理/">计算机原理</a>
 	</div>
 
 

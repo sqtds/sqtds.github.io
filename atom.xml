@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-08-15T04:09:17.000Z</updated>
+  <updated>2015-08-15T08:01:40.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -15,11 +15,218 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[tomcat8源码阅读(五)--启动四]]></title>
+    <link href="http://sqtds.github.io/2015/08/15/2015/tomcat8-sourcecode05/"/>
+    <id>http://sqtds.github.io/2015/08/15/2015/tomcat8-sourcecode05/</id>
+    <published>2015-08-15T06:10:54.000Z</published>
+    <updated>2015-08-15T08:01:40.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，回顾">一，回顾</h2><p>还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。</p>
+<h2 id="二，再读Lifecycle">二，再读Lifecycle</h2><p><img src="/img/2015/tomcat8-lifecycle.png" alt=""><br>我们看Lifecycle的类层次图，发现很多类都实现了Lifecycle，包括connector和container，这里我只关心connector。由于Connector继承了LifecycleBase，跟container一样，当调用其init和start方法时，会调用其内部的initInternal和startInternal方法，下面我们就关注其方法。</p>
+<h2 id="三，Connector的initInternal">三，Connector的initInternal</h2><p>看方法：</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+
+    <span class="keyword">super</span>.initInternal();
+
+    <span class="comment">// Initialize adapter</span>
+    adapter = <span class="keyword">new</span> CoyoteAdapter(<span class="keyword">this</span>);
+    protocolHandler.setAdapter(adapter);    
+
+    <span class="keyword">try</span> {
+        protocolHandler.init();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> LifecycleException
+            (sm.getString
+             (<span class="string">"coyoteConnector.protocolHandlerInitializationFailed"</span>), e);
+    }
+}
+</code></pre><p>这里我们要重点关注protocolHandler，它是怎么创建的呢？我们看Connector的创建。</p>
+<h3 id="3-1_创建Connector">3.1 创建Connector</h3><p>在Catalian的createStartDigester()方法中，有这样一段代码：</p>
+<pre><code><span class="type">Catalian</span>
+digester.addRule(<span class="string">"Server/Service/Connector"</span>,
+                     <span class="keyword">new</span> <span class="type">ConnectorCreateRule</span><span class="literal">()</span>);
+</code></pre><p>我们看代码，这里创建了一个ConnectorCreateRule对象，到这个里面看看。<br>    ConnectorCreateRule<br>    public void begin(String namespace, String name, Attributes attributes)<br>            throws Exception {<br>        Service svc = (Service)digester.peek();<br>        Executor ex = null;<br>        if ( attributes.getValue(“executor”)!=null ) {<br>            ex = svc.getExecutor(attributes.getValue(“executor”));<br>        }<br>        Connector con = new Connector(attributes.getValue(“protocol”));<br>        if (ex != null) {<br>            setExecutor(con, ex);<br>        }<br>        String sslImplementationName = attributes.getValue(“sslImplementationName”);<br>        if (sslImplementationName != null) {<br>            setSSLImplementationName(con, sslImplementationName);<br>        }<br>        digester.push(con);<br>    }</p>
+<p>中间有一句<code>new Connector(attributes.getValue(&quot;protocol&quot;));</code>，好家伙，我们看看Connector的构造方法。</p>
+<pre><code><span class="keyword">public</span> Connector(<span class="keyword">String</span> protocol) {
+    setProtocol(protocol);
+    <span class="comment">// Instantiate protocol handler</span>
+    ProtocolHandler p = <span class="keyword">null</span>;
+    <span class="keyword">try</span> {
+        Class&lt;?&gt; clazz = Class.forName(protocolHandlerClassName);
+        p = (ProtocolHandler) clazz.newInstance();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="built_in">log</span>.error(sm.getString(
+                <span class="string">"coyoteConnector.protocolHandlerInstantiationFailed"</span>), e);
+    } <span class="keyword">finally</span> {
+        <span class="keyword">this</span>.protocolHandler = p;
+    }
+
+    ...<span class="comment">//other</span>
+}
+<span class="comment">//默认类为Http11NioProtocol</span>
+<span class="keyword">protected</span> <span class="keyword">String</span> protocolHandlerClassName =
+    <span class="string">"org.apache.coyote.http11.Http11NioProtocol"</span>;
+</code></pre><p>我们看到，这里用反射创建了一个ProtocolHandler，默认为Http11NioProtocol，并且根据server.xml属性配置设置了协议。 </p>
+<h3 id="3-2_Http11NioProtocol的init">3.2 Http11NioProtocol的init</h3><p>我们看代码：</p>
+<pre><code>AbstractHttp11Protocol
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">for</span> (UpgradeProtocol upgradeProtocol : upgradeProtocols) {
+        configureUpgradeProtocol(upgradeProtocol);
+    }
+
+    <span class="keyword">super</span>.init();
+}
+</code></pre><p>调用了父类的init<br>    AbstractProtocol<br>    public void init() throws Exception {</p>
+<pre><code>    <span class="keyword">if</span> (oname == <span class="keyword">null</span>) {
+        <span class="comment">// Component not pre-registered so register it</span>
+        oname = createObjectName();
+        <span class="keyword">if</span> (oname != <span class="keyword">null</span>) {
+            Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(<span class="keyword">this</span>, oname,
+                <span class="keyword">null</span>);
+        }
+    }
+
+    <span class="keyword">if</span> (<span class="keyword">this</span>.domain != <span class="keyword">null</span>) {
+        <span class="keyword">try</span> {
+            tpOname = <span class="keyword">new</span> ObjectName(domain + <span class="string">":"</span> +
+                    <span class="string">"type=ThreadPool,name="</span> + getName());
+            Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(endpoint,
+                    tpOname, <span class="keyword">null</span>);
+        } <span class="keyword">catch</span> (Exception e) {
+            getLog().<span class="keyword">error</span>(sm.getString(
+                    <span class="string">"abstractProtocolHandler.mbeanRegistrationFailed"</span>,
+                    tpOname, getName()), e);
+        }
+        rgOname=<span class="keyword">new</span> ObjectName(domain +
+                <span class="string">":type=GlobalRequestProcessor,name="</span> + getName());
+        Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(
+                getHandler().getGlobal(), rgOname, <span class="keyword">null</span> );
+    }
+
+    String endpointName = getName();
+    endpoint.setName(endpointName.substring(<span class="number">1</span>, endpointName.length()-<span class="number">1</span>));
+
+    <span class="keyword">try</span> {
+        endpoint.init();
+    } <span class="keyword">catch</span> (Exception ex) {
+        getLog().<span class="keyword">error</span>(sm.getString(<span class="string">"abstractProtocolHandler.initError"</span>,
+                getName()), ex);
+        <span class="keyword">throw</span> ex;
+    }
+}
+AbstractEndpoint
+<span class="keyword">public</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span> (bindOnInit) {
+        bind();
+        bindState = BindState.BOUND_ON_INIT;
+    }
+}
+</code></pre><p>先调用bind方法，绑定端口：</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">bind</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+
+    serverSock = ServerSocketChannel.open();
+    socketProperties.setProperties(serverSock.socket());
+    InetSocketAddress addr = (getAddress()!=<span class="keyword">null</span>?<span class="keyword">new</span> InetSocketAddress(getAddress(),getPort()):<span class="keyword">new</span> InetSocketAddress(getPort()));
+    serverSock.socket().bind(addr,getBacklog());
+    serverSock.configureBlocking(<span class="keyword">true</span>); <span class="comment">//mimic APR behavior</span>
+    serverSock.socket().setSoTimeout(getSocketProperties().getSoTimeout());
+
+    <span class="comment">// Initialize thread count defaults for acceptor, poller</span>
+    <span class="keyword">if</span> (acceptorThreadCount == <span class="number">0</span>) {
+        <span class="comment">// FIXME: Doesn't seem to work that well with multiple accept threads</span>
+        acceptorThreadCount = <span class="number">1</span>;
+    }
+    <span class="keyword">if</span> (pollerThreadCount &lt;= <span class="number">0</span>) {
+        <span class="comment">//minimum one poller thread</span>
+        pollerThreadCount = <span class="number">1</span>;
+    }
+    stopLatch = <span class="keyword">new</span> CountDownLatch(pollerThreadCount);
+
+    <span class="comment">// Initialize SSL if needed</span>
+    initialiseSsl();
+
+    selectorPool.open();
+}
+</code></pre><h2 id="四，Connector的startInternal">四，Connector的startInternal</h2><p>直接上方法：</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    ...<span class="comment">//检验</span>
+    setState(LifecycleState.STARTING);
+    <span class="keyword">try</span> {
+        protocolHandler.start();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> LifecycleException
+            (errPrefix + <span class="string">" "</span> + sm.getString
+             (<span class="string">"coyoteConnector.protocolHandlerStartFailed"</span>), e);
+    }
+}
+</code></pre><p>方法很简单，调用了protocolHandler的start方法。</p>
+<h3 id="4-1_Http11NioProtocol的start">4.1 Http11NioProtocol的start</h3><pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">try</span> {
+        endpoint.start();
+    } <span class="keyword">catch</span> (Exception ex) {
+        getLog().<span class="keyword">error</span>(sm.getString(<span class="string">"abstractProtocolHandler.startError"</span>,
+                getName()), ex);
+        <span class="keyword">throw</span> ex;
+    }
+}
+</code></pre><p>代码直接启动了endpoint，在Http11NioProtocol为NioEndpoint对象，这里就不解释了。</p>
+<p>我们看其内部方法：</p>
+<pre><code>AbstractEndpoint
+<span class="keyword">public</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span> (bindState == BindState.UNBOUND) {
+        bind();
+        bindState = BindState.BOUND_ON_START;
+    }
+    startInternal();
+}
+</code></pre><p>代码采用Blocking模式接收连接请求。接着调用了startInternal方法:</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+
+    <span class="keyword">if</span> (!running) {
+        running = <span class="keyword">true</span>;
+        paused = <span class="keyword">false</span>;
+
+        processorCache = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                socketProperties.getProcessorCache());
+        eventCache = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                        socketProperties.getEventCache());
+        nioChannels = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                socketProperties.getBufferPool());
+
+        <span class="comment">// Create worker collection</span>
+        <span class="keyword">if</span> ( getExecutor() == <span class="keyword">null</span> ) {
+            createExecutor();
+        }
+
+        initializeConnectionLatch();
+
+        <span class="comment">// Start poller threads</span>
+        pollers = <span class="keyword">new</span> Poller[getPollerThreadCount()];
+        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;pollers.length; i++) {
+            pollers[i] = <span class="keyword">new</span> Poller();
+            Thread pollerThread = <span class="keyword">new</span> Thread(pollers[i], getName() + <span class="string">"-ClientPoller-"</span>+i);
+            pollerThread.setPriority(threadPriority);
+            pollerThread.setDaemon(<span class="keyword">true</span>);
+            pollerThread.start();
+        }
+
+        startAcceptorThreads();
+    }
+}
+</code></pre><p>代码首先创建了线程池，然后初始化了最大连接限制，启动了poller线程，最后启动了acceptor线程。这样，整个流程就结束了。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="一，回顾">一，回顾</h2><p>还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。</p>
+<h2 id="二，再读Lifecycle">二，再读Lifecy]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[redis学习]]></title>
-    <link href="http://sqtds.github.io/2015/08/15/redis-study/"/>
-    <id>http://sqtds.github.io/2015/08/15/redis-study/</id>
+    <link href="http://sqtds.github.io/2015/08/15/2015/redis-study/"/>
+    <id>http://sqtds.github.io/2015/08/15/2015/redis-study/</id>
     <published>2015-08-15T02:07:36.000Z</published>
-    <updated>2015-08-15T04:09:17.000Z</updated>
+    <updated>2015-08-15T04:11:24.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，redis数据结构">一，redis数据结构</h2><p>redis总共包含5种类型的数据结构，分别是String,Hash,List,Set,Sorted Set。下面我们来逐一介绍.</p>
 <h3 id="1-1_String">1.1 String</h3><p>String就是基本的key-value数据结构。</p>
 <p>常用命令：</p>
@@ -102,7 +309,7 @@ HSET person:<span class="number">1</span> sex <span class="string">'男'</span>�
 </ul>
 <h2 id="参考资料">参考资料</h2><ul>
 <li><a href="http://redisdoc.com/" target="_blank" rel="external">Redis 命令参考</a></li>
-<li><a href="http://redis.io/" target="_blank" rel="external">redis官方网站</a></li>
+<li><a href="http://redis.io/" target="_blank" rel="external">Redis官方网站</a></li>
 <li><a href="http://openmymind.net/2012/1/23/The-Little-Redis-Book/" target="_blank" rel="external">The Little Redis Book</a></li>
 </ul>
 ]]></content>
@@ -122,7 +329,7 @@ HSET person:<span class="number">1</span> sex <span class="string">'男'</span>�
     <link href="http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode04/"/>
     <id>http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode04/</id>
     <published>2015-08-12T13:40:47.000Z</published>
-    <updated>2015-08-13T13:28:44.000Z</updated>
+    <updated>2015-08-15T06:33:28.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，回顾">一，回顾</h2><p>上文介绍了Server的启动过程，但是没有详细介绍Container和Connector的详细启动流程，下面我将介绍Container的启动流程。</p>
 <h2 id="二，Container的init">二，Container的init</h2><p>下面我看看Container的继承结构：<br><img src="/img/2015/container.png" alt=""><br>Engine，Host，Context，Wrapper都属于Container。下面，我们根据server.xml的默认配置结构来看看。</p>
 <pre><code><span class="tag">&lt;<span class="title">Engine</span> <span class="attribute">name</span>=<span class="value">"Catalina"</span> <span class="attribute">defaultHost</span>=<span class="value">"localhost"</span>&gt;</span>
@@ -818,6 +1025,7 @@ public void start<span class="literal">()</span> {
         ...<span class="comment">//略</span>
 }
 </code></pre><p>在这里，我们发现，创建了一个Context，并将其添加到Host中，就完成了未在server.xml中配置Context也可以启动webapps目录下的工程了。好的，container启动部分就到此结束了，下文将介绍connector启动部分。</p>
+<h2 id="五，流程图">五，流程图</h2><p><img src="/img/2015/tomcat8-catalian-start1.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start2.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start3.png" alt=""></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h2 id="一，回顾">一，回顾</h2><p>上文介绍了Server的启动过程，但是没有详细介绍Container和Connector的详细启动流程，下面我将介绍Container的启动流程。</p>
@@ -835,7 +1043,7 @@ public void start<span class="literal">()</span> {
     <link href="http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode03/"/>
     <id>http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode03/</id>
     <published>2015-08-12T03:59:22.000Z</published>
-    <updated>2015-08-13T13:01:45.000Z</updated>
+    <updated>2015-08-15T07:47:05.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，Catalina启动">一，Catalina启动</h2><p>接上文，BootStart启动后会启动Catalina的start方法：</p>
 <pre><code> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>{
     <span class="comment">//加载服务    </span>
@@ -1101,7 +1309,7 @@ public void start<span class="literal">()</span> {
            <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
 
  &lt;Connector <span class="variable">port=</span><span class="string">"8009"</span> <span class="variable">protocol=</span><span class="string">"AJP/1.3"</span> <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
-</code></pre><p>他们分别接受Http和Ajp协议。由于Container和Connector的初始化流程太长，放到下一节讲。</p>
+</code></pre><p>他们分别接受Http和Ajp协议。由于Container和Connector的初始化流程太长，放到后面讲。</p>
 <h2 id="六，启动服务Server">六，启动服务Server</h2><p>初始化所有的节点后，接下来就是启动Server了。我们先看Server的start方法。同样的，Server继承了LifecycleBase的start方法。</p>
 <h3 id="6-1_Lifecycle的start">6.1 Lifecycle的start</h3><pre><code>LifecycleBase
 public final synchronized void start() throws LifecycleException {
@@ -1193,6 +1401,7 @@ public final synchronized void start() throws LifecycleException {
     }
 }
 </code></pre><p>同样，在这段代码中，也调用了container和connector的start方法。在接下来的文章中，我将详细介绍container和connector的启动方式。</p>
+<h2 id="五，流程图">五，流程图</h2><p>说了这么多，没图怎么能行呢？下面就是Boostart到Catalina加载的流程图。<br><img src="/img/2015/tomcat8-bootstarp.png" alt=""></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h2 id="一，Catalina启动">一，Catalina启动</h2><p>接上文，BootStart启动后会启动Catalina的start方法：</p>
@@ -1210,7 +1419,7 @@ public final synchronized void start() throws LifecycleException {
     <link href="http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode02/"/>
     <id>http://sqtds.github.io/2015/08/12/2015/tomcat8-sourcecode02/</id>
     <published>2015-08-12T00:25:49.000Z</published>
-    <updated>2015-08-12T03:59:59.000Z</updated>
+    <updated>2015-08-15T06:17:18.000Z</updated>
     <content type="html"><![CDATA[<h2 id="一，前言">一，前言</h2><p>在本文中，我将主要介绍tomcat的启动阶段，包括main方法的运行，配置文件的加载，对象的实例化关联等。</p>
 <h2 id="二，Bootstrap的mian">二，Bootstrap的mian</h2><p>当我们调试tomcat的时候，是从Bootstrap的main方法开始启动的。那这个main方法主要做了哪些工作，我们看看内部实现。</p>
 <pre><code><span class="keyword">Bootstrap</span>    
@@ -2649,35 +2858,6 @@ PSH 尽可能的将数据送往接收进程
       <category term="分布式" scheme="http://sqtds.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
       <category term="分布式" scheme="http://sqtds.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[java核心系列（十一）-java内存模型]]></title>
-    <link href="http://sqtds.github.io/2015/05/23/2015/java-jmm/"/>
-    <id>http://sqtds.github.io/2015/05/23/2015/java-jmm/</id>
-    <published>2015-05-23T00:10:03.000Z</published>
-    <updated>2015-05-24T07:20:42.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
-<h3 id="参考资料">参考资料</h3><ul>
-<li><a href="http://www.importnew.com/1993.html" target="_blank" rel="external">成为JavaGC专家Part I — 深入浅出Java垃圾回收机制</a></li>
-<li><a href="&quot;http://www.importnew.com/2057.html&quot;">成为JavaGC专家Part II — 如何监控Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3146.html" target="_blank" rel="external">成为Java GC专家系列Part III–如何优化Java垃圾回收机制 </a></li>
-<li><a href="http://www.importnew.com/3151.html" target="_blank" rel="external">成为Java GC专家（4）—Apache的MaxClients参数详解及其在Tomcat执行FullGC时的影响</a></li>
-<li><a href="http://www.importnew.com/13954.html" target="_blank" rel="external">成为Java GC专家（5）—Java性能调优原则</a></li>
-<li><a href="http://ju.outofmemory.cn/entry/65368" target="_blank" rel="external">G1垃圾收集器</a></li>
-<li><a href="http://ifeve.com/jvm-permgen-where-art-thou/" target="_blank" rel="external">JVM的持久代——何去何从？</a></li>
-</ul>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h2 id="JMM内存概览">JMM内存概览</h2><p><img src="/img/2015/JMM.png" alt=""></p>
-<h3 id="参考资料">参考资料</h3><ul>
-<li><a href="http://www.importnew.com/1]]>
-    </summary>
-    
-      <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
-    
-      <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
     
   </entry>
   

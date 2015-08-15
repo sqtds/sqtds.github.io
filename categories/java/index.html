@@ -889,6 +889,7 @@ public void start<span class="literal">()</span> {
         ...<span class="comment">//略</span>
 }
 </code></pre><p>在这里，我们发现，创建了一个Context，并将其添加到Host中，就完成了未在server.xml中配置Context也可以启动webapps目录下的工程了。好的，container启动部分就到此结束了，下文将介绍connector启动部分。</p>
+<h2 id="五，流程图">五，流程图</h2><p><img src="/img/2015/tomcat8-catalian-start1.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start2.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start3.png" alt=""></p>
 
       
     </div>
@@ -1210,7 +1211,7 @@ public void start<span class="literal">()</span> {
            <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
 
  &lt;Connector <span class="variable">port=</span><span class="string">"8009"</span> <span class="variable">protocol=</span><span class="string">"AJP/1.3"</span> <span class="variable">redirectPort=</span><span class="string">"8443"</span> /&gt;
-</code></pre><p>他们分别接受Http和Ajp协议。由于Container和Connector的初始化流程太长，放到下一节讲。</p>
+</code></pre><p>他们分别接受Http和Ajp协议。由于Container和Connector的初始化流程太长，放到后面讲。</p>
 <h2 id="六，启动服务Server">六，启动服务Server</h2><p>初始化所有的节点后，接下来就是启动Server了。我们先看Server的start方法。同样的，Server继承了LifecycleBase的start方法。</p>
 <h3 id="6-1_Lifecycle的start">6.1 Lifecycle的start</h3><pre><code>LifecycleBase
 public final synchronized void start() throws LifecycleException {
@@ -1302,6 +1303,7 @@ public final synchronized void start() throws LifecycleException {
     }
 }
 </code></pre><p>同样，在这段代码中，也调用了container和connector的start方法。在接下来的文章中，我将详细介绍container和connector的启动方式。</p>
+<h2 id="五，流程图">五，流程图</h2><p>说了这么多，没图怎么能行呢？下面就是Boostart到Catalina加载的流程图。<br><img src="/img/2015/tomcat8-bootstarp.png" alt=""></p>
 
       
     </div>

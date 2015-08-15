@@ -16,6 +16,9 @@
 二，Container的init下面我看看Container的继承结构：Engine，Host，Context，Wrapper都属于Container。下面，我们根据server.xml的默认配置结构来看看。
 &amp;lt;Engine name=&quot;">
 <meta property="og:image" content="/img/2015/container.png">
+<meta property="og:image" content="/img/2015/tomcat8-catalian-start1.png">
+<meta property="og:image" content="/img/2015/tomcat8-catalian-start2.png">
+<meta property="og:image" content="/img/2015/tomcat8-catalian-start3.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tomcat8源码阅读(四)--启动三">
 <meta name="twitter:description" content="一，回顾上文介绍了Server的启动过程，但是没有详细介绍Container和Connector的详细启动流程，下面我将介绍Container的启动流程。
@@ -909,6 +912,7 @@ public void start<span class="literal">()</span> {
         ...<span class="comment">//略</span>
 }
 </code></pre><p>在这里，我们发现，创建了一个Context，并将其添加到Host中，就完成了未在server.xml中配置Context也可以启动webapps目录下的工程了。好的，container启动部分就到此结束了，下文将介绍connector启动部分。</p>
+<h2 id="五，流程图">五，流程图</h2><p><img src="/img/2015/tomcat8-catalian-start1.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start2.png" alt=""><br><img src="/img/2015/tomcat8-catalian-start3.png" alt=""></p>
 
       
     </div>
@@ -918,7 +922,7 @@ public void start<span class="literal">()</span> {
     
 <nav id="article-nav">
   
-    <a href="/2015/08/15/redis-study/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/08/15/2015/redis-study/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         

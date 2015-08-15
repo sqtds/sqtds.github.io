@@ -168,6 +168,69 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-2014/mondrian-source-code-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-3/" class="article-date">
+  	<time datetime="2014-10-26T04:12:55.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-3/">mondrian 源码解读（三）-mondrian架构</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="mondrian系统的层次">mondrian系统的层次</h2><p>mondrian总共包含四个层次：表示层,计算层,聚集层,存储层.。</p>
+<h3 id="表示层(presentation_layer)">表示层(presentation layer)</h3><p>指最终呈现在用户显示器上的,以及与用户之间的交互,有许多方法来展现多维数据,包括数据透视表,饼,柱,线状图. </p>
+<h3 id="计算层(dimensional_layer)">计算层(dimensional layer)</h3><p>分析,验证,执行MDX查询. 一个mdx查询语句会有多个处理阶段。先是计算轴，然后是轴上的单元值。为效率起见，计算层批量将单元请求发送到聚集层。请求转换器允许程序操作存在的请求，而不是为每个请求从头构造mdx请求。元数据描述了计算模型和它怎么匹配到关系模型。</p>
+<h3 id="聚集层(star_layer)">聚集层(star layer)</h3><p>一个聚集指内存中一组计算值(cell),这些值通过维列来限制.计算层发送单元请求,如果请求不在缓存中,或者不能通过旋转聚集导出的话,聚集层向存储层发送请求. 聚集层是一个数据缓冲层(cache)<br>从数据库来的单元数据，聚合后提供给计算层。聚集层的主要作用是提高系统的性能。 </p>
+<h3 id="存储层(storage_layer)">存储层(storage layer)</h3><p>提供聚集单元数据(cell)和维表的成员(member),这些层可以不在同一机子上,但是计算和聚集层必须在同一台机子上。有三种需要存储的数据：事实数据(事实表)、维度表和聚集数据(即聚合表)</p>
+<p><img src="/img/2014/arch_mondrian_v1_lrg.png" alt="架构图"></p>
+<p>更多内容请移步：<a href="http://mondrian.pentaho.com/documentation/architecture.php" target="_blank" rel="external">http://mondrian.pentaho.com/documentation/architecture.php</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -613,161 +676,6 @@ term4  returns [Exp <span class="built_in">exp</span>]
     $<span class="built_in">exp</span> =  <span class="keyword">new</span> UnresolvedFunCall(<span class="string">"NOT"</span>, Syntax.Prefix, <span class="keyword">new</span> Exp[] {$term4alias.<span class="built_in">exp</span>});<span class="comment">//命名别名后，取出的才是真正需要的的内容，即当前term4下的表达式</span>
 }
 ;
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-exception" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/01/2014/antlr4-exception/" class="article-date">
-  	<time datetime="2014-09-01T11:57:01.000Z" itemprop="datePublished">9月 1 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/01/2014/antlr4-exception/">antlr4-异常处理（八）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>antlr4的异常处理机制很简单，下面我们来具体看看</p>
-<h2 id="修改和重定向错误">修改和重定向错误</h2><p>默认情况下， antlr发送所有的错误到标准错误中，但是我们可以提供ANTERErrorListener接口的实现来改变错误的内容和目的地。<br>这个接口有一个syntaxError方法适用于词法和解析器。方法接收所有已排序的本地错误和消息错误。它也可以接收一个parser的引用，所以我们能够查询状态的识别。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> class UnderlineListener extends BaseErrorListener {
-<span class="keyword">public</span> <span class="keyword">void</span> syntaxError(Recognizer&lt;?, ?&gt; recognizer,
-            <span class="keyword">Object</span> offendingSymbol,
-            <span class="built_in">int</span> <span class="built_in">line</span>, <span class="built_in">int</span> charPositionInLine,
-            <span class="keyword">String</span> msg,
-            RecognitionException e)
-{
-    System.err.<span class="built_in">println</span>(<span class="string">"line "</span>+<span class="built_in">line</span>+<span class="string">":"</span>+charPositionInLine+<span class="string">" "</span>+msg);
-    underlineError(recognizer,(Token)offendingSymbol,
-                   <span class="built_in">line</span>, charPositionInLine);
-}
-
-<span class="keyword">protected</span> <span class="keyword">void</span> underlineError(Recognizer recognizer,
-                              Token offendingToken, <span class="built_in">int</span> <span class="built_in">line</span>,
-                              <span class="built_in">int</span> charPositionInLine) {
-    CommonTokenStream tokens =
-        (CommonTokenStream)recognizer.getInputStream();
-    <span class="keyword">String</span> input = tokens.getTokenSource().getInputStream().toString();
-    <span class="keyword">String</span>[] lines = input.<span class="built_in">split</span>(<span class="string">"\n"</span>);
-    <span class="keyword">String</span> errorLine = lines[<span class="built_in">line</span> - <span class="number">1</span>];
-    System.err.<span class="built_in">println</span>(errorLine);
-    <span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>; i&lt;charPositionInLine; i++) System.err.<span class="built_in">print</span>(<span class="string">" "</span>);
-    <span class="built_in">int</span> start = offendingToken.getStartIndex();
-    <span class="built_in">int</span> stop = offendingToken.getStopIndex();
-    <span class="keyword">if</span> ( start&gt;=<span class="number">0</span> &amp;&amp; stop&gt;=<span class="number">0</span> ) {
-        <span class="keyword">for</span> (<span class="built_in">int</span> i=start; i&lt;=stop; i++) System.err.<span class="built_in">print</span>(<span class="string">"^"</span>);
-        }
-    System.err.<span class="built_in">println</span>();
-    }
-}
-
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="keyword">String</span>[] args) <span class="keyword">throws</span> Exception {
-    ANTLRInputStream input = <span class="keyword">new</span> ANTLRInputStream(System.in);
-    SimpleLexer lexer = <span class="keyword">new</span> SimpleLexer(input);
-    CommonTokenStream tokens = <span class="keyword">new</span> CommonTokenStream(lexer);
-    SimpleParser parser = <span class="keyword">new</span> SimpleParser(tokens);
-    parser.removeErrorListeners(); <span class="comment">// remove ConsoleErrorListener</span>
-    parser.addErrorListener(<span class="keyword">new</span> UnderlineListener());
-    parser.prog();
-}
-</code></pre><h2 id="自动错误恢复">自动错误恢复</h2><p>错误恢复就是运行解析器在发现了一个词法错误后可以继续执行。原则上，最佳的错误恢复应该是我们手写的递归下沿的解析器。解析器执行单个token插入和单个token删除直到不符合的token错误被修正。如果没有，解析器吞掉tokens知道他发现一个token能够可理解的跟着当前的规则然后返回，继续直到所有的解析完。</p>
-<h3 id="捕获失败的语义预测">捕获失败的语义预测</h3><p>so easy!  当预测失败时，你可以使用这样的函数{…}?<fail={failed()}>来执行某些动作。</fail={failed()}></p>
-<pre><code><span class="attribute">vec4</span>: <span class="string">  '[' ints[4] ']' ;</span>
-
-<span class="mel">ints[<span class="keyword">int</span> <span class="keyword">max</span>]
-locals [<span class="keyword">int</span> i=<span class="number">1</span>]
-:   INT ( <span class="string">','</span> {<span class="variable">$i</span>++;} {<span class="variable">$i</span>&lt;=<span class="variable">$max</span>}?&lt;fail={<span class="string">"exceeded max "</span>+<span class="variable">$max</span>}&gt; INT )*
-;
-
-INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
-WS  :   [ \t\r\n]+ -&gt; skip ;</span>
-</code></pre><h2 id="错误的替代选择">错误的替代选择</h2><p>同样不解释了.</p>
-<pre><code>fcall
-:   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span>
-|   ID <span class="string">'('</span> <span class="keyword">expr</span> <span class="string">')'</span> <span class="string">')'</span> {notifyErrorListeners(<span class="string">"Too many parentheses"</span>);}
-|   ID <span class="string">'('</span> <span class="keyword">expr</span>         {notifyErrorListeners(<span class="string">"Missing closing ')'"</span>);}
-;
-</code></pre><h2 id="另一个可选的错误策略">另一个可选的错误策略</h2><p>有时候我们不想用默认的错误处理策略。第一，在运行期的时候，我们可能想要禁用一些内部的错误处理。第二，我们可能想要提示最开始的语法错误。<br>要查看错误处理策略，我们可以看一下ANTLRErrorStrategy接口的默认具体实现DefaultErrorStrategy。这个类处理了antlr4所有的错误处理行为。<br>从antlr生成的代码中我们也可以看到：</p>
-<pre><code>_errHandler.reportError(<span class="keyword">this</span>, re);
-_errHandler.recover(<span class="keyword">this</span>, re);
-</code></pre><p>另一种错误处理就是BailErrorStrategy处理策略，即遇到异常后自动抛出。我们只需要告诉parser使用这种策略即可。当然，我们也可以用我们自己的错误处理方式，只需要继承DefaultErrorStrategy即可。</p>
-<blockquote>
-<p>parser.setErrorHandler( new BailErrorStrategy());</p>
-</blockquote>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">BailErrorStrategy</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">DefaultErrorStrategy</span> {</span>
-<span class="comment">/** Instead of recovering from exception {@code e}, re-throw it wrapped
- *  in a {@link ParseCancellationException} so it is not caught by the
- *  rule function catches.  Use {@link Exception#getCause()} to get the
- *  original {@link RecognitionException}.
- */</span>
-<span class="annotation">@Override</span>
-public void recover(<span class="type">Parser</span> recognizer, <span class="type">RecognitionException</span> e) {
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover inline; if the parser
- *  successfully recovers, it won't throw an exception.
- */</span>
-<span class="annotation">@Override</span>
-public <span class="type">Token</span> recoverInline(<span class="type">Parser</span> recognizer)
-    <span class="keyword">throws</span> <span class="type">RecognitionException</span>
-{
-    <span class="type">InputMismatchException</span> e = <span class="keyword">new</span> <span class="type">InputMismatchException</span>(recognizer);
-    <span class="keyword">for</span> (<span class="type">ParserRuleContext</span> context = recognizer.getContext(); context != <span class="literal">null</span>; context = context.getParent()) {
-        context.exception = e;
-    }
-
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">ParseCancellationException</span>(e);
-}
-
-<span class="comment">/** Make sure we don't attempt to recover from problems in subrules. */</span>
-<span class="annotation">@Override</span>
-public void sync(<span class="type">Parser</span> recognizer) { }
 </code></pre>
       
     </div>

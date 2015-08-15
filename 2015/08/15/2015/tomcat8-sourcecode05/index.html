@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>tomcat8源码阅读(五)--启动四 | 蜻蜓点水</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一，回顾还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。
+二，再读Lifecycle我们看Lifecycle的类层次图，发现很多类都实现了Lifecycle，包括connector和container，这里我只关心connector。由于Connector继承了LifecycleBase，跟co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tomcat8源码阅读(五)--启动四">
+<meta property="og:url" content="http://sqtds.github.io/2015/08/15/2015/tomcat8-sourcecode05/index.html">
+<meta property="og:site_name" content="蜻蜓点水">
+<meta property="og:description" content="一，回顾还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。
+二，再读Lifecycle我们看Lifecycle的类层次图，发现很多类都实现了Lifecycle，包括connector和container，这里我只关心connector。由于Connector继承了LifecycleBase，跟co">
+<meta property="og:image" content="/img/2015/tomcat8-lifecycle.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tomcat8源码阅读(五)--启动四">
+<meta name="twitter:description" content="一，回顾还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。
+二，再读Lifecycle我们看Lifecycle的类层次图，发现很多类都实现了Lifecycle，包括connector和container，这里我只关心connector。由于Connector继承了LifecycleBase，跟co">
+  
+    <link rel="alternative" href="/atom.xml" title="蜻蜓点水" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+<script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?1bd1f966e3148e2b59e4b159067ad372";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="/img/photo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">sqtds</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/随笔">随笔</a></li>
+				        
+							<li><a href="/about">关于我</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+					        
+								<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+					        
+								<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">sqtds</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/photo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">sqtds</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/随笔">随笔</a></li>
+		        
+					<li><a href="/about">关于我</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/sqtds" title="github">github</a>
+			        
+						<a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+			        
+						<a class="mail" target="_blank" href="/sqtds@163.com" title="mail">mail</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-2015/tomcat8-sourcecode05" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/15/2015/tomcat8-sourcecode05/" class="article-date">
+  	<time datetime="2015-08-15T06:10:54.000Z" itemprop="datePublished">8月 15 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      tomcat8源码阅读(五)--启动四
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，回顾">一，回顾</h2><p>还记得我们在启动二讲过的嘛？container的启动和初始化讲完了，connector还没开始。下面，我们开始看connector是如何初始化和启动的。</p>
+<h2 id="二，再读Lifecycle">二，再读Lifecycle</h2><p><img src="/img/2015/tomcat8-lifecycle.png" alt=""><br>我们看Lifecycle的类层次图，发现很多类都实现了Lifecycle，包括connector和container，这里我只关心connector。由于Connector继承了LifecycleBase，跟container一样，当调用其init和start方法时，会调用其内部的initInternal和startInternal方法，下面我们就关注其方法。</p>
+<h2 id="三，Connector的initInternal">三，Connector的initInternal</h2><p>看方法：</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">initInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+
+    <span class="keyword">super</span>.initInternal();
+
+    <span class="comment">// Initialize adapter</span>
+    adapter = <span class="keyword">new</span> CoyoteAdapter(<span class="keyword">this</span>);
+    protocolHandler.setAdapter(adapter);    
+
+    <span class="keyword">try</span> {
+        protocolHandler.init();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> LifecycleException
+            (sm.getString
+             (<span class="string">"coyoteConnector.protocolHandlerInitializationFailed"</span>), e);
+    }
+}
+</code></pre><p>这里我们要重点关注protocolHandler，它是怎么创建的呢？我们看Connector的创建。</p>
+<h3 id="3-1_创建Connector">3.1 创建Connector</h3><p>在Catalian的createStartDigester()方法中，有这样一段代码：</p>
+<pre><code><span class="type">Catalian</span>
+digester.addRule(<span class="string">"Server/Service/Connector"</span>,
+                     <span class="keyword">new</span> <span class="type">ConnectorCreateRule</span><span class="literal">()</span>);
+</code></pre><p>我们看代码，这里创建了一个ConnectorCreateRule对象，到这个里面看看。<br>    ConnectorCreateRule<br>    public void begin(String namespace, String name, Attributes attributes)<br>            throws Exception {<br>        Service svc = (Service)digester.peek();<br>        Executor ex = null;<br>        if ( attributes.getValue(“executor”)!=null ) {<br>            ex = svc.getExecutor(attributes.getValue(“executor”));<br>        }<br>        Connector con = new Connector(attributes.getValue(“protocol”));<br>        if (ex != null) {<br>            setExecutor(con, ex);<br>        }<br>        String sslImplementationName = attributes.getValue(“sslImplementationName”);<br>        if (sslImplementationName != null) {<br>            setSSLImplementationName(con, sslImplementationName);<br>        }<br>        digester.push(con);<br>    }</p>
+<p>中间有一句<code>new Connector(attributes.getValue(&quot;protocol&quot;));</code>，好家伙，我们看看Connector的构造方法。</p>
+<pre><code><span class="keyword">public</span> Connector(<span class="keyword">String</span> protocol) {
+    setProtocol(protocol);
+    <span class="comment">// Instantiate protocol handler</span>
+    ProtocolHandler p = <span class="keyword">null</span>;
+    <span class="keyword">try</span> {
+        Class&lt;?&gt; clazz = Class.forName(protocolHandlerClassName);
+        p = (ProtocolHandler) clazz.newInstance();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="built_in">log</span>.error(sm.getString(
+                <span class="string">"coyoteConnector.protocolHandlerInstantiationFailed"</span>), e);
+    } <span class="keyword">finally</span> {
+        <span class="keyword">this</span>.protocolHandler = p;
+    }
+
+    ...<span class="comment">//other</span>
+}
+<span class="comment">//默认类为Http11NioProtocol</span>
+<span class="keyword">protected</span> <span class="keyword">String</span> protocolHandlerClassName =
+    <span class="string">"org.apache.coyote.http11.Http11NioProtocol"</span>;
+</code></pre><p>我们看到，这里用反射创建了一个ProtocolHandler，默认为Http11NioProtocol，并且根据server.xml属性配置设置了协议。 </p>
+<h3 id="3-2_Http11NioProtocol的init">3.2 Http11NioProtocol的init</h3><p>我们看代码：</p>
+<pre><code>AbstractHttp11Protocol
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">for</span> (UpgradeProtocol upgradeProtocol : upgradeProtocols) {
+        configureUpgradeProtocol(upgradeProtocol);
+    }
+
+    <span class="keyword">super</span>.init();
+}
+</code></pre><p>调用了父类的init<br>    AbstractProtocol<br>    public void init() throws Exception {</p>
+<pre><code>    <span class="keyword">if</span> (oname == <span class="keyword">null</span>) {
+        <span class="comment">// Component not pre-registered so register it</span>
+        oname = createObjectName();
+        <span class="keyword">if</span> (oname != <span class="keyword">null</span>) {
+            Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(<span class="keyword">this</span>, oname,
+                <span class="keyword">null</span>);
+        }
+    }
+
+    <span class="keyword">if</span> (<span class="keyword">this</span>.domain != <span class="keyword">null</span>) {
+        <span class="keyword">try</span> {
+            tpOname = <span class="keyword">new</span> ObjectName(domain + <span class="string">":"</span> +
+                    <span class="string">"type=ThreadPool,name="</span> + getName());
+            Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(endpoint,
+                    tpOname, <span class="keyword">null</span>);
+        } <span class="keyword">catch</span> (Exception e) {
+            getLog().<span class="keyword">error</span>(sm.getString(
+                    <span class="string">"abstractProtocolHandler.mbeanRegistrationFailed"</span>,
+                    tpOname, getName()), e);
+        }
+        rgOname=<span class="keyword">new</span> ObjectName(domain +
+                <span class="string">":type=GlobalRequestProcessor,name="</span> + getName());
+        Registry.getRegistry(<span class="keyword">null</span>, <span class="keyword">null</span>).registerComponent(
+                getHandler().getGlobal(), rgOname, <span class="keyword">null</span> );
+    }
+
+    String endpointName = getName();
+    endpoint.setName(endpointName.substring(<span class="number">1</span>, endpointName.length()-<span class="number">1</span>));
+
+    <span class="keyword">try</span> {
+        endpoint.init();
+    } <span class="keyword">catch</span> (Exception ex) {
+        getLog().<span class="keyword">error</span>(sm.getString(<span class="string">"abstractProtocolHandler.initError"</span>,
+                getName()), ex);
+        <span class="keyword">throw</span> ex;
+    }
+}
+AbstractEndpoint
+<span class="keyword">public</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span> (bindOnInit) {
+        bind();
+        bindState = BindState.BOUND_ON_INIT;
+    }
+}
+</code></pre><p>先调用bind方法，绑定端口：</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">bind</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+
+    serverSock = ServerSocketChannel.open();
+    socketProperties.setProperties(serverSock.socket());
+    InetSocketAddress addr = (getAddress()!=<span class="keyword">null</span>?<span class="keyword">new</span> InetSocketAddress(getAddress(),getPort()):<span class="keyword">new</span> InetSocketAddress(getPort()));
+    serverSock.socket().bind(addr,getBacklog());
+    serverSock.configureBlocking(<span class="keyword">true</span>); <span class="comment">//mimic APR behavior</span>
+    serverSock.socket().setSoTimeout(getSocketProperties().getSoTimeout());
+
+    <span class="comment">// Initialize thread count defaults for acceptor, poller</span>
+    <span class="keyword">if</span> (acceptorThreadCount == <span class="number">0</span>) {
+        <span class="comment">// FIXME: Doesn't seem to work that well with multiple accept threads</span>
+        acceptorThreadCount = <span class="number">1</span>;
+    }
+    <span class="keyword">if</span> (pollerThreadCount &lt;= <span class="number">0</span>) {
+        <span class="comment">//minimum one poller thread</span>
+        pollerThreadCount = <span class="number">1</span>;
+    }
+    stopLatch = <span class="keyword">new</span> CountDownLatch(pollerThreadCount);
+
+    <span class="comment">// Initialize SSL if needed</span>
+    initialiseSsl();
+
+    selectorPool.open();
+}
+</code></pre><h2 id="四，Connector的startInternal">四，Connector的startInternal</h2><p>直接上方法：</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> LifecycleException </span>{
+    ...<span class="comment">//检验</span>
+    setState(LifecycleState.STARTING);
+    <span class="keyword">try</span> {
+        protocolHandler.start();
+    } <span class="keyword">catch</span> (Exception e) {
+        <span class="keyword">throw</span> <span class="keyword">new</span> LifecycleException
+            (errPrefix + <span class="string">" "</span> + sm.getString
+             (<span class="string">"coyoteConnector.protocolHandlerStartFailed"</span>), e);
+    }
+}
+</code></pre><p>方法很简单，调用了protocolHandler的start方法。</p>
+<h3 id="4-1_Http11NioProtocol的start">4.1 Http11NioProtocol的start</h3><pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">try</span> {
+        endpoint.start();
+    } <span class="keyword">catch</span> (Exception ex) {
+        getLog().<span class="keyword">error</span>(sm.getString(<span class="string">"abstractProtocolHandler.startError"</span>,
+                getName()), ex);
+        <span class="keyword">throw</span> ex;
+    }
+}
+</code></pre><p>代码直接启动了endpoint，在Http11NioProtocol为NioEndpoint对象，这里就不解释了。</p>
+<p>我们看其内部方法：</p>
+<pre><code>AbstractEndpoint
+<span class="keyword">public</span> <span class="keyword">final</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+    <span class="keyword">if</span> (bindState == BindState.UNBOUND) {
+        bind();
+        bindState = BindState.BOUND_ON_START;
+    }
+    startInternal();
+}
+</code></pre><p>代码采用Blocking模式接收连接请求。接着调用了startInternal方法:</p>
+<pre><code><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">startInternal</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>{
+
+    <span class="keyword">if</span> (!running) {
+        running = <span class="keyword">true</span>;
+        paused = <span class="keyword">false</span>;
+
+        processorCache = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                socketProperties.getProcessorCache());
+        eventCache = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                        socketProperties.getEventCache());
+        nioChannels = <span class="keyword">new</span> SynchronizedStack&lt;&gt;(SynchronizedStack.DEFAULT_SIZE,
+                socketProperties.getBufferPool());
+
+        <span class="comment">// Create worker collection</span>
+        <span class="keyword">if</span> ( getExecutor() == <span class="keyword">null</span> ) {
+            createExecutor();
+        }
+
+        initializeConnectionLatch();
+
+        <span class="comment">// Start poller threads</span>
+        pollers = <span class="keyword">new</span> Poller[getPollerThreadCount()];
+        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;pollers.length; i++) {
+            pollers[i] = <span class="keyword">new</span> Poller();
+            Thread pollerThread = <span class="keyword">new</span> Thread(pollers[i], getName() + <span class="string">"-ClientPoller-"</span>+i);
+            pollerThread.setPriority(threadPriority);
+            pollerThread.setDaemon(<span class="keyword">true</span>);
+            pollerThread.start();
+        }
+
+        startAcceptorThreads();
+    }
+}
+</code></pre><p>代码首先创建了线程池，然后初始化了最大连接限制，启动了poller线程，最后启动了acceptor线程。这样，整个流程就结束了。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/08/15/2015/redis-study/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">redis学习</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="2015/tomcat8-sourcecode05" data-title="tomcat8源码阅读(五)--启动四" data-url="http://sqtds.github.io/2015/08/15/2015/tomcat8-sourcecode05/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"sqtds"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 sqtds
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/mobile.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
