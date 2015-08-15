@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-08-15T04:01:42.000Z</updated>
+  <updated>2015-08-15T04:09:17.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -19,12 +19,12 @@
     <link href="http://sqtds.github.io/2015/08/15/redis-study/"/>
     <id>http://sqtds.github.io/2015/08/15/redis-study/</id>
     <published>2015-08-15T02:07:36.000Z</published>
-    <updated>2015-08-15T04:01:42.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="一，redis数据结构">一，redis数据结构</h2><p>redis总共包含5种类型的数据结构，分别是String，Hash,List,Set ,Sorted Set。下面我们来逐一介绍.</p>
+    <updated>2015-08-15T04:09:17.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="一，redis数据结构">一，redis数据结构</h2><p>redis总共包含5种类型的数据结构，分别是String,Hash,List,Set,Sorted Set。下面我们来逐一介绍.</p>
 <h3 id="1-1_String">1.1 String</h3><p>String就是基本的key-value数据结构。</p>
 <p>常用命令：</p>
 <blockquote>
-<p>get,set,mset,mget,decr,incr，GETSET，del，exists等。</p>
+<p>get,set,mset,mget,decr,incr,getset,del,exists等。</p>
 </blockquote>
 <h3 id="1-2_Hash">1.2 Hash</h3><p>Hash提供对象关系存储，相比String而言多了一层查找字段的功能。<br>举个例子，我们看hash的set命令：</p>
 <blockquote>
@@ -103,12 +103,12 @@ HSET person:<span class="number">1</span> sex <span class="string">'男'</span>�
 <h2 id="参考资料">参考资料</h2><ul>
 <li><a href="http://redisdoc.com/" target="_blank" rel="external">Redis 命令参考</a></li>
 <li><a href="http://redis.io/" target="_blank" rel="external">redis官方网站</a></li>
-<li><a href="http://openmymind.net/2012/1/23/The-Little-Redis-Book/" target="_blank" rel="external"><the little="" redis="" book=""> </the></a></li>
+<li><a href="http://openmymind.net/2012/1/23/The-Little-Redis-Book/" target="_blank" rel="external">The Little Redis Book</a></li>
 </ul>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h2 id="一，redis数据结构">一，redis数据结构</h2><p>redis总共包含5种类型的数据结构，分别是String，Hash,List,Set ,Sorted Set。下面我们来逐一介绍.</p>
-<h3 id="1-1_String">1.1 String]]>
+    <![CDATA[<h2 id="一，redis数据结构">一，redis数据结构</h2><p>redis总共包含5种类型的数据结构，分别是String,Hash,List,Set,Sorted Set。下面我们来逐一介绍.</p>
+<h3 id="1-1_String">1.1 String<]]>
     </summary>
     
       <category term="缓存" scheme="http://sqtds.github.io/tags/%E7%BC%93%E5%AD%98/"/>
