@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 14.29px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,618 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-tomcat8-sourcecode06" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/15/tomcat8-sourcecode06/" class="article-date">
+  	<time datetime="2015-08-15T09:30:04.000Z" itemprop="datePublished">8月 15 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/15/tomcat8-sourcecode06/">tomcat8源码阅读(六)--接收请求</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，回顾">一，回顾</h2><p>上篇文章讲了tomcat的Connector启动过程，启动之后，就可以接收请求了。这篇文章主要讲解tomcat如何接收请求。</p>
+<h2 id="二，NioEndpoint">二，NioEndpoint</h2><h3 id="2-1_NioEndpoint#Acceptor创建链接">2.1 NioEndpoint#Acceptor创建链接</h3><p>在NioEndpoint#Acceptor的run方法中，接受socket链接，代码如下：</p>
+<pre><code>NioEndpoint#Acceptor    
+<span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>{
+
+        <span class="keyword">int</span> errorDelay = <span class="number">0</span>;
+
+        <span class="comment">// Loop until we receive a shutdown command</span>
+        <span class="keyword">while</span> (running) {
+
+           ...<span class="comment">//略 是否要暂停 Loop if endpoint is paused</span>
+
+            state = AcceptorState.RUNNING;
+
+            <span class="keyword">try</span> {
+                <span class="comment">//if we have reached max connections, wait</span>
+                countUpOrAwaitConnection();
+
+                SocketChannel socket = <span class="keyword">null</span>;
+                <span class="keyword">try</span> {
+                    <span class="comment">// Accept the next incoming connection from the server</span>
+                    <span class="comment">// socket</span>
+                    socket = serverSock.accept();
+                } <span class="keyword">catch</span> (IOException ioe) {
+                    <span class="comment">//we didn't get a socket</span>
+                    countDownConnection();
+                    <span class="comment">// Introduce delay if necessary</span>
+                    errorDelay = handleExceptionWithDelay(errorDelay);
+                    <span class="comment">// re-throw</span>
+                    <span class="keyword">throw</span> ioe;
+                }
+                <span class="comment">// Successful accept, reset the error delay</span>
+                errorDelay = <span class="number">0</span>;
+
+                <span class="comment">// setSocketOptions() will add channel to the poller</span>
+                <span class="comment">// if successful</span>
+                ...<span class="comment">//略，状态处理</span>
+            } <span class="keyword">catch</span> (SocketTimeoutException sx) {
+                <span class="comment">// Ignore: Normal condition</span>
+            } <span class="keyword">catch</span> (IOException x) {
+                <span class="keyword">if</span> (running) {
+                    log.<span class="keyword">error</span>(sm.getString(<span class="string">"endpoint.accept.fail"</span>), x);
+                }
+            } <span class="keyword">catch</span> (Throwable t) {
+                ExceptionUtils.handleThrowable(t);
+                log.<span class="keyword">error</span>(sm.getString(<span class="string">"endpoint.accept.fail"</span>), t);
+            }
+        }
+        state = AcceptorState.ENDED;
+    }
+</code></pre><p>核心代码在<code>socket = serverSock.accept()</code>中，当创建链路后。Selector会对此链路进行监控，然后进行数据的读写。</p>
+<h3 id="2-2_NioEndpoint#Poller接受数据">2.2 NioEndpoint#Poller接受数据</h3><p>在poller的run方法中，对SelectionKey进行遍历。</p>
+<pre><code>public <span class="type">void</span> run() {
+    // <span class="type">Loop</span> until destroy() <span class="keyword">is</span> called
+    <span class="keyword">while</span> (<span class="literal">true</span>) {
+
+        boolean hasEvents = <span class="literal">false</span>;
+
+        ...略// <span class="type">Time</span> to terminate?
+
+        <span class="keyword">try</span> {
+            <span class="keyword">if</span> ( !close ) {
+                <span class="keyword">if</span> (wakeupCounter.getAndSet(-<span class="number">1</span>) &gt; <span class="number">0</span>) {
+                    //<span class="keyword">if</span> we are here, means we have other stuff to <span class="keyword">do</span>
+                    //<span class="keyword">do</span> a non blocking select
+                    keyCount = selector.selectNow();
+                } <span class="keyword">else</span> {
+                    keyCount = selector.select(selectorTimeout);
+                }
+                wakeupCounter.<span class="type">set</span>(<span class="number">0</span>);
+            }
+            <span class="keyword">if</span> (close) {
+                events();
+                timeout(<span class="number">0</span>, <span class="literal">false</span>);
+                <span class="keyword">try</span> {
+                    selector.close();
+                } catch (<span class="type">IOException</span> ioe) {
+                    log.error(sm.getString(
+                            <span class="string">"endpoint.nio.selectorCloseFail"</span>), ioe);
+                }
+                <span class="keyword">break</span>;
+            }
+        } catch (<span class="type">Throwable</span> x) {
+            <span class="type">ExceptionUtils</span>.handleThrowable(x);
+            log.error(<span class="string">""</span>,x);
+            <span class="keyword">continue</span>;
+        }
+        //either we timed <span class="keyword">out</span> <span class="keyword">or</span> we woke up, process events first
+        <span class="keyword">if</span> ( keyCount == <span class="number">0</span> ) hasEvents = (hasEvents | events());
+
+        //遍历<span class="type">SelectionKey</span>    
+        <span class="type">Iterator</span>&lt;<span class="type">SelectionKey</span>&gt; <span class="keyword">iterator</span> =
+            keyCount &gt; <span class="number">0</span> ? selector.selectedKeys().<span class="keyword">iterator</span>() : null;
+        // <span class="type">Walk</span> through the collection <span class="keyword">of</span> ready keys <span class="keyword">and</span> dispatch
+        // <span class="type">any</span> active event.
+        <span class="keyword">while</span> (<span class="keyword">iterator</span> != null &amp;&amp; <span class="keyword">iterator</span>.hasNext()) {
+            <span class="type">SelectionKey</span> sk = <span class="keyword">iterator</span>.next();
+            <span class="type">NioSocketWrapper</span> attachment = (<span class="type">NioSocketWrapper</span>)sk.attachment();
+            // <span class="type">Attachment</span> may be null <span class="keyword">if</span> another thread has called
+            // cancelledKey()
+            <span class="keyword">if</span> (attachment == null) {
+                <span class="keyword">iterator</span>.remove();
+            } <span class="keyword">else</span> {
+                <span class="keyword">iterator</span>.remove();
+                //处理<span class="type">SelectionKey</span>
+                processKey(sk, attachment);
+            }
+        }//<span class="keyword">while</span>
+
+        //process timeouts
+        timeout(keyCount,hasEvents);
+    }//<span class="keyword">while</span>
+
+    stopLatch.countDown();
+}
+</code></pre><p>在run方法中，有一句<code>processKey(sk, attachment)</code>，对SelectionKey进行处理，我们看其具体实现逻辑:</p>
+<pre><code> <span class="keyword">protected</span> <span class="function"><span class="keyword">void</span> <span class="title">processKey</span><span class="params">(SelectionKey sk, NioSocketWrapper attachment)</span> </span>{
+    <span class="keyword">try</span> {
+        <span class="keyword">if</span> ( close ) {
+            cancelledKey(sk);
+        } <span class="keyword">else</span> <span class="keyword">if</span> ( sk.isValid() &amp;&amp; attachment != <span class="keyword">null</span> ) {
+            <span class="keyword">if</span> (sk.isReadable() || sk.isWritable() ) {
+                <span class="keyword">if</span> ( attachment.getSendfileData() != <span class="keyword">null</span> ) {
+                    <span class="comment">//处理文件发送</span>
+                    processSendfile(sk,attachment, <span class="keyword">false</span>);
+                } <span class="keyword">else</span> {
+                    <span class="keyword">if</span> ( isWorkerAvailable() ) {
+                        unreg(sk, attachment, sk.readyOps());
+                        <span class="keyword">boolean</span> closeSocket = <span class="keyword">false</span>;
+                        <span class="comment">// Read goes before write</span>
+                        <span class="keyword">if</span> (sk.isReadable()) {
+                            <span class="comment">//读操作</span>
+                            <span class="keyword">if</span> (!processSocket(attachment, SocketStatus.OPEN_READ, <span class="keyword">true</span>)) {
+                                closeSocket = <span class="keyword">true</span>;
+                            }
+                        }
+                        <span class="keyword">if</span> (!closeSocket &amp;&amp; sk.isWritable()) {
+                            <span class="comment">//写操作                    </span>
+                            <span class="keyword">if</span> (!processSocket(attachment, SocketStatus.OPEN_WRITE, <span class="keyword">true</span>)) {
+                                closeSocket = <span class="keyword">true</span>;
+                            }
+                        }
+                        <span class="keyword">if</span> (closeSocket) {
+                            cancelledKey(sk);
+                        }
+                    }
+                }
+            }
+        } <span class="keyword">else</span> {
+            <span class="comment">//invalid key</span>
+            cancelledKey(sk);
+        }
+    } <span class="keyword">catch</span> ( CancelledKeyException ckx ) {
+        cancelledKey(sk);
+    } <span class="keyword">catch</span> (Throwable t) {
+        ExceptionUtils.handleThrowable(t);
+        log.<span class="keyword">error</span>(<span class="string">""</span>,t);
+    }
+}
+</code></pre><p>processKey对文件进行了隔离操作，然后使用processSocket方法进行读写操作。</p>
+<pre><code><span class="keyword">protected</span> <span class="function"><span class="keyword">boolean</span> <span class="title">processSocket</span><span class="params">(NioSocketWrapper attachment, SocketStatus status, <span class="keyword">boolean</span> dispatch)</span> </span>{
+    <span class="keyword">try</span> {
+        <span class="keyword">if</span> (attachment == <span class="keyword">null</span>) {
+            <span class="keyword">return</span> <span class="keyword">false</span>;
+        }
+        SocketProcessor sc = processorCache.pop();
+        <span class="keyword">if</span> ( sc == <span class="keyword">null</span> ) sc = <span class="keyword">new</span> SocketProcessor(attachment, status);
+        <span class="function"><span class="keyword">else</span> sc.<span class="title">reset</span><span class="params">(attachment, status)</span></span>;
+        Executor executor = getExecutor();
+        <span class="keyword">if</span> (dispatch &amp;&amp; executor != <span class="keyword">null</span>) {
+            executor.execute(sc);
+        } <span class="keyword">else</span> {
+            sc.run();
+        }
+    } <span class="keyword">catch</span> (RejectedExecutionException ree) {
+        <span class="keyword">return</span> <span class="keyword">false</span>;
+    } <span class="keyword">catch</span> (Throwable t) {
+        <span class="keyword">return</span> <span class="keyword">false</span>;
+    }
+    <span class="keyword">return</span> <span class="keyword">true</span>;
+}
+</code></pre><p>processSocket创建了一个SocketProcessor，然后提交到线程池中进行处理。我们看SocketProcessor的run方法。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">void</span> run() {
+    NioChannel socket = ka.getSocket();
+    <span class="keyword">if</span> (socket == <span class="keyword">null</span>) {
+        <span class="keyword">return</span>;
+    }
+    SelectionKey <span class="variable">key</span> = socket.getIOChannel().keyFor(
+            socket.getPoller().getSelector());
+
+    <span class="keyword">synchronized</span> (socket) {
+        <span class="keyword">try</span> {
+            <span class="built_in">int</span> handshake = -<span class="number">1</span>;
+
+            <span class="keyword">try</span> {
+                ...<span class="comment">//略，握手处理</span>
+            <span class="keyword">if</span> (handshake == <span class="number">0</span>) {
+                SocketState state = SocketState.OPEN;
+                <span class="comment">// Process the request from this socket</span>
+                <span class="keyword">if</span> (status == <span class="keyword">null</span>) {
+                    state = handler.process(ka, SocketStatus.OPEN_READ);
+                } <span class="keyword">else</span> {
+                    state = handler.process(ka, status);
+                }
+                <span class="keyword">if</span> (state == SocketState.CLOSED) {
+                    close(socket, <span class="variable">key</span>);
+                }
+            } <span class="keyword">else</span> <span class="keyword">if</span> (handshake == -<span class="number">1</span> ) {
+                close(socket, <span class="variable">key</span>);
+            } <span class="keyword">else</span> {
+                ka.getPoller().<span class="built_in">add</span>(socket,handshake);
+            }
+        } <span class="keyword">catch</span> (CancelledKeyException cx) {
+            socket.getPoller().cancelledKey(<span class="variable">key</span>);
+        } <span class="keyword">catch</span> (VirtualMachineError vme) {
+            ExceptionUtils.handleThrowable(vme);
+        } <span class="keyword">catch</span> (Throwable t) {
+            <span class="built_in">log</span>.error(<span class="string">""</span>, t);
+            socket.getPoller().cancelledKey(<span class="variable">key</span>);
+        } <span class="keyword">finally</span> {
+            ka = <span class="keyword">null</span>;
+            status = <span class="keyword">null</span>;
+            <span class="comment">//return to cache</span>
+            <span class="keyword">if</span> (running &amp;&amp; !paused) {
+                processorCache.push(<span class="keyword">this</span>);
+            }
+        }
+    }
+}
+</code></pre><p>run方法对握手进行了处理，然后开始处理数据。在handler的procee实现了具体的处理方式：</p>
+<pre><code>public SocketState process(SocketWrapperBase<span class="variable">&lt;S&gt;</span> wrapper,
+        SocketStatus status) {
+    ...//略，对状态的一些判断
+
+    Processor processor = connections.get(socket);
+    if (status == SocketStatus.DISCONNECT &amp;&amp; processor == null) {
+        // Nothing <span class="keyword">to</span> do. Endpoint requested a close and there is no
+        // longer a processor associated with this socket.
+        return SocketState.CLOSED;
+    }
+
+    wrapper.<span class="built_in">set</span>Async(false);
+    ContainerThreadMarker.<span class="built_in">set</span>();
+
+    try {
+        ...//对process的判断
+        processor.<span class="built_in">set</span>SslSupport(
+                wrapper.getSslSupport(getProtocol().getClientCertProvider()));
+
+        SocketState <span class="keyword">state</span> = SocketState.CLOSED;
+        Iterator<span class="variable">&lt;DispatchType&gt;</span> dispatches = null;
+        do {
+            if (status == SocketStatus.CLOSE_NOW) {
+                ...//略，很多状态
+            } else {
+                <span class="keyword">state</span> = processor.process(wrapper);
+            }
+
+            if (<span class="keyword">state</span> != SocketState.CLOSED &amp;&amp; processor.isAsync()) {
+                <span class="keyword">state</span> = processor.asyncPostProcess();
+            }
+
+            ...//略，协议更新处理
+            if (dispatches == null || !dispatches.hasNext()) {
+                // Only returns non-null iterator if there are
+                // dispatches <span class="keyword">to</span> process.
+                dispatches = wrapper.getIteratorAndClearDispatches();
+            }
+        } while (<span class="keyword">state</span> == SocketState.ASYNC_END ||
+                <span class="keyword">state</span> == SocketState.UPGRADING ||
+                dispatches != null &amp;&amp; <span class="keyword">state</span> != SocketState.CLOSED);
+
+        ...//略，状态判断
+        return <span class="keyword">state</span>;
+    } catch(java.net.SocketException e) {
+       ...//略，异常
+    }
+    finally {
+        ContainerThreadMarker.clear();
+    }
+
+    // Make sure socket/processor is removed <span class="keyword">from</span> the list of current
+    // connections
+    connections.remove(socket);
+    // D<span class="keyword">on</span>'t try <span class="keyword">to</span> add upgrade processors back into the pool
+    if (processor !=null &amp;&amp; !processor.isUpgrade()) {
+        release(wrapper, processor, false);
+    }
+    return SocketState.CLOSED;
+}
+</code></pre><p>在这个方法中，我们只看最重要的 <code>processor.process(wrapper);</code>对于http协议，processor是Http11Processor，下面将详细讲解。</p>
+<h2 id="三，Http11Processor">三，Http11Processor</h2><p>下面我们看看Process是如何对NioSocketWrapper进行处理的。我们看process方法，方法太长，省略了许多：</p>
+<pre><code><span class="keyword">public</span> SocketState process(SocketWrapperBase&lt;?&gt; socketWrapper)
+    <span class="keyword">throws</span> IOException {
+    RequestInfo rp = request.getRequestProcessor();
+    rp.setStage(org.apache.coyote.Constants.STAGE_PARSE);
+
+    <span class="comment">// Setting up the I/O</span>
+     ...<span class="comment">//略</span>
+    <span class="comment">// Flags</span>
+    keepAlive = <span class="keyword">true</span>;
+    openSocket = <span class="keyword">false</span>;
+    sendfileInProgress = <span class="keyword">false</span>;
+    readComplete = <span class="keyword">true</span>;
+    keptAlive = <span class="keyword">false</span>;
+
+    <span class="keyword">while</span> (!getErrorState().isError() &amp;&amp; keepAlive &amp;&amp; !isAsync() &amp;&amp;
+            httpUpgradeHandler == <span class="keyword">null</span> &amp;&amp; !endpoint.isPaused()) {
+
+        <span class="comment">// Parsing the request header</span>
+        <span class="keyword">try</span> {
+            <span class="keyword">if</span> (!inputBuffer.parseRequestLine(keptAlive)) {
+                <span class="keyword">if</span> (handleIncompleteRequestLineRead()) {
+                    <span class="keyword">break</span>;
+                }
+            }
+
+            <span class="keyword">if</span> (endpoint.isPaused()) {
+                <span class="comment">// 503 - Service unavailable</span>
+                response.setStatus(<span class="number">503</span>);
+                setErrorState(ErrorState.CLOSE_CLEAN, <span class="keyword">null</span>);
+            } <span class="keyword">else</span> {
+                keptAlive = <span class="keyword">true</span>;
+                <span class="comment">// Set this every time in case limit has been changed via JMX</span>
+                request.getMimeHeaders().setLimit(endpoint.getMaxHeaderCount());
+                <span class="keyword">if</span> (!inputBuffer.parseHeaders()) {
+                    <span class="comment">// We've read part of the request, don't recycle it</span>
+                    <span class="comment">// instead associate it with the socket</span>
+                    openSocket = <span class="keyword">true</span>;
+                    readComplete = <span class="keyword">false</span>;
+                    <span class="keyword">break</span>;
+                }
+                <span class="keyword">if</span> (!disableUploadTimeout) {
+                    socketWrapper.setReadTimeout(connectionUploadTimeout);
+                }
+            }
+        } <span class="keyword">catch</span> (Throwable t) {
+            ...<span class="comment">//略，其他异常</span>
+            <span class="comment">// 400 - Bad Request ，返回400错误</span>
+            response.setStatus(<span class="number">400</span>);
+            setErrorState(ErrorState.CLOSE_CLEAN, t);
+            getAdapter().<span class="built_in">log</span>(request, response, <span class="number">0</span>);
+        }
+
+        <span class="comment">// Has an upgrade been requested?</span>
+        ...<span class="comment">//略，更新请求</span>
+
+        <span class="keyword">if</span> (!getErrorState().isError()) {
+            <span class="comment">// Setting up filters, and parse some request headers</span>
+            rp.setStage(org.apache.coyote.Constants.STAGE_PREPARE);
+            <span class="keyword">try</span> {
+                prepareRequest();
+            } <span class="keyword">catch</span> (Throwable t) {
+                ExceptionUtils.handleThrowable(t);
+                <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled()) {
+                    <span class="built_in">log</span>.debug(sm.getString(<span class="string">"http11processor.request.prepare"</span>), t);
+                }
+                <span class="comment">// 500 - Internal Server Error</span>
+                response.setStatus(<span class="number">500</span>);
+                setErrorState(ErrorState.CLOSE_CLEAN, t);
+                getAdapter().<span class="built_in">log</span>(request, response, <span class="number">0</span>);
+            }
+        }
+
+        <span class="keyword">if</span> (maxKeepAliveRequests == <span class="number">1</span>) {
+            keepAlive = <span class="keyword">false</span>;
+        } <span class="keyword">else</span> <span class="keyword">if</span> (maxKeepAliveRequests &gt; <span class="number">0</span> &amp;&amp;
+                socketWrapper.decrementKeepAlive() &lt;= <span class="number">0</span>) {
+            keepAlive = <span class="keyword">false</span>;
+        }
+
+        <span class="comment">// Process the request in the adapter</span>
+        <span class="keyword">if</span> (!getErrorState().isError()) {
+            <span class="keyword">try</span> {
+                rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
+                getAdapter().service(request, response);
+                <span class="comment">// Handle when the response was committed before a serious</span>
+                <span class="comment">// error occurred.  Throwing a ServletException should both</span>
+                <span class="comment">// set the status to 500 and set the errorException.</span>
+                <span class="comment">// If we fail here, then the response is likely already</span>
+                <span class="comment">// committed, so we can't try and set headers.</span>
+                <span class="keyword">if</span>(keepAlive &amp;&amp; !getErrorState().isError() &amp;&amp; (
+                        response.getErrorException() != <span class="keyword">null</span> ||
+                                (!isAsync() &amp;&amp;
+                                statusDropsConnection(response.getStatus())))) {
+                    setErrorState(ErrorState.CLOSE_CLEAN, <span class="keyword">null</span>);
+                }
+            } <span class="keyword">catch</span> (InterruptedIOException e) {
+                setErrorState(ErrorState.CLOSE_NOW, e);
+            } <span class="keyword">catch</span> (HeadersTooLargeException e) {
+                <span class="comment">// The response should not have been committed but check it</span>
+                <span class="comment">// anyway to be safe</span>
+                <span class="keyword">if</span> (response.isCommitted()) {
+                    setErrorState(ErrorState.CLOSE_NOW, e);
+                } <span class="keyword">else</span> {
+                    response.reset();
+                    response.setStatus(<span class="number">500</span>);
+                    setErrorState(ErrorState.CLOSE_CLEAN, e);
+                    response.setHeader(<span class="string">"Connection"</span>, <span class="string">"close"</span>); <span class="comment">// TODO: Remove</span>
+                }
+            } <span class="keyword">catch</span> (Throwable t) {
+                ExceptionUtils.handleThrowable(t);
+                <span class="built_in">log</span>.error(sm.getString(<span class="string">"http11processor.request.process"</span>), t);
+                <span class="comment">// 500 - Internal Server Error</span>
+                response.setStatus(<span class="number">500</span>);
+                setErrorState(ErrorState.CLOSE_CLEAN, t);
+                getAdapter().<span class="built_in">log</span>(request, response, <span class="number">0</span>);
+            }
+        }
+
+        <span class="comment">// Finish the handling of the request</span>
+        rp.setStage(org.apache.coyote.Constants.STAGE_ENDINPUT);
+        <span class="keyword">if</span> (!isAsync()) {
+            <span class="comment">// If this is an async request then the request ends when it has</span>
+            <span class="comment">// been completed. The AsyncContext is responsible for calling</span>
+            <span class="comment">// endRequest() in that case.</span>
+            endRequest();
+        }
+        rp.setStage(org.apache.coyote.Constants.STAGE_ENDOUTPUT);
+
+        <span class="comment">// If there was an error, make sure the request is counted as</span>
+        <span class="comment">// and error, and update the statistics counter</span>
+        <span class="keyword">if</span> (getErrorState().isError()) {
+            response.setStatus(<span class="number">500</span>);
+        }
+        request.updateCounters();
+
+        ...<span class="comment">//略</span>
+
+        rp.setStage(org.apache.coyote.Constants.STAGE_KEEPALIVE);
+
+        <span class="keyword">if</span> (breakKeepAliveLoop(socketWrapper)) {
+            <span class="keyword">break</span>;
+        }
+    }
+
+    rp.setStage(org.apache.coyote.Constants.STAGE_ENDED);
+
+    <span class="keyword">if</span> (getErrorState().isError() || endpoint.isPaused()) {
+        <span class="keyword">return</span> SocketState.CLOSED;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (isAsync()) {
+        <span class="keyword">return</span> SocketState.LONG;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (isUpgrade()) {
+        <span class="keyword">return</span> SocketState.UPGRADING;
+    } <span class="keyword">else</span> {
+        <span class="keyword">if</span> (sendfileInProgress) {
+            <span class="keyword">return</span> SocketState.SENDFILE;
+        } <span class="keyword">else</span> {
+            <span class="keyword">if</span> (openSocket) {
+                <span class="keyword">if</span> (readComplete) {
+                    <span class="keyword">return</span> SocketState.OPEN;
+                } <span class="keyword">else</span> {
+                    <span class="keyword">return</span> SocketState.LONG;
+                }
+            } <span class="keyword">else</span> {
+                <span class="keyword">return</span> SocketState.CLOSED;
+            }
+        }
+    }
+}
+</code></pre><p>方法太长，略去了一部分。代码主要是作用是生成了org.apache.coyote.Requset对象和org.apache.coyote.Response对象，对升级和错误进行了额外的处理等。我们重点看<code>getAdapter().service(request, response);</code>这段代码会转发到Servlet请求上。getAdapter()返回一个CoyoteAdapter对象，我们接着看。</p>
+<h2 id="四，CoyoteAdapter">四，CoyoteAdapter</h2><p>service方法对req和res进行转型，转成ServletRequest和ServletResponse<br>    public void service(org.apache.coyote.Request req,<br>                        org.apache.coyote.Response res)<br>        throws Exception {</p>
+<pre><code>    Request request = (Request) req.getNote(ADAPTER_NOTES);
+    Response response = (Response) res.getNote(ADAPTER_NOTES);
+
+    <span class="keyword">if</span> (request == <span class="keyword">null</span>) {
+
+        <span class="comment">// Create objects</span>
+        request = connector.createRequest();
+        request.setCoyoteRequest(req);
+        response = connector.createResponse();
+        response.setCoyoteResponse(res);
+
+        <span class="comment">// Link objects</span>
+        request.setResponse(response);
+        response.setRequest(request);
+
+        <span class="comment">// Set as notes</span>
+        req.setNote(ADAPTER_NOTES, request);
+        res.setNote(ADAPTER_NOTES, response);
+
+        <span class="comment">// Set query string encoding</span>
+        req.getParameters().setQueryStringEncoding
+            (connector.getURIEncoding());
+
+    }
+
+    <span class="keyword">if</span> (connector.getXpoweredBy()) {
+        response.addHeader(<span class="string">"X-Powered-By"</span>, POWERED_BY);
+    }
+
+    <span class="keyword">boolean</span> async = <span class="keyword">false</span>;
+
+    <span class="keyword">try</span> {
+
+        <span class="comment">// Parse and set Catalina and configuration specific</span>
+        <span class="comment">// request parameters</span>
+        req.getRequestProcessor().setWorkerThreadName(THREAD_NAME.get());
+        <span class="keyword">boolean</span> postParseSuccess = postParseRequest(req, request, res, response);
+        <span class="keyword">if</span> (postParseSuccess) {
+            <span class="comment">//check valves if we support async</span>
+            request.setAsyncSupported(connector.getService().getContainer().getPipeline().isAsyncSupported());
+            <span class="comment">// Calling the container</span>
+            connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+        }
+        AsyncContextImpl asyncConImpl = (AsyncContextImpl)request.getAsyncContext();
+        <span class="keyword">if</span> (asyncConImpl != <span class="keyword">null</span>) {
+            async = <span class="keyword">true</span>;
+            ReadListener readListener = req.getReadListener();
+            <span class="keyword">if</span> (readListener != <span class="keyword">null</span> &amp;&amp; request.isFinished()) {
+                <span class="comment">// Possible the all data may have been read during service()</span>
+                <span class="comment">// method so this needs to be checked here</span>
+                ClassLoader oldCL = <span class="keyword">null</span>;
+                <span class="keyword">try</span> {
+                    oldCL = request.getContext().bind(<span class="keyword">false</span>, <span class="keyword">null</span>);
+                    <span class="keyword">if</span> (req.sendAllDataReadEvent()) {
+                        req.getReadListener().onAllDataRead();
+                    }
+                } <span class="keyword">finally</span> {
+                    request.getContext().unbind(<span class="keyword">false</span>, oldCL);
+                }
+            }
+        } <span class="keyword">else</span> {
+            request.finishRequest();
+            response.finishResponse();
+            <span class="keyword">if</span> (postParseSuccess) {
+                <span class="comment">// Log only if processing was invoked.</span>
+                <span class="comment">// If postParseRequest() failed, it has already logged it.</span>
+                request.getMappingData().context.logAccess(
+                        request, response,
+                        System.currentTimeMillis() - req.getStartTime(),
+                        <span class="keyword">false</span>);
+            }
+        }
+
+    } <span class="keyword">catch</span> (IOException e) {
+        <span class="comment">// Ignore</span>
+    } <span class="keyword">finally</span> {
+        req.getRequestProcessor().setWorkerThreadName(<span class="keyword">null</span>);
+        AtomicBoolean <span class="keyword">error</span> = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);
+        res.action(ActionCode.IS_ERROR, <span class="keyword">error</span>);
+        <span class="comment">// Recycle the wrapper request and response</span>
+        <span class="keyword">if</span> (!async || <span class="keyword">error</span>.get()) {
+            request.recycle();
+            response.recycle();
+        } <span class="keyword">else</span> {
+            <span class="comment">// Clear converters so that the minimum amount of memory</span>
+            <span class="comment">// is used by this processor</span>
+            request.clearEncoders();
+            response.clearEncoders();
+        }
+    }
+
+}
+</code></pre><p>太长了，我们只关注最重要的：<code>connector.getService().getMapper().map(serverName, decodedURI, version, request.getMappingData());</code></p>
+<p>connector.getService()返回了StandardService，然后映射到了具体的Servlet上，这里就是详细解释了，要去跑步了，88.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/tomcat8-sourcecode05" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -386,14 +998,22 @@ AbstractEndpoint
         startAcceptorThreads();
     }
 }
-</code></pre><p>代码首先创建了线程池，然后初始化了最大连接限制，启动了poller线程，最后启动了acceptor线程。这样，整个流程就结束了。</p>
+</code></pre><p>代码首先创建了线程池，然后初始化了最大连接限制，启动了poller线程，和acceptor线程。这样，整个流程就结束了。Poller主要作用于socket读写事件，Acceptor主要作用于接收请求。</p>
 
       
     </div>
     
     <div class="article-info article-info-index">
       
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
 
       
       <div class="clearfix"></div>
@@ -1919,70 +2539,6 @@ public <span class="type">void</span> start()
     <span class="keyword">method</span>.invoke(catalinaDaemon, (<span class="type">Object</span> [])null);
 }
 </code></pre><p>start方法很简单，利用反射调用了catalina的start方法。<br>Catalina的start方法做了哪些事情呢？我们下文继续。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/tomcat8-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/11/2015/tomcat8-sourcecode01/" class="article-date">
-  	<time datetime="2015-08-11T07:51:00.000Z" itemprop="datePublished">8月 11 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/11/2015/tomcat8-sourcecode01/">tomcat8源码阅读(一)--准备</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，前言">一，前言</h2><p>以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。</p>
-<h2 id="二，搭建源码包">二，搭建源码包</h2><p>其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。<br>我们可以参考<a href="http://developer.51cto.com/art/201207/346156.htm" target="_blank" rel="external">Tomcat7调试运行环境搭建与源代码分析入门</a>的方法进行tomcat8的搭建。<br>搭建比较简单，我也备份了一份到github上<a href="https://github.com/sqtds/tomcat8。" target="_blank" rel="external">https://github.com/sqtds/tomcat8。</a> 如果觉得搭建麻烦，可以直接下载使用我的即可。</p>
-<h2 id="三，tomcat8整体架构">三，tomcat8整体架构</h2><p>参考我的wiki页面<a href="https://github.com/sqtds/tomcat8/wiki，这里不不多说了。" target="_blank" rel="external">https://github.com/sqtds/tomcat8/wiki，这里不不多说了。</a><br>本文主要研究的是tomcat的catalina架构，其他有时间再进行研究。</p>
-<h2 id="四，参考指南">四，参考指南</h2><ul>
-<li>how tomcat works ——不说了，大名鼎鼎的，读源码都是从它开始</li>
-<li><a href="http://tyrion.iteye.com/category/285081" target="_blank" rel="external">Tomcat7源码分析</a>——分析的挺多，还不错</li>
-<li><a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-1/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（上）</a>，<a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-2/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（下）</a>——分析了http的请求</li>
-</ul>
 
       
     </div>
