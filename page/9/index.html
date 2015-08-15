@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,68 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/mondrian-source-code-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-2/" class="article-date">
+  	<time datetime="2014-10-26T04:11:20.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-2/">mondrian 源码解读（二）-MDX</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是MDX？">什么是MDX？</h2><p>MDX为MultiDimensional Expressions的缩写，多维表达式，是标准的OLAP查询语言。在多数OLAPServer都提供MDX支持，如Microsoft SQL Server OLAP Services,SAS,Hyperion Essbase等。</p>
+<p>支持多维对象与数据的定义和操作。MDX 在很多方面与结构化查询语言 (SQL) 语法相似，但它不是 SQL 语言的扩展；事实上，MDX 所提供的一些功能也可由 SQL 提供，尽管不是那么有效或直观。<br>如同 SQL 查询一样，每个 MDX 查询都要求有数据请求（SELECT 子句）、起始点（FROM 子句）和筛选（WHERE 子句）。这些关键字以及其它关键字提供了各种工具，用来从多维数据集析取数据的特定部分。</p>
+<p>MDX 还提供了可靠的函数集，用来对所检索的数据进行操作，同时还具有用户定义函数扩展 MDX 的能力。MDX为多维数据库提供了表达式查询语法，用于查询Cube数据，并提供了许多强大的分析函数，用于支持常用的OLAP分析。
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-2/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/mondrian-source-code-1" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -721,236 +783,6 @@ public void sync(<span class="type">Parser</span> recognizer) { }
 	<a class="article-category-link" href="/categories/java/">java</a>
 	</div>
 
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/antlr4-embedd-action" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/30/2014/antlr4-embedd-action/" class="article-date">
-  	<time datetime="2014-08-30T09:54:59.000Z" itemprop="datePublished">8月 30 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/30/2014/antlr4-embedd-action/">antlr4-添加嵌入式的行为(七)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一般情况下我们最好不要这么做，这会使应用代码与语法代码混淆。但是在某些情况下也有她的好处：</p>
-<ul>
-<li>简易的：有时候仅仅是简答的几个动作，避免创建监听器或访问器。</li>
-<li>有效的：在特定的资源应用中，我们不想浪费时间和内存去构建一个解析树。</li>
-<li>判断解析：在很少的情况下，我么需要依靠之前的输入流来判断解析属性。一些语法需要构建符号表来意识到将来的不同情况的输入，依赖与标识符是否是类型或者方法。</li>
-</ul>
-<h2 id="演示">演示</h2><pre><code>grammar Rows;
-
-<span class="variable">@parser</span>::members { <span class="comment">// add members to generated RowsParser</span>
-    <span class="keyword">int</span> col;
-    public RowsParser(TokenStream input, <span class="keyword">int</span> col) { <span class="comment">// custom constructor</span>
-        this(input);
-        this.col = col;
-    }
-}
-
-<span class="keyword">file</span>: (row NL)+ ;
-
-row
-locals [<span class="keyword">int</span> i=<span class="number">0</span>]   <span class="comment">//locals 本地变量表</span>
-    : (   STUFF
-          { <span class="comment">//行为 ，通过$来取出本地变量 ,col是全局变量</span>
-          <span class="variable">$i</span>++;
-          <span class="keyword">if</span> ( <span class="variable">$i</span> == col ) System.out.println(<span class="variable">$STUFF</span>.<span class="keyword">text</span>);
-          }
-      )+
-    ;
-
-TAB  :  <span class="string">'\t'</span> -&gt; skip ;   <span class="comment">// match but don't pass to the parser</span>
-NL   :  <span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// match and pass to the parser</span>
-STUFF:  ~[\t\r\n]+ ;     <span class="comment">// match any chars except tab, newline</span>
-</code></pre><h2 id="利用语法规则的外部行为">利用语法规则的外部行为</h2><pre><code>&lt;header&gt;
-public <span class="class"><span class="keyword">class</span> <span class="title">&lt;grammarName&gt;</span> <span class="title">Parser</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Parser</span> {</span>
-&lt;members&gt;
-...
-}
-</code></pre><p>package/import  statements is header and<br>class members like fields and methods is members<br>如果要指定header行为，我们用@header,如果要注入字段和方法，我们用@memers。<br>在一个合并的parser/lexer语法中，他们命名的行为应用在parser和lexer中。如果要限制生成的行为在parser或lexer中，我们可以用 @parser::name 或者 @lexer::name.</p>
-<p>通常情况下，$x.y表示y属性的x元素，x可以是token的引用或者rule引用。</p>
-<h3 id="expr例子">expr例子</h3><pre><code><span class="comment">/** Grammar from tour chapter augmented with actions */</span>
-grammar Expr;
-
-<span class="variable">@header</span> {
-<span class="comment">/**package tools;*/</span>
-import java.util.<span class="variable">*;</span>
-}
-
-<span class="variable">@parser</span>::members {
-    <span class="comment">/** "memory" for our calculator; variable/value pairs go here */</span>
-    Map&lt;String, Integer&gt; <span class="keyword">memory</span> = new HashMap&lt;String, Integer&gt;();
-
-    <span class="keyword">int</span> <span class="keyword">eval</span>(<span class="keyword">int</span> left, <span class="keyword">int</span> op, <span class="keyword">int</span> right) {
-        <span class="keyword">switch</span> ( op ) {
-            <span class="keyword">case</span> MUL : <span class="keyword">return</span> left * right;
-            <span class="keyword">case</span> DIV : <span class="keyword">return</span> left / right;
-            <span class="keyword">case</span> ADD : <span class="keyword">return</span> left + right;
-            <span class="keyword">case</span> SUB : <span class="keyword">return</span> left - right;
-        }
-        <span class="keyword">return</span> <span class="number">0</span>;
-    }
-}
-
-stat:   e NEWLINE           {System.out.println(<span class="variable">$e</span>.v);}
-    |   ID <span class="string">'='</span> e NEWLINE    {<span class="keyword">memory</span>.put(<span class="variable">$ID</span>.<span class="keyword">text</span>, <span class="variable">$e</span>.v);}
-    |   NEWLINE                   
-    ;
-
-e returns [<span class="keyword">int</span> v]
-    : a=e op=(<span class="string">'*'</span>|<span class="string">'/'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}
-    | a=e op=(<span class="string">'+'</span>|<span class="string">'-'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}  
-    | INT                   {<span class="variable">$v</span> = <span class="variable">$INT</span>.<span class="keyword">int</span>;}    
-    | ID
-      {
-      String id = <span class="variable">$ID</span>.<span class="keyword">text</span>;
-      <span class="variable">$v</span> = <span class="keyword">memory</span>.containsKey(id) ? <span class="keyword">memory</span>.get(id) : <span class="number">0</span>;
-      }
-    | <span class="string">'('</span> e <span class="string">')'</span>             {<span class="variable">$v</span> = <span class="variable">$e</span>.v;}       
-    ; 
-
-MUL : <span class="string">'*'</span> ;
-DIV : <span class="string">'/'</span> ;
-ADD : <span class="string">'+'</span> ;
-SUB : <span class="string">'-'</span> ;
-
-ID  :   [a-zA-Z]+ ;      <span class="comment">// match identifiers</span>
-INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;         <span class="comment">// match integers</span>
-NEWLINE:<span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// return newlines to parser (is end-statement signal)</span>
-WS  :   [ \t]+ -&gt; skip ; <span class="comment">// toss out whitespace                </span>
-</code></pre><h3 id="keyword例子">keyword例子</h3><pre><code>grammar Keywords;
-@lexer::header {    // place this header <span class="keyword">action</span> <span class="keyword">only</span> <span class="type">in</span> lexer, not the parser
-    <span class="keyword">import</span> java.util.*;
-}
-
-// explicitly define keyword token types to avoid <span class="type">implicit</span> def warnings
-tokens { BEGIN, <span class="keyword">END</span>, <span class="keyword">IF</span>, <span class="keyword">THEN</span>, <span class="keyword">WHILE</span> }
-
-@lexer::members {   // place this <span class="keyword">class</span> member <span class="keyword">only</span> <span class="type">in</span> lexer
-    Map&lt;String,<span class="type">Integer</span>&gt; keywords = new HashMap&lt;String,<span class="type">Integer</span>&gt;() &lt;<span class="comment">!--￼0--&gt;;</span>
-}
-
-
-stat:   BEGIN stat* <span class="keyword">END</span> 
-    |   <span class="keyword">IF</span> expr <span class="keyword">THEN</span> stat
-    |   <span class="keyword">WHILE</span> expr stat
-    |   ID <span class="string">'='</span> expr <span class="string">';'</span>
-    ;
-
-expr:   <span class="built_in">INT</span> | <span class="built_in">CHAR</span> ;
-
-ID  :   [a-zA-Z]+
-        {//嵌入式代码
-        <span class="keyword">if</span> ( keywords.containsKey(getText()) ) {
-            setType(keywords.get(getText())); // reset token <span class="keyword">type</span>
-        }
-        }
-    ;
-
-/** Convert <span class="number">3</span>-<span class="built_in">char</span> <span class="string">'x'</span> input <span class="keyword">sequence</span> to string x */
-<span class="built_in">CHAR</span>:   <span class="string">'\''</span> . <span class="string">'\''</span> {setText( String.valueOf(getText().charAt(<span class="number">1</span>)) );} ;
-
-<span class="built_in">INT</span> :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
-
-WS  :   [ \t\n\r]+ -&gt; skip ;
-</code></pre><h3 id="csvexample">csvexample</h3><pre><code>grammar CSV;
-
-@header {
-import java.util.*;
-}
-
-<span class="comment">/** Derived from rule "file : hdr row+ ;" */</span>
-<span class="keyword">file</span>
-locals [int i=0]
-     : hdr ( rows+=row[<span class="label">$hdr</span>.text.<span class="keyword">split</span>(<span class="string">","</span>)] {<span class="label">$i</span>++;} )+
-       {
-       System.<span class="keyword">out</span>.println(<span class="label">$i</span>+<span class="string">" rows"</span>);
-       <span class="keyword">for</span> (RowContext r : <span class="label">$rows</span>) {
-           System.<span class="keyword">out</span>.println(<span class="string">"row token interval: "</span>+r.getSourceInterval());
-       }
-       }
-     ;
-
-hdr : row[null] {System.<span class="keyword">out</span>.println(<span class="string">"header: '"</span>+<span class="label">$text</span>.<span class="literal">trim</span>()+<span class="string">"'"</span>);} ;
-
-<span class="comment">/** Derived from rule "row : field (',' field)* '\r'? '\n' ;" */</span>
-<span class="comment">//参数 columns ，返回值values</span>
-row[String[] columns] returns [Map&lt;String,String&gt; values]
-locals [int col=0]
-@init {
-    <span class="label">$values</span> = new HashMap&lt;String,String&gt;();
-}
-@after {
-    <span class="keyword">if</span> (<span class="label">$values</span>!=null &amp;&amp; <span class="label">$values</span>.size()&gt;0) {
-        System.<span class="keyword">out</span>.println(<span class="string">"values = "</span>+<span class="label">$values</span>);
-    }
-}
-<span class="comment">// rule row cont'd...</span>
-    :   field
-        {
-        <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
-            <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
-        }
-        }
-        (   ',' field
-            {
-            <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
-                <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
-            }
-            }
-        )* '\r'? '\<span class="keyword">n</span>'
-    ;
-
-field
-    :   TEXT
-    |   <span class="literal">STRING</span>
-    |
-    ;
-
-TEXT : ~[,\<span class="keyword">n</span>\r"]+ ;
-STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')* '"' ; <span class="comment">// quote-quote is an escaped quote</span>
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
 
       
       <div class="clearfix"></div>

@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,380 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/hessian-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/08/2015/hessian-1/" class="article-date">
+  	<time datetime="2015-08-08T03:12:08.000Z" itemprop="datePublished">8月 8 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/08/2015/hessian-1/">hessian协议解析--hessian序列化</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>本文主要介绍hessian的解析协议，通过理解hessian协议以便于知道它的优劣，从而更好的运用它。Hessian序列化的协议可以在官方文档上找到 <a href="http://hessian.caucho.com/doc/hessian-serialization.html" target="_blank" rel="external">Hessian 2.0 Serialization Protocol</a></p>
+<h2 id="二，基本类型序列化">二，基本类型序列化</h2><p>我们先从最简单的看起，int是如何序列化的。首先我们看官方文档定义。</p>
+<pre><code>           <span class="comment"># 32-bit signed integer</span>
+int        <span class="type-annotation">::</span>= <span class="char">'I'</span> b3 b2 b1 b0
+           <span class="type-annotation">::</span>= [x80-xbf]             <span class="comment"># -x10 to x3f  -16到63之间</span>
+           <span class="type-annotation">::</span>= [xc0-xcf] b0          <span class="comment"># -x800 to x7ff  -2048到2047之间</span>
+           <span class="type-annotation">::</span>= [xd0-xd7] b1 b0       <span class="comment"># -x40000 to x3ffff  -262144到262143之间</span>
+</code></pre><p>其实有了定义之后就容易实现了，我们看代码实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="type">Hessian2Output</span>
+public void writeInt<span class="container">(<span class="title">int</span> <span class="title">value</span>)</span>
+  throws <span class="type">IOException</span>
+{
+  int offset = _offset;
+  byte []buffer = _buffer;
+  //扩容
+  if <span class="container">(<span class="type">SIZE</span> &lt;= <span class="title">offset</span> + 16)</span> {
+    flushBuffer<span class="container">()</span>;
+    offset = _offset;
+  }
+  if <span class="container">(<span class="type">INT_DIRECT_MIN</span> &lt;= <span class="title">value</span> &amp;&amp; <span class="title">value</span> &lt;= <span class="type">INT_DIRECT_MAX</span>)</span>
+  //值在-x10到x3f之间，加上<span class="type">BC_INT_ZERO</span>（0x90），就在区间[x80-xbf]上了。
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span> + <span class="type">BC_INT_ZERO</span>)</span>;
+  else if <span class="container">(<span class="type">INT_BYTE_MIN</span> &lt;= <span class="title">value</span> &amp;&amp; <span class="title">value</span> &lt;= <span class="type">INT_BYTE_MAX</span>)</span> {
+  //值在-0x800到0x7ff之间，左移8位加上<span class="type">BC_INT_BYTE_ZERO</span>（0xc8），第一个字节就在区间[xc0-xcf]上了。
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="type">BC_INT_BYTE_ZERO</span> + (<span class="title">value</span> &gt;&gt; 8)</span>);
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span>)</span>;
+  }
+  else if <span class="container">(<span class="type">INT_SHORT_MIN</span> &lt;= <span class="title">value</span> &amp;&amp; <span class="title">value</span> &lt;= <span class="type">INT_SHORT_MAX</span>)</span> {
+  //值在-x40000到x3ffff之间，左移16位加上<span class="type">BC_INT_SHORT_ZERO</span>（0xd4），第一个字节就在区间[xd0-xd7]上了。
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="type">BC_INT_SHORT_ZERO</span> + (<span class="title">value</span> &gt;&gt; 16)</span>);
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span> &gt;&gt; 8)</span>;
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span>)</span>;
+  }
+  else {
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">('<span class="type">I</span>')</span>;
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span> &gt;&gt; 24)</span>;
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span> &gt;&gt; 16)</span>;
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span> &gt;&gt; 8)</span>;
+    buffer[offset++] = <span class="container">(<span class="title">byte</span>)</span> <span class="container">(<span class="title">value</span>)</span>;
+  }
+
+  _offset = offset;
+}</span>
+</code></pre><p>同理，Long和Double也是如此，就不一一解释了。Boolean类型用’T’’F’来表示。</p>
+<h2 id="三，对象序列化">三，对象序列化</h2><h3 id="3,1_String序列化">3,1 String序列化</h3><p>String是我们最常用的对象，下面我们看看它的结构定义。</p>
+<pre><code>           <span class="comment"># UTF-8 encoded character string split into 64k chunks</span>
+string     <span class="type-annotation">::</span>= x52 b1 b0 &lt;utf8-data&gt; string  <span class="comment"># non-final chunk</span>
+           <span class="type-annotation">::</span>= <span class="char">'S'</span> b1 b0 &lt;utf8-data&gt;         <span class="comment"># string of length</span>
+                                             <span class="comment">#  0-65535</span>
+           <span class="type-annotation">::</span>= [x00-x1f] &lt;utf8-data&gt;         <span class="comment"># string of length</span>
+                                             <span class="comment">#  0-31</span>
+           <span class="type-annotation">::</span>= [x30-x34] &lt;utf8-data&gt;         <span class="comment"># string of length</span>
+                                             <span class="comment">#  0-1023</span>
+</code></pre><p>从上面我们看到，当字符串小于65535的时候，会生成一个结束数据块，否者，一直遍历循环截取String，生成一个大小为65535的。<br>下面我们看源码实现：</p>
+<pre><code><span class="keyword">class</span> Hessian2Output
+<span class="keyword">public</span> <span class="keyword">void</span> writeString(String value)
+   <span class="keyword">throws</span> IOException
+ {
+   ....<span class="comment">//略     扩容</span>
+   <span class="keyword">if</span> (value == <span class="keyword">null</span>) {
+     buffer[offset++] = (<span class="keyword">byte</span>) <span class="string">'N'</span>;
+     _offset = offset;
+   } <span class="keyword">else</span> {
+     <span class="keyword">int</span> length = value.length();
+     <span class="keyword">int</span> strOffset = <span class="number">0</span>;
+
+     <span class="keyword">while</span> (length &gt; <span class="number">0</span>x8000) {
+       <span class="keyword">int</span> sublen = <span class="number">0</span>x8000; <span class="comment">//长度为32768，这里是由于一个unicode字符为2byte</span>
+       ...<span class="comment">//略 扩容</span>
+
+       <span class="comment">// chunk can't end in high surrogate</span>
+       <span class="keyword">char</span> tail = value.charAt(strOffset + sublen - <span class="number">1</span>);
+       <span class="comment">//块不能以高位结尾</span>
+       <span class="keyword">if</span> (<span class="number">0</span>xd800 &lt;= tail &amp;&amp; tail &lt;= <span class="number">0</span>xdbff)
+         sublen--;
+       buffer[offset + <span class="number">0</span>] = (<span class="keyword">byte</span>) BC_STRING_CHUNK;
+       buffer[offset + <span class="number">1</span>] = (<span class="keyword">byte</span>) (sublen &gt;&gt; <span class="number">8</span>);
+       buffer[offset + <span class="number">2</span>] = (<span class="keyword">byte</span>) (sublen);
+       <span class="comment">//3个字节，R字符串长度</span>
+       _offset = offset + <span class="number">3</span>;
+       printString(value, strOffset, sublen);
+       length -= sublen;
+       strOffset += sublen;
+     }
+     ...<span class="comment">//略 扩容，这里代码太不规范，一直重复</span>
+     <span class="keyword">if</span> (length &lt;= STRING_DIRECT_MAX) {
+       <span class="comment">//直接写入字符串长度</span>
+       buffer[offset++] = (<span class="keyword">byte</span>) (BC_STRING_DIRECT + length);
+     }
+     <span class="keyword">else</span> <span class="keyword">if</span> (length &lt;= STRING_SHORT_MAX) {
+       <span class="comment">//高位与0x30相加，地位取length的低位</span>
+       buffer[offset++] = (<span class="keyword">byte</span>) (BC_STRING_SHORT + (length &gt;&gt; <span class="number">8</span>));
+       buffer[offset++] = (<span class="keyword">byte</span>) (length);
+     }
+     <span class="keyword">else</span> {
+       buffer[offset++] = (<span class="keyword">byte</span>) (<span class="string">'S'</span>);
+       buffer[offset++] = (<span class="keyword">byte</span>) (length &gt;&gt; <span class="number">8</span>);
+       buffer[offset++] = (<span class="keyword">byte</span>) (length);
+     }
+
+     _offset = offset;
+
+     printString(value, strOffset, length);
+   }
+ }
+</code></pre><h3 id="3,2_date序列化">3,2 date序列化</h3><p>其实日期也是个相对时间，相对1970年的差值而已，也就是序列化的为整形而已。</p>
+<pre><code>           <span class="comment"># time in UTC encoded as 64-bit long milliseconds since</span>
+           <span class="comment">#  epoch</span>
+date       <span class="type-annotation">::</span>= x4a b7 b6 b5 b4 b3 b2 b1 b0
+           <span class="type-annotation">::</span>= x4b b3 b2 b1 b0       <span class="comment"># minutes since epoch</span>
+</code></pre><p>我们看到，0x4a开头的日期是带秒的，0x4b开头的日期是不带秒的。接下来看代码实现：</p>
+<pre><code>    <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">writeUTCDate</span><span class="params">(<span class="keyword">long</span> time)</span>
+  <span class="keyword">throws</span> IOException
+</span>{
+  <span class="keyword">if</span> (SIZE &lt; _offset + <span class="number">32</span>)
+    flushBuffer();
+
+  <span class="keyword">int</span> offset = _offset;
+  <span class="keyword">byte</span> []buffer = _buffer;
+  <span class="comment">//除以60000秒</span>
+  <span class="keyword">if</span> (time % <span class="number">60000</span>L == <span class="number">0</span>) {
+    <span class="comment">// compact date ::= x65 b3 b2 b1 b0</span>
+
+    <span class="keyword">long</span> minutes = time / <span class="number">60000</span>L;
+
+    <span class="keyword">if</span> ((minutes &gt;&gt; <span class="number">31</span>) == <span class="number">0</span> || (minutes &gt;&gt; <span class="number">31</span>) == -<span class="number">1</span>) {
+      buffer[offset++] = (<span class="keyword">byte</span>) BC_DATE_MINUTE;
+      buffer[offset++] = ((<span class="keyword">byte</span>) (minutes &gt;&gt; <span class="number">24</span>));
+      buffer[offset++] = ((<span class="keyword">byte</span>) (minutes &gt;&gt; <span class="number">16</span>));
+      buffer[offset++] = ((<span class="keyword">byte</span>) (minutes &gt;&gt; <span class="number">8</span>));
+      buffer[offset++] = ((<span class="keyword">byte</span>) (minutes &gt;&gt; <span class="number">0</span>));
+
+      _offset = offset;
+      <span class="keyword">return</span>;
+    }
+  }
+
+  buffer[offset++] = (<span class="keyword">byte</span>) BC_DATE;
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">56</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">48</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">40</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">32</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">24</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">16</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time &gt;&gt; <span class="number">8</span>));
+  buffer[offset++] = ((<span class="keyword">byte</span>) (time));
+
+  _offset = offset;
+}
+</code></pre><h3 id="3-3自定义类定义序列化">3.3自定义类定义序列化</h3><p>序列化类规则：”C”+类名+字段长度+字段名。<br>对象规则：”O”+类定义引用+字段值 或者  类定义引用值小于16，(0x60+引用值)+字段值。</p>
+<pre><code><span class="keyword">class</span>-def  ::= <span class="char">'C'</span> <span class="built_in">string</span> <span class="built_in">int</span> <span class="built_in">string</span>*
+
+<span class="keyword">object</span>     ::= <span class="char">'O'</span> <span class="built_in">int</span> <span class="keyword">value</span>*
+           ::= [x60-x6f] <span class="keyword">value</span>*
+</code></pre><p>对象序列化需要注意，如果以前已经序列化过了，再次序列化时，会添加一个引用标志，如下：</p>
+<pre><code><span class="keyword">ref</span> ::= x51 <span class="type">int</span>
+</code></pre><p>引用仅仅引用list，map和对象。</p>
+<pre><code>public <span class="type">void</span> writeObject(<span class="type">Object</span> obj, <span class="type">AbstractHessianOutput</span> <span class="keyword">out</span>)
+    throws <span class="type">IOException</span>
+  {
+    //对象引用
+    <span class="keyword">if</span> (<span class="keyword">out</span>.addRef(obj)) {
+      <span class="keyword">return</span>;
+    }
+    <span class="type">Class</span>&lt;?&gt; cl = obj.getClass();
+
+    //'C'和类名
+    <span class="type">int</span> <span class="keyword">ref</span> = <span class="keyword">out</span>.writeObjectBegin(cl.getName());
+
+    //类名引用
+    <span class="keyword">if</span> (<span class="keyword">ref</span> &gt;= <span class="number">0</span>) {
+      writeInstance(obj, <span class="keyword">out</span>);
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">ref</span> == -<span class="number">1</span>) {
+      //字段长度，字段名
+      writeDefinition20(<span class="keyword">out</span>);
+      <span class="keyword">out</span>.writeObjectBegin(cl.getName());
+      //字段序列化
+      writeInstance(obj, <span class="keyword">out</span>);
+    }
+    <span class="keyword">else</span> {
+      writeObject10(obj, <span class="keyword">out</span>);
+    }
+  }
+</code></pre><p>参考hessian序列化的例子：</p>
+<pre><code><span class="keyword">class</span> <span class="title">Car</span> {
+  String color;
+  String model;
+}
+
+<span class="keyword">out</span>.writeObject(<span class="keyword">new</span> Car(<span class="string">"red"</span>, <span class="string">"corvette"</span>));
+<span class="keyword">out</span>.writeObject(<span class="keyword">new</span> Car(<span class="string">"green"</span>, <span class="string">"civic"</span>));
+
+---
+
+C                        <span class="preprocessor"># object definition (#0)</span>
+  x0b example.Car        <span class="preprocessor"># type is example.Car</span>
+  x92                    <span class="preprocessor"># two fields</span>
+  x05 color              <span class="preprocessor"># color field name</span>
+  x05 model              <span class="preprocessor"># model field name</span>
+
+O                        <span class="preprocessor"># object def (long form)</span>
+  x90                    <span class="preprocessor"># object definition #0</span>
+  x03 red                <span class="preprocessor"># color field value</span>
+  x08 corvette           <span class="preprocessor"># model field value</span>
+
+x60                      <span class="preprocessor"># object def #0 (short form)</span>
+  x05 green              <span class="preprocessor"># color field value</span>
+  x05 civic              <span class="preprocessor"># model field value</span>
+</code></pre><h2 id="四，集合序列化">四，集合序列化</h2><h3 id="4-1_数组序列化">4.1 数组序列化</h3><p>我们看它的协议：</p>
+<pre><code>list <span class="type-annotation">::</span>= x55 <span class="keyword">type</span> value* <span class="char">'Z'</span>   <span class="comment"># variable-length list</span>
+     <span class="type-annotation">::</span>= <span class="char">'V'</span> <span class="keyword">type</span> int value*   <span class="comment"># fixed-length list</span>
+     <span class="type-annotation">::</span>= x57 value* <span class="char">'Z'</span>        <span class="comment"># variable-length untyped list</span>
+     <span class="type-annotation">::</span>= x58 int value*        <span class="comment"># fixed-length untyped list</span>
+     <span class="type-annotation">::</span>= [x70-<span class="number">77</span>] <span class="keyword">type</span> value*  <span class="comment"># fixed-length typed list</span>
+     <span class="type-annotation">::</span>= [x78-<span class="number">7</span>f] value*       <span class="comment"># fixed-length untyped list</span>
+</code></pre><p>协议本身很简单：总共分为6种情况。<br>   变长list<br>   固定长度list<br>   变长无类型list<br>   固定长度无类型list<br>   固定长度（小于等于7）有类型list<br>   固定长度（小于等于7）无类型list</p>
+<p>下面我看看int[]的解析：</p>
+<pre><code>V                    <span class="preprocessor"># fixed length, typed list</span>
+  x04 [<span class="keyword">int</span>           <span class="preprocessor"># encoding of int[] type</span>
+  x92                <span class="preprocessor"># length = 2</span>
+  x90                <span class="preprocessor"># integer 0</span>
+  x91                <span class="preprocessor"># integer 1</span>
+BasicSerializer
+<span class="keyword">case</span> INTEGER_ARRAY:
+{
+  <span class="keyword">if</span> (<span class="keyword">out</span>.addRef(obj))
+    <span class="keyword">return</span>;
+
+  <span class="keyword">int</span> []data = (<span class="keyword">int</span> []) obj;
+  <span class="comment">//写对象头</span>
+  boolean hasEnd = <span class="keyword">out</span>.writeListBegin(data.length, <span class="string">"[int"</span>);
+  <span class="comment">//写数据</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; data.length; i++)
+    <span class="keyword">out</span>.writeInt(data[i]);
+  <span class="comment">//写结尾</span>
+  <span class="keyword">if</span> (hasEnd)
+<span class="keyword">out</span>.writeListEnd();
+
+  <span class="keyword">break</span>;
+}
+</code></pre><h3 id="4-2_Map序列化">4.2 Map序列化</h3><p>我们看它的协议：</p>
+<pre><code>map        ::= M <span class="keyword">type</span> (<span class="keyword">value</span> <span class="keyword">value</span>)* Z
+</code></pre><p>这个就更简单了，M开头，接着是类型，然后是值，最后以Z结尾。代码如下：</p>
+<pre><code>MapSerializer
+<span class="keyword">public</span> void writeObject(Object obj, AbstractHessianOutput <span class="type">out</span>)
+throws IOException
+  {
+    <span class="keyword">if</span> (<span class="type">out</span>.addRef(obj))
+      <span class="keyword">return</span>;
+
+    Map map = (Map) obj;
+
+    <span class="keyword">Class</span> cl = obj.getClass();
+
+    <span class="keyword">if</span> (cl.equals(HashMap.<span class="keyword">class</span>)
+    || <span class="comment">! _isSendJavaType</span>
+    || <span class="comment">! (obj instanceof java.io.Serializable))</span>
+      <span class="type">out</span>.writeMapBegin(null);
+    <span class="keyword">else</span>
+      <span class="type">out</span>.writeMapBegin(obj.getClass().getName());
+
+    Iterator iter = map.entrySet().iterator();
+    <span class="keyword">while</span> (iter.hasNext()) {
+      Map.<span class="built_in">Entry</span> <span class="built_in">entry</span> = (Map.<span class="built_in">Entry</span>) iter.next();
+
+      <span class="type">out</span>.writeObject(<span class="built_in">entry</span>.getKey());
+      <span class="type">out</span>.writeObject(<span class="built_in">entry</span>.getValue());
+    }
+    <span class="type">out</span>.writeMapEnd();
+  }
+</code></pre><h2 id="五，结尾">五，结尾</h2><p>hessian序列化以开头一个字节做映射，根据不同的编号映射到不同的类型定义,下面是总体规则：</p>
+<pre><code>x00 - x1f    <span class="array"># utf</span>-<span class="number">8</span> string length <span class="number">0</span>-<span class="number">32</span>
+x20 - x2f    <span class="array"># binary data length </span><span class="number">0</span>-<span class="number">16</span>
+x30 - x33    <span class="array"># utf</span>-<span class="number">8</span> string length <span class="number">0</span>-<span class="number">1023</span>
+x34 - x37    <span class="array"># binary data length </span><span class="number">0</span>-<span class="number">1023</span>
+x38 - x3f    <span class="array"># three</span>-octet compact long (-x40000 to x3ffff)
+x40          <span class="array"># reserved </span>(expansion/escape)
+x41          <span class="array"># </span><span class="number">8</span>-bit binary data non-final chunk (<span class="string">'A'</span>)
+x42          <span class="array"># </span><span class="number">8</span>-bit binary data final chunk (<span class="string">'B'</span>)
+x43          <span class="array"># object type definition </span>(<span class="string">'C'</span>)
+x44          <span class="array"># </span><span class="number">64</span>-bit IEEE encoded double (<span class="string">'D'</span>)
+x45          <span class="array"># reserved</span>
+x46          <span class="array"># boolean false </span>(<span class="string">'F'</span>)
+x47          <span class="array"># reserved</span>
+x48          <span class="array"># untyped map </span>(<span class="string">'H'</span>)
+x49          <span class="array"># </span><span class="number">32</span>-bit signed integer (<span class="string">'I'</span>)
+x4a          <span class="array"># </span><span class="number">64</span>-bit UTC millisecond date
+x4b          <span class="array"># </span><span class="number">32</span>-bit UTC minute date
+x4c          <span class="array"># </span><span class="number">64</span>-bit signed long integer (<span class="string">'L'</span>)
+x4d          <span class="array"># map with type </span>(<span class="string">'M'</span>)
+x4e          <span class="array"># null </span>(<span class="string">'N'</span>)
+x4f          <span class="array"># object instance </span>(<span class="string">'O'</span>)
+x50          <span class="array"># reserved</span>
+x51          <span class="array"># reference to map</span>/list/object - integer (<span class="string">'Q'</span>)
+x52          <span class="array"># utf</span>-<span class="number">8</span> string non-final chunk (<span class="string">'R'</span>)
+x53          <span class="array"># utf</span>-<span class="number">8</span> string final chunk (<span class="string">'S'</span>)
+x54          <span class="array"># boolean true </span>(<span class="string">'T'</span>)
+x55          <span class="array"># variable</span>-length list/vector (<span class="string">'U'</span>)
+x56          <span class="array"># fixed</span>-length list/vector (<span class="string">'V'</span>)
+x57          <span class="array"># variable</span>-length untyped list/vector (<span class="string">'W'</span>)
+x58          <span class="array"># fixed</span>-length untyped list/vector (<span class="string">'X'</span>)
+x59          <span class="array"># long encoded as </span><span class="number">32</span>-bit int (<span class="string">'Y'</span>)
+x5a          <span class="array"># list</span>/map terminator (<span class="string">'Z'</span>)
+x5b          <span class="array"># double </span><span class="number">0.0</span>
+x5c          <span class="array"># double </span><span class="number">1.0</span>
+x5d          <span class="array"># double represented as byte </span>(-<span class="number">128.0</span> to <span class="number">127.0</span>)
+x5e          <span class="array"># double represented as short </span>(-<span class="number">32768.0</span> to <span class="number">327676.0</span>)
+x5f          <span class="array"># double represented as float</span>
+x60 - x6f    <span class="array"># object with direct type</span>
+x70 - x77    <span class="array"># fixed list with direct length</span>
+x78 - x7f    <span class="array"># fixed untyped list with direct length</span>
+x80 - xbf    <span class="array"># one</span>-octet compact int (-x10 to x3f, x90 is <span class="number">0</span>)
+xc0 - xcf    <span class="array"># two</span>-octet compact int (-x800 to x7ff)
+xd0 - xd7    <span class="array"># three</span>-octet compact int (-x40000 to x3ffff)
+xd8 - xef    <span class="array"># one</span>-octet compact long (-x8 to xf, xe0 is <span class="number">0</span>)
+xf0 - xff    <span class="array"># two</span>-octet compact long (-x800 to x7ff, xf8 is <span class="number">0</span>)
+</code></pre><p>本文介绍了hessian的序列化机制，而反序列化是如何实现的呢，下文见。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/GC-turing" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -569,63 +943,6 @@ PSH 尽可能的将数据送往接收进程
 <li>《计算机网络-自顶向下方法》—陈鸣译</li>
 </ul>
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/计算机原理/">计算机原理</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/网络协议-应用层" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/06/21/2015/网络协议-应用层/" class="article-date">
-  	<time datetime="2015-06-21T08:49:37.000Z" itemprop="datePublished">6月 21 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/06/21/2015/网络协议-应用层/">计算机网络协议(2)-应用层</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/img/2015/应用层.png" alt=""></p>
-<h2 id="待续">待续</h2>
       
     </div>
     

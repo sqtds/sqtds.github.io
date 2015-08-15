@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,85 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/android-intent" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/05/25/2014/android-intent/" class="article-date">
+  	<time datetime="2014-05-25T10:44:43.000Z" itemprop="datePublished">5月 25 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/25/2014/android-intent/">Intent和Broadcast Receiver</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Intent简介">Intent简介</h2><p>Intent是一种消息传递机制，可以在应用程序中使用， 也可以在应用程序间使用。Intent可以用于：</p>
+<ul>
+<li>使用类名显示启动一个特定的Service或Activity</li>
+<li>启动Activity或Service来执行一个动作的Intent，通常需要使用特定的数据，或者对特定的数据执行动作。</li>
+<li>广播某个事件的发生。</li>
+</ul>
+<h3 id="使用Intent来启动Activity">使用Intent来启动Activity</h3><p>显示：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Intent</span> <span class="type">intent</span> = new <span class="type">Intent</span>(MyActivity.this, MyOtherActivity.<span class="keyword">class</span>);</span><br><span class="line">startActivity(<span class="type">intent</span>);</span><br></pre></td></tr></table></figure>
+<p>隐式：<br>隐式的Intent提供了一种机制，可以让匿名的应用程序组件响应动作请求。这意味着可以要求系统启动一个可执行给定动作的Activity，而不必知道需要启动哪个应用程序或Activity。</p>
+<p>例如：如果希望用户从应用程序中打电话，可以实现一个新的拨号程序，也可以使用一个隐式的Intent来请求一个在电话号码（表示为一个URI）上执行动作（拨号）。<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(somethingWeird&amp;&amp;itDontLookGood)&#123;</span><br><span class="line">	<span class="type">Intent</span> <span class="type">intent</span> = </span><br><span class="line">      new <span class="type">Intent</span> (<span class="type">Intent</span>.Action_DLL,Uri.parse(<span class="string">"tel:555-2368"</span>));</span><br><span class="line">	startActivity(<span class="type">intent</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Android就会解析这个Intent，并启动一个新的Activity，该Activity会提供对这个电话号码进行拨号的动作—-在这种情况下，通常是Phone Dialer.</p>
+<h2 id="Linfify简介">Linfify简介</h2><p>Linkify是一个辅助类，它会自动地在TextView类（或者TextView的派生类）中通过RegEx模型匹配来创建超链接。</p>
+<p>那些匹配一个指定的RegEx模式的文本都将会被转换为一个可以单击的超链接，这些超链接可以隐式使用匹配的文本作为目标URI来触发startActivity（new Intent(Intent.ACTION_VIEW，uri)）。</p>
+<h3 id="原生Linkify链接类型">原生Linkify链接类型</h3><p>Linkify类有一些预设值可以检测到Web URL，电子邮件地址和电话号码，并把他们转换为链接。要应用一个预设值，需要使用静态的Linkify.addLinks方法，并传入要建立的链接的视图，以及以下的一个活更多个自描述的Linkify类常量的位掩码:WEB_URLS，EMAIL_ADDRESS,PHONE_NUMBERS和ALL。</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextView textView = (TextView)findViewById(R.id.myTextView);</span><br><span class="line">Linkify.addLinks(textView,Linkify.WEB_URLS<span class="string">|Linkify.EMAIL_ADDRESSES);</span></span><br></pre></td></tr></table></figure>
+<p>也可以使用Android:autoLink属性来在一个布局内部链接视图。<br><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	android:<span class="variable">layout_width =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">layout_height =</span> <span class="string">"match_parent"</span></span><br><span class="line">	android:<span class="variable">text =</span> <span class="string">"@string/linkify_name"</span></span><br><span class="line">	android:<span class="variable">autoLink =</span> <span class="string">"phone|email"</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="创建定制的链接字符串">创建定制的链接字符串</h3><h3 id="使用Match_Filter">使用Match Filter</h3><h3 id="使用Transform_Filter">使用Transform Filter</h3><p>Transform Filter 允许修改匹配的链接文本生成的隐式URI。把链接文本和目标URI分离开，你能够更自由的决定如何把数据字符串显示给用户。</p>
+<h2 id="使用Intent广播事件">使用Intent广播事件</h2><p>作为一个系统级的消息传递机制，Intent可以在进程之间发送结构化的消息。因此，可以通过实现Broadcast Receiver来监听和响应应用程序内的这些Broadcast Intent。</p>
+<p>Broadcast Intent 用于向监听器通知系统的应用程序或应用事件，从而可以扩展应用程序间的事件驱动的编程模型。</p>
+<p>Broadcast Intent 可以是应用程序更加开发：通过使用Intent来广播一个事件，可以在不用修改原始应用程序的情况下，让你和第三方开发人员对事件做出反应。在应用程序中，可以通过监听Broadcast Intent来对设备状态变化和第三方应用程序事件做出反应。</p>
+<h3 id="使用_Intent广播事件">使用 Intent广播事件</h3><p>在应用程序组件中，可以构建希望广播的Intent，然后使用sendBroadcast方法来发送它。</p>
+<p>可以对Intent的动作，数据和分类进行设置，从而使Broadcast Receiver能够精确的确定他们的需求。</p>
+<h3 id="使用Broadcast_Receiver来监听广播">使用Broadcast Receiver来监听广播</h3><p>Broadcast Receiver可以用来监听Broadcast Intent。要使Broadcast Receiver 能够接受广播，就需要对其进行注册，即可以使用代码，也可以在应用程序的manifest文件中注册。无论怎么注册，都要使用一个Intent Filter来指定它要监听哪些Intent和数据。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/impala-jdbc-pool" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -507,66 +586,6 @@ var _hmt = _hmt || [];
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/hadoop-start" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/05/19/2014/hadoop-start/" class="article-date">
-  	<time datetime="2014-05-19T13:50:32.000Z" itemprop="datePublished">5月 19 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/19/2014/hadoop-start/">hadoop的生态圈（1）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="hadoop的历史">hadoop的历史</h2><p>谈到 Hadoop 的历史，就不得不提到 Lucene 和 Nutch。Hadoop 开始时是 Nutch 的一个子项目，而 Nutch 又是 Apache Lucene 的子项目。这 3 个项目都是由 Doug Cutting 创立，每个项目在逻辑上都是前一个项目的演进。
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hadoop/">hadoop</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/大数据/">大数据</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2014/05/19/2014/hadoop-start/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>

@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 16.67px;">android</a><a href="/tags/antlr4/" style="font-size: 18.33px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.67px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.67px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 13.33px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 15px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.33px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.67px;">nosql</a><a href="/tags/spring/" style="font-size: 15px;">spring</a><a href="/tags/tomcat/" style="font-size: 16.67px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 16.67px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,91 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/java-queue" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/15/2015/java-queue/" class="article-date">
+  	<time datetime="2015-05-15T12:31:10.000Z" itemprop="datePublished">5月 15 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/15/2015/java-queue/">java核心系列（八）—java队列</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="队列概览">队列概览</h2><p><img src="/img/2015/Queue.png" alt=""></p>
+<h3 id="1，BlockingQueue">1，BlockingQueue</h3><ul>
+<li>ArrayBlockingQueue，数组结构组成,其构造函数必须带一个int参数来指明其大小</li>
+<li>LinkedBlockingQueue，由链表结构组成,若其构造函数带一个规定大小的参数，生成的BlockingQueue有大小限制，若不带大小参数，所生成的BlockingQueue的大小由Integer.MAX_VALUE来决定</li>
+<li>PriorityBlockingQueue，其所含对象的排序不是FIFO,而是依据对象的自然排序顺序或者是构造函数的Comparator决定的顺序</li>
+<li><p>DelayQueue：一个使用优先级队列实现的无界阻塞队列。DelayQueue是一个支持延时获取元素的无界阻塞队列。队列使用PriorityQueue来实现。队列中的元素必须实现Delayed接口，<strong>在创建元素时可以指定多久才能从队列中获取当前元素</strong>。<strong>只有在延迟期满时才能从队列中提取元素。</strong>我们可以将DelayQueue运用在以下应用场景：</p>
+<p> 缓存系统的设计：<br> 可以用DelayQueue保存缓存元素的有效期，使用一个线程循环查询DelayQueue，一旦能从DelayQueue中获取元素时，表示缓存有效期到了。<br> 定时任务调度：<br> 使用DelayQueue保存当天将会执行的任务和执行时间，一旦从DelayQueue中获取到任务就开始执行，从比如TimerQueue就是使用DelayQueue实现的。</p>
+</li>
+<li><p>SynchronousQueue：一个不存储元素的阻塞队列。每一个put操作必须等待一个take操作，否则不能继续添加元素。</p>
+</li>
+<li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</li>
+<li>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</li>
+</ul>
+<h3 id="2，Queue">2，Queue</h3><ul>
+<li><p>PriorityQueue是个基于优先级堆的极大优先级队列。<br>此队列按照在构造时所指定的顺序对元素排序，既可以根据元素的自然顺序来指定排序（参阅 Comparable）， 也可以根据 Comparator 来指定，这取决于使用哪种构造方法。优先级队列不允许 null 元素。</p>
+</li>
+<li><p>ConcurrentLinkedQueue一个无锁的并发线程安全的队列。对比锁机制的实现，使用无锁机制的难点在于要充分考虑线程间的协调。简单的说就是多个线程对内部数据结构进行访问时，如果其中一个线程执行的中途因为一些原因出现故障，其他的线程能够检测并帮助完成剩下的操作。这就需要把对数据结构的操作过程精细的划分成多个状态或阶段，考虑每个阶段或状态多线程访问会出现的情况。<br>需要说一下的是，<strong>ConcurrentLinkedQueue的size()是要遍历一遍集合的，所以尽量要避免用size而改用isEmpty()，以免性能过慢。</strong></p>
+</li>
+</ul>
+<h3 id="3，Deque">3，Deque</h3><p>LinkedList，ArrayDeque，非线程安全的，可以通过Collections的工具方法改造成线程安全的。<br>LinkedBlockingDeque</p>
+<p>按照我们一般的理解，Deque是一个双向队列，这将意味着它不过是对Queue接口的增强。如果仔细分析Deque接口代码的话，我们会发现它里面主要包含有4个部分的功能定义。</p>
+<ol>
+<li>双向队列特定方法定义。 </li>
+<li>Queue方法定义。 </li>
+<li><strong>Stack方法定义。 </strong></li>
+<li>Collection方法定义。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">\\Stack定义</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addFirst(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> removeFirst();</span><br><span class="line">    &#125;</span><br><span class="line"> 	<span class="function"><span class="keyword">public</span> E <span class="title">peek</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="4,参考资料">4,参考资料</h3><p><a href="http://www.infoq.com/cn/articles/java-blocking-queue" target="_blank" rel="external">聊聊并发（七）——Java中的阻塞队列</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278350" target="_blank" rel="external"> Java多线程（五）之BlockingQueue深入分析</a><br><a href="http://blog.csdn.net/guangcigeyun/article/details/8278355" target="_blank" rel="external">Java多线程（六）之Deque与LinkedBlockingDeque深入分析</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/java-thread" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -720,115 +805,6 @@ GatheringByteChannel
 <li><a href="http://blog.csdn.net/zhoudaxia/article/details/35824249" target="_blank" rel="external">深入理解Java类加载器(1)：Java类加载原理解析</a></li>
 <li><a href="http://lengyun3566.iteye.com/blog/1683972" target="_blank" rel="external">Tomcat源码解读系列（四）——Tomcat类加载机制概述</a></li>
 </ol>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-reflection" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/10/2015/java-reflection/" class="article-date">
-  	<time datetime="2015-05-10T10:42:41.000Z" itemprop="datePublished">5月 10 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/10/2015/java-reflection/">java核心系列（二）—java反射</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，概述">一，概述</h2><p>java动态代理只能对方法进行反射，为什么？<br><img src="/img/2015/反射.png" alt=""></p>
-<h2 id="二，Class">二，Class</h2><p>getXXX()返回的为public的XXX(方法，构造方法，属性,注解)，包括继承的和接口实现的。</p>
-<p>getDeclaredXXX()返回的为本类的所有的XXX(方法，构造方法，属性，注解)，不包括继承的。</p>
-<h3 id="1,Methods">1,Methods</h3><ul>
-<li><p>public Method[] getMethods()<br>返回某个类的所有公用（public）方法包括其继承类的公用方法，当然也包括它所实现接口的方法。</p>
-</li>
-<li><p>public Method[] getDeclaredMethods()<br>返回某个类的所有方法，包括公共、保护、默认（包）访问和私有方法，但不包括继承的方法。当然也包括它所实现接口的方法。</p>
-</li>
-</ul>
-<h3 id="2,Constructors">2,Constructors</h3><ul>
-<li>public Constructor<t> getConstructor(Class&lt;?&gt;… parameterTypes)<br>根据参数返回公共构造方法。</t></li>
-<li>public Constructor&lt;?&gt;[] getConstructors()<br>得到所有的公共构造方法</li>
-<li>public Constructor&lt;?&gt;[] getDeclaredConstructors()<br>得到声明的构造方法</li>
-</ul>
-<h3 id="3,Fields">3,Fields</h3><p>同上</p>
-<h3 id="4,Annotations">4,Annotations</h3><p>同上，只能获取注解集合，暂时不能获取指定参数注解。</p>
-<h2 id="三，AccessibleObject">三，AccessibleObject</h2><p><img src="/img/2015/AccessibleObject.png" alt=""><br>从图中我们可以看到Methods，Constructors，Fields继承了这个类。<br>我们看这个类的方法：<br><img src="/img/2015/AccessibleObjectMethod.png" alt=""><br>从图中可以看出，这个对象主要包含了2类方法：</p>
-<ul>
-<li>第一类是获取对象注解，getAnnotations()。</li>
-<li>第二类是设置对象是否可访问，setAccessible(boolean flag),通过设置访问标志来访问非public对象（方法，构造方法，属性）。</li>
-</ul>
-<h2 id="五-Modifiers">五.Modifiers</h2><p>我们可以看到修饰符使用的是二进制来表示的，访问修饰符用01,10,100，1000来表示的，总共容纳32个修饰符，每一位使用mod&amp;修饰符来判断当前值是否包含修饰符。</p>
-<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PUBLIC</span>           = <span class="number">0</span>x00000001;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PRIVATE</span>          = <span class="number">0</span>x00000002;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">PROTECTED</span>        = <span class="number">0</span>x00000004;
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="keyword">STATIC</span>           = <span class="number">0</span>x00000008;
-...
-Modifier.isAbstract(<span class="keyword">int</span> modifiers)
-Modifier.isFinal(<span class="keyword">int</span> modifiers)
-Modifier.isInterface(<span class="keyword">int</span> modifiers)
-Modifier.isNative(<span class="keyword">int</span> modifiers)
-Modifier.isPrivate(<span class="keyword">int</span> modifiers)
-Modifier.isProtected(<span class="keyword">int</span> modifiers)
-Modifier.isPublic(<span class="keyword">int</span> modifiers)
-Modifier.isStatic(<span class="keyword">int</span> modifiers)
-Modifier.isStrict(<span class="keyword">int</span> modifiers)
-Modifier.isSynchronized(<span class="keyword">int</span> modifiers)
-Modifier.isTransient(<span class="keyword">int</span> modifiers)
-Modifier.isVolatile(<span class="keyword">int</span> modifiers)
-</code></pre><h2 id="六-InvocationHandler">六.InvocationHandler</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Proxy</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span><br><span class="line">				  Class&lt;?&gt;[] interfaces,</span><br><span class="line">				  InvocationHandler h)</span></span><br><span class="line">上述方法与下面的方法 完全等同，都是构造一个代理实例。</span><br><span class="line">Proxy.<span class="title">getProxyClass</span><span class="params">(loader, interfaces)</span>.</span><br><span class="line">              <span class="title">getConstructor</span><span class="params">(new Class[] &#123; InvocationHandler.class &#125;)</span>.</span><br><span class="line">              <span class="title">newInstance</span><span class="params">(new Object[] &#123; handler &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>从这里可以看出，任何一个代理类都会有一个以InvocationHandler为参数的构造方法，通过这个方法，我们可以创建一个代理类。<br>然后我们看看InvocationHandler的接口实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br></pre></td></tr></table></figure></p>
-<p>从这里看出，参数仅仅能传Method，所以只能对方法进行代理。</p>
-<h2 id="七，Array">七，Array</h2><p>注意不要混淆java.lang.reflect.Array与java.util.Arrays。</p>
-<h3 id="1，创建数组">1，创建数组</h3><pre><code><span class="built_in">int</span><span class="literal">[]</span> intArray = (<span class="built_in">int</span><span class="literal">[]</span>) <span class="type">Array</span>.newInstance(<span class="built_in">int</span>.<span class="keyword">class</span>, <span class="number">3</span>);
-</code></pre><p>创建一个大小为3，类型为int的数组。</p>
-<h3 id="2，访问数组">2，访问数组</h3><pre><code><span class="keyword">Array</span>.<span class="keyword">set</span>(intArray, <span class="number">0</span>, <span class="number">123</span>);
-</code></pre><p>设置数组的第一个值为123。</p>
-<h3 id="3，从数组中获取类对象">3，从数组中获取类对象</h3><pre><code><span class="keyword">Class</span> stringArrayClass = <span class="built_in">String</span>[].<span class="keyword">class</span>;
-<span class="keyword">Class</span> intArray = <span class="keyword">Class</span>.forName(<span class="string">"[I"</span>);
-<span class="keyword">Class</span> stringArrayClass = <span class="keyword">Class</span>.forName(<span class="string">"[Ljava.lang.String;"</span>);
-</code></pre><h2 id="八，jdk8改进">八，jdk8改进</h2><p>反射异常ClassNotFoundException、NoSuchMethodException、IllegalAccessException，InvocationTargetExcetpion等有一个父类异常叫ReflectiveOperationExcetpion。</p>
-<p>旧版JDK，还有个很莫名其妙的地方，就是所有反射，都拿不到参数名，无论名字叫啥，都返回arg0，arg1，所以在CXF，SpringMVC里，你都要把参数名字用annotation再写一遍：<br>    Person getEmployee(@PathParam(“dept”) Long dept, @QueryParam(“id”) Long id)<br>现在，JDK8新提供的类java.lang.reflect.Parameter可以反射参数名了，编译时要加参数，如 javac -parameters xxx.java，或者Eclipse里设置。然后就可以写成:<br>    Person getEmployee(@PathParam Long dept, @QueryParam Long id)</p>
-<h2 id="九，参考资料">九，参考资料</h2><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="external">Java Reflection Tutorial</a></p>
 
       
     </div>
