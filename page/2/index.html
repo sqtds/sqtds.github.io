@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 14.29px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,239 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/tomcat8-sourcecode02" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/12/2015/tomcat8-sourcecode02/" class="article-date">
+  	<time datetime="2015-08-12T00:25:49.000Z" itemprop="datePublished">8月 12 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/12/2015/tomcat8-sourcecode02/">tomcat8源码阅读(二)--启动一</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，前言">一，前言</h2><p>在本文中，我将主要介绍tomcat的启动阶段，包括main方法的运行，配置文件的加载，对象的实例化关联等。</p>
+<h2 id="二，Bootstrap的mian">二，Bootstrap的mian</h2><p>当我们调试tomcat的时候，是从Bootstrap的main方法开始启动的。那这个main方法主要做了哪些工作，我们看看内部实现。</p>
+<pre><code><span class="keyword">Bootstrap</span>    
+public static void main(String <span class="keyword">args</span>[]) {
+     <span class="keyword">Bootstrap</span> <span class="keyword">bootstrap</span> = new <span class="keyword">Bootstrap</span>();
+     <span class="comment">//初始化</span>
+     <span class="keyword">bootstrap</span>.init();
+     daemon = <span class="keyword">bootstrap</span>;
+
+    try {
+        String command = <span class="string">"start"</span>;
+        <span class="keyword">if</span> (<span class="keyword">args</span>.length &gt; 0) {
+            command = <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1];
+        }
+        <span class="keyword">if</span> (command.equals(<span class="string">"startd"</span>)) {
+            <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1] = <span class="string">"start"</span>;
+            daemon.load(<span class="keyword">args</span>);
+            daemon.start();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"stopd"</span>)) {
+            <span class="keyword">args</span>[<span class="keyword">args</span>.length - 1] = <span class="string">"stop"</span>;
+            daemon.stop();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"start"</span>)) {
+            daemon.setAwait(true);
+            daemon.load(<span class="keyword">args</span>);
+            daemon.start();
+        } <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"stop"</span>)) {
+            daemon.stopServer(<span class="keyword">args</span>);
+        }<span class="keyword">else</span> other ...                 
+    } catch (Throwable t) {
+        ...<span class="comment">//异常</span>
+        System.<span class="keyword">exit</span>(1);
+    }
+
+}
+</code></pre><p>代码很简单，创建一个Bootstrap，然后初始化init，最后调用start方法启动。</p>
+<h2 id="三，init方法">三，init方法</h2><p>那么初始化方法做了什么呢？我们接下来看看：</p>
+<pre><code><span class="type">Bootstrap</span>
+public <span class="type">void</span> init() throws <span class="type">Exception</span> {
+    //初始化类加载器
+    initClassLoaders();
+    //设置当前上下文类加载器为catalinaLoader
+    <span class="type">Thread</span>.currentThread().setContextClassLoader(catalinaLoader);
+
+    ...//略
+    <span class="type">Class</span>&lt;?&gt; startupClass =
+        catalinaLoader.loadClass
+        (<span class="string">"org.apache.catalina.startup.Catalina"</span>);
+    //加载类<span class="type">Catalina</span>，并实例化
+    <span class="type">Object</span> startupInstance = startupClass.newInstance();
+    <span class="type">String</span> methodName = <span class="string">"setParentClassLoader"</span>;
+    <span class="type">Class</span>&lt;?&gt; paramTypes[] = new <span class="type">Class</span>[<span class="number">1</span>];
+    paramTypes[<span class="number">0</span>] = <span class="type">Class</span>.forName(<span class="string">"java.lang.ClassLoader"</span>);
+    <span class="type">Object</span> paramValues[] = new <span class="type">Object</span>[<span class="number">1</span>];
+    paramValues[<span class="number">0</span>] = sharedLoader;
+    <span class="type">Method</span> <span class="keyword">method</span> =
+        startupInstance.getClass().getMethod(methodName, paramTypes);
+    //调用<span class="type">Catalina</span>的setParentClassLoader方法设置父类加载器为catalinaLoader
+    <span class="keyword">method</span>.invoke(startupInstance, paramValues);
+
+    catalinaDaemon = startupInstance;
+}
+</code></pre><p>初始化做了2件事，第一件事是初始化类加载器，并设置了线程上下文类加载器。第二件事是初始化Catalina，并设置它的父类加载器为当前线程上下文类加载器。</p>
+<h3 id="3-1，初始化类加载器">3.1，初始化类加载器</h3><p>接下来我们就看看类加载器是如何初始化的。</p>
+<pre><code>Bootstrap
+<span class="keyword">private</span> <span class="function"><span class="keyword">void</span> <span class="title">initClassLoaders</span><span class="params">()</span> </span>{
+    <span class="keyword">try</span> {
+        commonLoader = createClassLoader(<span class="string">"common"</span>, <span class="keyword">null</span>);
+        <span class="keyword">if</span>( commonLoader == <span class="keyword">null</span> ) {
+            commonLoader=<span class="keyword">this</span>.getClass().getClassLoader();
+        }
+        catalinaLoader = createClassLoader(<span class="string">"server"</span>, commonLoader);
+        sharedLoader = createClassLoader(<span class="string">"shared"</span>, commonLoader);
+    } <span class="keyword">catch</span> (Throwable t) {
+        <span class="comment">//....异常</span>
+        System.exit(<span class="number">1</span>);
+    }
+}
+</code></pre><p>上面代码创建了3个类加载器，至于这3个的用处，以后再说，我们看是如何实现的。</p>
+<pre><code><span class="keyword">private</span> ClassLoader createClassLoader(<span class="keyword">String</span> name, ClassLoader parent)
+    <span class="keyword">throws</span> Exception {
+
+    <span class="keyword">String</span> value = CatalinaProperties.getProperty(name + <span class="string">".loader"</span>);<span class="comment">//第一处</span>
+    <span class="keyword">if</span> ((value == <span class="keyword">null</span>) || (value.equals(<span class="string">""</span>)))
+        <span class="keyword">return</span> parent;
+
+    value = replace(value);
+
+    List&lt;Repository&gt; repositories = <span class="keyword">new</span> ArrayList&lt;&gt;();
+
+    <span class="keyword">String</span>[] repositoryPaths = getPaths(value);
+
+    <span class="keyword">for</span> (<span class="keyword">String</span> repository : repositoryPaths) {
+        <span class="comment">// Check for a JAR URL repository</span>
+        <span class="keyword">try</span> {
+            @SuppressWarnings(<span class="string">"unused"</span>)
+            URL url = <span class="keyword">new</span> URL(repository);
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.URL));
+            <span class="keyword">continue</span>;
+        } <span class="keyword">catch</span> (MalformedURLException e) {
+            <span class="comment">// Ignore</span>
+        }
+
+        <span class="comment">// Local repository</span>
+        <span class="keyword">if</span> (repository.endsWith(<span class="string">"*.jar"</span>)) {
+            repository = repository.substring
+                (<span class="number">0</span>, repository.length() - <span class="string">"*.jar"</span>.length());
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.GLOB));
+        } <span class="keyword">else</span> <span class="keyword">if</span> (repository.endsWith(<span class="string">".jar"</span>)) {
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.JAR));
+        } <span class="keyword">else</span> {
+            repositories.<span class="built_in">add</span>(
+                    <span class="keyword">new</span> Repository(repository, RepositoryType.DIR));
+        }
+    }
+
+    <span class="keyword">return</span> ClassLoaderFactory.createClassLoader(repositories, parent);
+}
+</code></pre><p>我们看上面代码第一处，从属性文件中获取值。<br>我们打开conf/catalina.properties文件，发现</p>
+<pre><code>catalina.properties
+common.<span class="variable">loader=</span><span class="string">"<span class="subst">${catalina.base}</span>/lib"</span>,<span class="string">"<span class="subst">${catalina.base}</span>/lib/*.jar"</span>,<span class="string">"<span class="subst">${catalina.home}</span>/lib"</span>,<span class="string">"<span class="subst">${catalina.home}</span>/lib/*.jar"</span>
+server.<span class="variable">loader=</span>
+shared.<span class="variable">loader=</span>
+</code></pre><p>只有common.loader才有值，表示加载的是tomcatlib目录下的jar包。由于server.loader和shared.loader为空，catalinaLoader和sharedLoader都会引用的commonLoader。<br>最后我们看具体的创建过程，即ClassLoaderFactory.createClassLoader（repositories, parent）方法。</p>
+<pre><code>    <span class="keyword">public</span> <span class="keyword">static</span> ClassLoader createClassLoader(List&lt;Repository&gt; repositories,
+                                            <span class="keyword">final</span> ClassLoader parent)
+    <span class="keyword">throws</span> Exception {
+    Set&lt;URL&gt; <span class="built_in">set</span> = <span class="keyword">new</span> LinkedHashSet&lt;&gt;();
+    <span class="keyword">if</span> (repositories != <span class="keyword">null</span>) {
+        <span class="keyword">for</span> (Repository repository : repositories)  {
+            ...<span class="comment">//略去其他类型</span>
+            File directory = <span class="keyword">new</span> File(repository.getLocation());
+            directory = directory.getCanonicalFile();
+            <span class="keyword">if</span> (!validateFile(directory, RepositoryType.DIR)) {
+                <span class="keyword">continue</span>;
+            }
+            URL url = directory.toURI().toURL();
+            <span class="keyword">if</span> (<span class="built_in">log</span>.isDebugEnabled())
+                <span class="built_in">log</span>.debug(<span class="string">"  Including directory "</span> + url);
+            <span class="built_in">set</span>.<span class="built_in">add</span>(url);
+        }
+    }
+
+    <span class="comment">// Construct the class loader itself</span>
+    <span class="keyword">final</span> URL[] array = <span class="built_in">set</span>.toArray(<span class="keyword">new</span> URL[<span class="built_in">set</span>.<span class="built_in">size</span>()]);
+
+    <span class="keyword">return</span> AccessController.doPrivileged(
+            <span class="keyword">new</span> PrivilegedAction&lt;URLClassLoader&gt;() {
+                @Override
+                <span class="keyword">public</span> URLClassLoader run() {
+                    <span class="keyword">if</span> (parent == <span class="keyword">null</span>)
+                        <span class="keyword">return</span> <span class="keyword">new</span> URLClassLoader(array);
+                    <span class="keyword">else</span>
+                        <span class="keyword">return</span> <span class="keyword">new</span> URLClassLoader(array, parent);
+                }
+            });
+}
+</code></pre><p>最后我们从代码中可以看到，生成了一个URLClassLoader加载器。记得tomcat6的时候这里生成的StandardClassLoader，看来StandardClassLoader没啥作用，在后面的tomcat中移除了。</p>
+<h2 id="3-2，初始化Catalina">3.2，初始化Catalina</h2><p>初始化Catalina用反射即可，不多说了。</p>
+<h2 id="四，start启动">四，start启动</h2><p>初始化完成之后，就可以启动了。我们看看启动start方法。</p>
+<pre><code><span class="type">Bootstrap</span>
+//设置等待标志，为关闭做准备，暂时不关注
+daemon.setAwait(<span class="literal">true</span>);
+//加载参数，无参数，暂时不关注
+daemon.load(args);
+//启动
+daemon.start();
+
+public <span class="type">void</span> start()
+    throws <span class="type">Exception</span> {
+    <span class="keyword">if</span>( catalinaDaemon==null ) init();
+    <span class="type">Method</span> <span class="keyword">method</span> = catalinaDaemon.getClass().getMethod(<span class="string">"start"</span>, (<span class="type">Class</span> [] )null);
+    <span class="keyword">method</span>.invoke(catalinaDaemon, (<span class="type">Object</span> [])null);
+}
+</code></pre><p>start方法很简单，利用反射调用了catalina的start方法。<br>Catalina的start方法做了哪些事情呢？我们下文继续。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2015/tomcat8-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -846,57 +1079,9 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
 
 
   
-    <article id="post-netty-study1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/22/netty-study1/" class="article-date">
-  	<time datetime="2015-07-22T10:42:51.000Z" itemprop="datePublished">7月 22 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/22/netty-study1/">netty研究</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 </div>

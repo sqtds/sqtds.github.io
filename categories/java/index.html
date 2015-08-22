@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 14.29px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -750,6 +750,7 @@ var _hmt = _hmt || [];
 }
 </code></pre><p>太长了，我们只关注最重要的：<code>connector.getService().getMapper().map(serverName, decodedURI, version, request.getMappingData());</code></p>
 <p>connector.getService()返回了StandardService，然后映射到了具体的Servlet上，这里就是详细解释了，要去跑步了，88.</p>
+<h2 id="五，结束">五，结束</h2><p>请求处理完后就会发送数据，就不一一详解了。</p>
 
       
     </div>

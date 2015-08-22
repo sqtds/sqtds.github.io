@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 14.29px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,69 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
+  	<time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">10月 26 2014</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
+<h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
+<h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
+<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2014/10/26/2014/mondrian-source-code-5/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -645,68 +708,9 @@ IGNORE      :   .                       -&gt; more ;
 
 
   
-    <article id="post-2014/antlr4-semantic-predicate" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/03/2014/antlr4-semantic-predicate/" class="article-date">
-  	<time datetime="2014-09-03T12:33:06.000Z" itemprop="datePublished">9月 3 2014</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/03/2014/antlr4-semantic-predicate/">antlr4-语义预测（九）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在这一节，我们将介绍anltr的特别的行为 {…}?,就是所谓的语义预测。可以让我们在运行的时候使部分语法无效。预测是boolean型的表达式，可以有效的减少解析树的选择。</p>
-<p>有2个比较常用的语义预测用例。第一个，我们可能需要一个解析器去处理多个，有点不同版本的相同语言。例如，各个数据库厂商的定制sql语言。<br>第二个，可能涉及解析语法模糊不清的部分。在有些语言中，相同的词法构造可能意味着不同的含义，预测可以让我们在多个含义中选择一条。</p>
-<p>例子太简单了，这里就不介绍了。<br>有一点需要注意的是，看下面这个例子，ENUM必须在ID的前面。这是因为‘enum’被包含在ID中，antlr对这种模糊不清的词法总是优先用第一个解析，在下面的例子中是ENUM。如果将他们颠倒的话，那么‘enum’将被永远的解析为ID了。<br>    predicates/Enum2.g4<br>    ENUM: ‘enum’ {java5}? ; // must be before ID<br>    ID : [a-zA-Z]+ ;</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
     </nav>
   
 </div>
