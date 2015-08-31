@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 11.43px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,150 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2015/linux-search" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/18/2015/linux-search/" class="article-date">
+  	<time datetime="2015-05-18T01:55:16.000Z" itemprop="datePublished">5月 18 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/18/2015/linux-search/">linux搜索命令</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一，grep">一，grep</h2><blockquote>
+<p>Syntax: grep [options] pattern [files]</p>
+</blockquote>
+<pre><code>搜索在文件中包含pattern的所有的行    
+<span class="id">#grep</span> John /etc/passwd
+搜索在文件中不包含pattern的所有的行    
+<span class="id">#grep</span> -v John /etc/passwd
+搜索在文件中包含pattern的行数
+<span class="id">#grep</span> -c John /etc/passwd
+忽略大小写
+<span class="id">#grep</span> -<span class="tag">i</span> John /etc/passwd
+搜索子目录,展现文件名和行
+<span class="id">#grep</span> -ri john /home/users
+搜索子目录,只展现文件名
+<span class="id">#grep</span> -ril john /home/users
+</code></pre><h2 id="二，grep与正则的配合">二，grep与正则的配合</h2><pre><code>行的开始^
+grpe <span class="string">"^aa"</span> message<span class="class">.logs</span>
+行的结尾$
+grpe <span class="string">"aa$"</span> message<span class="class">.logs</span>
+计算空行数
+grep -c <span class="string">"^$"</span> message.logs
+</code></pre><h2 id="三，find">三，find</h2><blockquote>
+<p>Syntax: find [pathnames] [conditions]</p>
+</blockquote>
+<pre><code>查找文件名包含特定的字符
+<span class="preprocessor"># find /etc -name "*mail*"</span>
+查找文件大小大于<span class="number">100</span>M
+<span class="preprocessor">#find / -type f -size +100M</span>
+查找文件在最近的<span class="number">60</span>天未被修改
+<span class="preprocessor"># find . -mtime +60</span>
+查找文件在最近的<span class="number">2</span>天内被修改的
+<span class="preprocessor"># find . –mtime -2</span>
+查看以.tar.gz并且大于<span class="number">100</span>M的文件，并且删除
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec ls -l {}</span>
+\;
+<span class="preprocessor"># find / -type f -name *.tar.gz -size +100M -exec rm -f {}</span>
+\;
+</code></pre><h2 id="四，sed">四，sed</h2><blockquote>
+<p>Syntax: #sed ‘ADDRESSs/REGEXP/REPLACEMENT/FLAGS’ filename<br>Syntax: #sed ‘PATTERNs/REGEXP/REPLACEMENT/FLAGS’ filename</p>
+</blockquote>
+<ul>
+<li>s is substitute command</li>
+<li>/ is a delimiter</li>
+<li>REGEXP is regular expression to match</li>
+<li>REPLACEMENT is a value to replace</li>
+</ul>
+<p>FLAGS选项:</p>
+<ul>
+<li>g 用REPLACEMENT代替所有的 REGEXP  </li>
+<li>n 可以是任意数字,用REPLACEMENT代替REGEXP的第n个实例。</li>
+<li>p 打印匹配后的行</li>
+<li>i 忽略大小写</li>
+<li>w 将匹配后的行写入到文件中</li>
+</ul>
+<p>我们也可以用( one of @ % ; : )的其中一个代替/</p>
+<pre><code>使用Linux-Unix替代Linux，只替代第一次
+$ sed <span class="string">'s/Linux/Linux-Unix/'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代所有的
+$ sed <span class="string">'s/Linux/Linux-Unix/g'</span> thegeekstuff<span class="class">.txt</span>
+使用Linux-Unix替代Linux，替代第<span class="number">2</span>次
+$ sed <span class="string">'s/Linux/Linux-Unix/2'</span> thegeekstuff<span class="class">.txt</span>
+将替换后的行输出并打印 ，-n 表示取消默认输出
+$ sed -n <span class="string">'s/Linux/Linux-Unix/gpw output'</span> thegeekstuff<span class="class">.txt</span>
+删除所有的以#开头的行  -e 表示在文本中编辑
+$ sed -e <span class="string">'s/#.*//'</span> thegeekstuff.txt
+</code></pre><h2 id="五，cut">五，cut</h2><p>Cut命令用于展现文本中的特定列。</p>
+<blockquote>
+<p>Syntax: cut  [-bn] [file] 或 cut [-c] [file]  或  cut [-df] [file]</p>
+</blockquote>
+<ul>
+<li>-b ：以字节为单位进行分割。这些字节位置将忽略多字节字符边界，除非也指定了 -n 标志。</li>
+<li>-c ：以字符为单位进行分割。</li>
+<li>-d ：自定义分隔符，默认为制表符。</li>
+<li>-f  ：与-d一起使用，指定显示哪个区域。</li>
+<li><p>-n ：取消分割多字节字符。仅和 -b 标志一起使用。如果字符的最后一个字节落在由 -b 标志的 List 参数指示的范围之内，该字符将被写出；否则，该字符将被排除。</p>
+<p>  从冒号(:)分隔文件中展现第一个字段.<br>  $ cut -d: -f 1 names.txt<br>  从冒号(:)分隔文件中展现第一到三个字段.<br>  $ cut -d: -f 1,3 names.txt<br>  展现每行的前8个字符<br>  $ cut -c 1-8 names.txt<br>  展现可用内存<br>  free | tr -s ‘ ‘ | sed ‘/^Mem/!d’ | cut -d” “ -f2 </p>
+</li>
+</ul>
+<h2 id="六，awk">六，awk</h2><blockquote>
+<p>Syntax:awk ‘/search pattern1/ {Actions}<br>          /search pattern2/ {Actions}’ file</p>
+</blockquote>
+<ul>
+<li>search pattern is a regular expression.</li>
+<li>Actions – statement(s) to be performed.</li>
+<li>several patterns and actions are possible in Awk.</li>
+<li>file – Input file.</li>
+<li>Single quotes around program is to avoid shell not to interpret any of its special characters</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux命令/">linux命令</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/linux/">linux</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/linux-tips" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -515,106 +659,6 @@ t2.join(); <span class="comment">// in this program, this may be removed</span>
 <li><a href="http://www.ibm.com/developerworks/cn/java/j-jtp05236.html" target="_blank" rel="external">Java 理论与实践: 处理 InterruptedException</a></li>
 <li><a href="http://ifeve.com/java-concurrency-constructs/" target="_blank" rel="external">Java并发结构</a></li>
 </ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2015/java-collection" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/14/2015/java-collection/" class="article-date">
-  	<time datetime="2015-05-14T12:42:41.000Z" itemprop="datePublished">5月 14 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/14/2015/java-collection/">java核心系列（六）-java集合小结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要从整体架构，功能特性，和其他方面介绍集合。</p>
-<h2 id="一-整体架构">一.整体架构</h2><p>上图：<br><img src="/img/2014/collections.png" alt="集合架构"><br>我们可以看到集合主要分为set，list和queue这三类，似乎还有一个Stack。它在哪里呢？<br>我们看JDK代码：<code>public class Stack&lt;E&gt; extends Vector&lt;E&gt;</code>，原来它继承了Vector。</p>
-<p>看上面这个图，我们是不是有点疑问，为什么Linkedlist实现了List又实现了Queue。这是因为List可以模拟Queue的行为，所以也可以将他看成是Queue对象，只需要去掉List的随机访问需求即可，从而实现更高效的并发。</p>
-<p>了解了Collection后，我们发现JDK中还有个Collections，它是什么鬼东西？查看源码，我们发现它是包含了对Collection的基本静态方法，例如排序，创建，复制等。同理，Arrays是对数组的操作，Executors是对Executor的操作。有没有一种感觉写jdk的人喜欢用名称加s来代表一个utils。</p>
-<h3 id="SET">SET</h3><p>一个不包括重复元素（包括可变对象）的Collection，是一种无序的集合。Set不包含满 a.equals(b) 的元素对a和b，并且最多有一个null。实现Set的接口有：EnumSet、HashSet、TreeSet等。下图是Set的JDK源码UML图。<br><img src="/img/2014/collection-set.png" alt="set"></p>
-<h3 id="List">List</h3><p>一个有序的Collection（也称序列），元素可以重复。确切的讲，列表通常允许满足 e1.equals(e2) 的元素对 e1 和 e2，并且如果列表本身允许 null 元素的话，通常它们允许多个 null 元素。实现List的有：ArrayList、LinkedList、Vector、Stack等。下图是List的JDK源码UML图。<br><img src="/img/2014/collection-list.png" alt="list"></p>
-<h3 id="Queue">Queue</h3><p>一种队列则是双端队列，支持在头、尾两端插入和移除元素，主要包括：ArrayDeque、LinkedBlockingDeque、LinkedList。另一种是阻塞式队列，队列满了以后再插入元素则会抛出异常，主要包括ArrayBlockQueue、PriorityBlockingQueue、LinkedBlockingQueue。虽然接口并未定义阻塞方法，但是实现类扩展了此接口。下图是Queue的JDK源码UML图。<br><img src="/img/2014/collection-queue.png" alt="queue"></p>
-<h2 id="二，功能特性">二，功能特性</h2><p>以下比较基于ArrayList，linkedList，Vector，Stack,HashSet,TreeSet,HashMap,TreeMap</p>
-<h3 id="1，添加元素">1，添加元素</h3><p>在添加元素上，ArrayList，Vector的性能相对较差，原因是ArrayList在容量不够时需要扩充。</p>
-<h3 id="2，查找元素">2，查找元素</h3><p>在查找元素上，ArrayList，linkedList，Vector，Stack的性能略差一点点，这是由于他们在查找时需要遍历整个集合。而Set，Map类型的都是通过hash后再在链表上查找，因此速度比较快。</p>
-<h3 id="3，删除元素">3，删除元素</h3><p>在删除元素上，除了TreeMap和TreeSet外，其他集合类型的性能基本无差异，TreeSet基于TreeMap实现，TreeMap之所以性能相对较差的原因是它在删除时需要排序。<br>List适用于允许重复元素的单个对象集合场景，Set适用于不允许重复元素的单个对象集合场景，Map适合key-value结构的集合场景。</p>
-<h2 id="三，并发结构">三，并发结构</h2><h3 id="1，ConcurrentHashMap">1，ConcurrentHashMap</h3><p>线程安全的haspmap，默认采用16个Segment存储对象。每个Segment一把锁，可允许16个线程同时并发的操作集合对象。</p>
-<h3 id="2，CopyOnWriteArrayList">2，CopyOnWriteArrayList</h3><p>CopyOnWriteArrayList是一个线程安全的，并且在读操作时无需加锁的ArrayList。</p>
-<h3 id="3，ArrayBlockingQueue">3，ArrayBlockingQueue</h3><p>ArrayBlockingQueue是一个基于数组，先进先出的，线程安全的集合类，其特色为指定时间的阻塞读写，并且容量是可限制的。</p>
-<blockquote>
-<p>offer(E,long,TimeUnit) 插入元素到数组的尾部，如果数组已满，则等待。poll(E,long,TimeUnit)获取数组中的第一个元素，如果数组中没有元素，则等待。</p>
-</blockquote>
-<h3 id="4,LinkedBlockingQueue">4,LinkedBlockingQueue</h3><p>LinkedBlockingQueue采用链表的方式存储对象。</p>
-<blockquote>
-<p>对于读操作take和poll，采用一把锁，对于写操作put和poll，采用另一把锁。因此在高并发读写操作多的情况下，性能好于ArrayBlockingQueue。但在遍历和删除元素时，需要2把锁同时锁住。</p>
-</blockquote>
-<h3 id="5,IndentityHashMap">5,IndentityHashMap</h3><p>简单说IdentityHashMap与常用的HashMap的区别是：前者比较key时是“引用相等”而后者是“对象相等”，即对于k1和k2，当k1==k2时，IdentityHashMap认为两个key相等，而HashMap只有在k1.equals(k2) == true 时才会认为两个key相等。</p>
-<h3 id="6,ConcurrentSkipListMap">6,ConcurrentSkipListMap</h3><p>SkipList是红黑树的一种简化替代方案，是个流行的有序集合算法。在4线程1.6万数据的条件下，ConcurrentHashMap 存取速度是ConcurrentSkipListMap 的4倍左右。<br>但ConcurrentSkipListMap有几个ConcurrentHashMap 不能比拟的优点：</p>
-<ol>
-<li>ConcurrentSkipListMap 的key是有序的。</li>
-<li>ConcurrentSkipListMap 支持更高的并发。ConcurrentSkipListMap 的存取时间是log（N），和线程数几乎无关。也就是说在数据量一定的情况下，并发的线程越多，ConcurrentSkipListMap越能体现出他的优势。 </li>
-</ol>
-<h2 id="四，其他特性">四，其他特性</h2><h3 id="算法">算法</h3><ol>
-<li>Colletions.sort(list) 与 Arrays.sort(T[]) </li>
-</ol>
-<p>Colletions.sort()实际会将list转为数组，然后调用Arrays.sort()，排完了再转回List。<br>PS. JDK8里，List有自己的sort()方法了，像ArrayList就直接用自己内部的数组来排，而LinkedList, CopyOnWriteArrayList还是要复制出一份数组。<br>而Arrays.sort()，对原始类型(int[],double[],char[],byte[])，JDK6里用的是快速排序，对于对象类型(Object[])，JDK6则使用归并排序。为什么要用不同的算法呢？</p>
-<ol>
-<li>JDK7的进步</li>
-</ol>
-<p>到了JDK7，快速排序升级为双基准快排(双基准快排 vs 三路快排)；归并排序升级为归并排序的改进版TimSort，一个JDK的自我进化。</p>
-<ol>
-<li>JDK8的进步</li>
-</ol>
-<p>再到了JDK8， 对大集合增加了Arrays.parallelSort()函数，使用fork-Join框架，充分利用多核，对大的集合进行切分然后再归并排序，而在小的连续片段里，依然使用TimSort与DualPivotQuickSort。</p>
-<h3 id="五，参考资料">五，参考资料</h3><ol>
-<li>《分布式JAVA应用 基础与实践》—-林昊</li>
-<li><a href="http://calvin1978.blogcn.com/articles/jdk.html" target="_blank" rel="external">JDK78数则</a></li>
-<li><a href="http://www.bysocket.com/?p=162" target="_blank" rel="external">Java 容器 &amp; 泛型（1）：认识容器</a></li>
-</ol>
 
       
     </div>

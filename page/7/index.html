@@ -110,7 +110,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/android/" style="font-size: 15.71px;">android</a><a href="/tags/antlr4/" style="font-size: 18.57px;">antlr4</a><a href="/tags/hadoop/" style="font-size: 11.43px;">hadoop</a><a href="/tags/impala/" style="font-size: 10px;">impala</a><a href="/tags/java/" style="font-size: 11.43px;">java</a><a href="/tags/java核心系列/" style="font-size: 20px;">java核心系列</a><a href="/tags/java源码阅读/" style="font-size: 12.86px;">java源码阅读</a><a href="/tags/linux/" style="font-size: 14.29px;">linux</a><a href="/tags/linux命令/" style="font-size: 10px;">linux命令</a><a href="/tags/mondrian/" style="font-size: 18.57px;">mondrian</a><a href="/tags/netty/" style="font-size: 10px;">netty</a><a href="/tags/nosql/" style="font-size: 11.43px;">nosql</a><a href="/tags/spring/" style="font-size: 14.29px;">spring</a><a href="/tags/tomcat/" style="font-size: 17.14px;">tomcat</a><a href="/tags/分布式/" style="font-size: 10px;">分布式</a><a href="/tags/异常/" style="font-size: 10px;">异常</a><a href="/tags/性能/" style="font-size: 10px;">性能</a><a href="/tags/数据库/" style="font-size: 15.71px;">数据库</a><a href="/tags/缓存/" style="font-size: 10px;">缓存</a><a href="/tags/计算机原理/" style="font-size: 15.71px;">计算机原理</a><a href="/tags/随笔/" style="font-size: 11.43px;">随笔</a>
 					</div>
 				</section>
 				
@@ -167,6 +167,80 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-2014/性能调优总结" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/04/27/2014/性能调优总结/" class="article-date">
+  	<time datetime="2015-04-27T03:38:06.000Z" itemprop="datePublished">4月 27 2015</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/27/2014/性能调优总结/">性能调优总结</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>性能调优主要是对CPU，磁盘IO，网络IO，内存等方面进行调优。<br><img src="/img/2014/性能调优.png" alt="性能调优"></p>
+<h2 id="一，CPU">一，CPU</h2><h3 id="1,上下文切换">1,上下文切换</h3><p>上下文切换（有时也称做进程切换或任务切换）是指 CPU 从一个进程或线程切换到另一个进程或线程。</p>
+<p>上下文是指某一时间点 CPU 寄存器和程序计数器的内容。寄存器是 CPU 内部的数量较少但是速度很快的内存（与之对应的是 CPU 外部相对较慢的 RAM 主内存）。寄存器通过对常用值（通常是运算的中间值）的快速访问来提高计算机程序运行的速度。程序计数器是一个专用的寄存器，用于表明指令序列中 CPU 正在执行的位置，存的值为正在执行的指令的位置或者下一个将要被执行的指令的位置，具体依赖于特定的系统。</p>
+<p>稍微详细描述一下，上下文切换可以认为是内核（操作系统的核心）在 CPU 上对于进程（包括线程）进行以下的活动： </p>
+<ol>
+<li>挂起一个进程，将这个进程在 CPU 中的状态（上下文）存储于内存中的某处，</li>
+<li>在内存中检索下一个进程的上下文并 将其在 CPU 的寄存器中恢复，</li>
+<li>跳转到程序计数器所指向的位置（即跳转到进程被中断时的代码行），以恢复该进程。</li>
+</ol>
+<p>上下文切换的消耗</p>
+<p>上下文切换通常是计算密集型的。也就是说，它需要相当可观的处理器时间，在每秒几十上百次的切换中，每次切换都需要纳秒量级的时间。所以，上下文切换对系统来说意味着消耗大量的 CPU 时间，事实上，可能是操作系统中时间消耗最大的操作。<br>Linux 号称的相比于其他的操作系统（包括其他类 Unix 系统）的很多优点中，有一项就是，其上下文切换和模式切换的时间消耗非常少。</p>
+<h3 id="2，利用率">2，利用率</h3><p>利用率为CPU在用户进程，内核，中断处理，IO等待以及空闲5个部分使用百分比。Linux And System Network Performance Monitoring建议用户进程和内核进程的CPU消耗分别是65%-70%，30%-35%。<br>在liunx中可以使用top或者pidstat查看CPU的消耗情况。<br>在java应用中，CPU消耗主要在us,sy上。</p>
+<h4 id="US">US</h4><p><strong>US:用户进程处理所占的百分比</strong><br>当us过高时，表明应用消耗了大量的CPU。在这种情况下，需要找到具体消耗CPU的线程所执行的代码。</p>
+<h4 id="SY">SY</h4><p><strong>SY：内核线程所占的百分比</strong><br>当sy过高时，表示linux花费了过多的时间在进程切换上面。java应用造成这种现象的主要原因是启动的线程比较多，且这些线程多数处于不断阻塞的状态和执行状态的变化过程中，产生了大量的上下文切换。<br>通过jstack -l pid 查看线程争用。可以看到TIMED_WAITING(on object monitor)状态和Runnable转换中。</p>
+<h2 id="二，磁盘IO">二，磁盘IO</h2><p>在linux中，要查看线程的磁盘IO消耗，主要方法是通过pidstat。<br><img src="/img/2014/QQ图片20150429165052.png" alt=""><br>使用pidstat找到文件IO操作多的线程，之后结合jstack找到对应的java代码。</p>
+<h2 id="三，网络IO">三，网络IO</h2><p>在linux中，通过sar来分析网络IO的状况。如果需要跟踪tcp的通信信息，需要使用tcpdump来进行。</p>
+<h2 id="四，内存消耗">四，内存消耗</h2><p>通过jmap，jstat，mat，visualVM来分析</p>
+<p>PS:本文总结自《分布式JAVA应用 基础与实践》—-林昊</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能/">性能</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-2014/java-string" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -778,156 +852,6 @@ db.factories.find( { addr: { <span class="keyword">state</span>: <span class="st
 	</div>
 
       
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-2014/mondrian-source-code-9" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/04/04/2014/mondrian-source-code-9/" class="article-date">
-  	<time datetime="2015-04-04T10:41:49.000Z" itemprop="datePublished">4月 4 2015</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/04/04/2014/mondrian-source-code-9/">mondrian 源码解读（九）-聚集层</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>包mondrian.rolap.agg，管理聚合缓存，这些缓存中包含着各单元格值。<br>RolapStar中含有aggregation(聚合)，一个aggregation是针对一组columns的，该聚合可以包含多个segment，同一个aggregation中的每个segment都将覆盖到相同的列集合；每个segment表达了一组cell值，这些cell自然是由具体的列值和一个必备度量值(如下面的unit sales)来限定，如：<code>(Unit sales, Gender = &#39;F&#39;, State  in {&#39;CA&#39;,&#39;OR&#39;}, Marital Status = anything)</code>，由于其中的列值可能会取多个，因此最终表达的cell值也可能是多个。RolapStar中有一个aggregations，是一个map对象，通过request的constrainedColumnsBitKey来索引一个aggregation。</p>
-<h2 id="聚合装载过程">聚合装载过程</h2><p>实际中无论是底层的单元值还是聚合后的单元值都是放在聚合对象aggregation中的。以aggregation.load(colums,measures,predicates,pinnedSegments)为入口：</p>
-<p>参数中的除了measure不一样外，其限定的列(colums)及列值（prediactes）都是一致的。因此转换成对对若干segment[]的求值： Segment.load(segment[]，….)，在该方法内部：</p>
-<ul>
-<li>首先根据segments中的信息生成sql查询语句，有两个不同的生成类：AggQuerySpec和SegmentArrayQuerySpec，前者用于找到聚合表情况下的sql语句生成，后者用于基于原始表的sql语句生成。具体可以参见它们的generateSqlQuery()方法，这里注意对以distinct count有不同的生成方法。Sql生成的核心类是sqlQuery，类似于交换系统中的QuerySqlFactory类。注意：聚合操作如avg、sum等都最终还是利用sql语句实现的，并非mondiran自己实现这些聚合功能。</li>
-<li>利用jdbc，执行sql语句，获取到jdbc 结果集。参见mondrian.rolap.RolapUtil.executeQuery()方法。</li>
-<li>解析结果集，将结果集中的数据填充到rows[][]二维数值中，并且把各列的值也填充好。如图：<br>结果集每条记录的值如宁波市、G010….,前面两个是维度列值，后面几个是度量值。<br><img src="/img/2014/mondrian_agg1.png" alt=""><br>各列的值(其中第0项值为：[宁波市])：<br><img src="/img/2014/mondrian_agg2.png" alt=""></li>
-<li>决定采用稀疏性(sparse)还是稠密性（dense）SegmentDataSet存储（如果是稠密的，就用数组存储，如果是稀疏的，则用Map存储）；并创建该空的DataSet对象。每个segment关联一个DataSet对象；但其稀疏性还是稠密性都是一致的。注意dataset中单元值的个数可能是1个或多个，是由各限定列的指定值个数乘积，若所有限定列都取单值，则显然最终决定一个唯一的单元。</li>
-<li>将上述的rows中间集转换到SegmentDataSets集中。最后再分拣给每个segment，确保每个segment的setData(SegmentDataSet)被调用。</li>
-</ul>
-<h2 id="segment详解">segment详解</h2><p>我们看Segment里面都放了什么：</p>
-<pre><code><span class="keyword">protected</span> <span class="keyword">final</span> Column[] columns; <span class="comment">//约束列</span>
-<span class="keyword">public</span> <span class="keyword">final</span> MeasureColumn measure;<span class="comment">//这个segment是针对哪个度量的。</span>
-<span class="keyword">private</span> RolapModel model; <span class="comment">//对模型的引用</span>
-<span class="keyword">public</span> <span class="keyword">final</span> StarColumnPredicate[] predicates; <span class="comment">//Segment存在哪些断言</span>
-</code></pre><p>从这里我们可以看出，Segment就是对某个Cube的断面做的定义。那它的单元值是存在哪里呢？<br>就是我们在上面讲的到SegmentDataSet，由它来存储单元值。那么如何关联Segment与SegmentDataSet呢？这里我们有要讲到SegmentWithData。我们看他的定义：</p>
-<pre><code>public <span class="class"><span class="keyword">class</span> <span class="title">SegmentWithData</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Segment</span>{</span>
-    <span class="keyword">final</span> <span class="type">SegmentAxis</span>[] axes;<span class="comment">//一组维度的约束</span>
-    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">SegmentDataset</span> data;<span class="comment">//数据存储</span>
-...
-    <span class="comment">//此方法判断SegmentWithData中是否存在以keys为维度的单元值</span>
-    public <span class="type">Object</span> getCellValue(<span class="type">Object</span>[] keys) {
-        assert keys.length == axes.length;
-        int missed = <span class="number">0</span>;
-        <span class="type">CellKey</span> cellKey = <span class="type">CellKey</span>.<span class="type">Generator</span>.newCellKey(axes.length);
-        <span class="keyword">for</span> (int i = <span class="number">0</span>; i &lt; keys.length; i++) {
-            <span class="type">Comparable</span> key = (<span class="type">Comparable</span>) keys[i];
-            int offset = axes[i].getOffset(key);
-            <span class="keyword">if</span> (offset &lt; <span class="number">0</span>) {
-                <span class="keyword">if</span> (axes[i].wouldContain(key)) {
-                    <span class="comment">// see whether this segment should contain this value</span>
-                    missed++;
-                    <span class="keyword">continue</span>;
-                } <span class="keyword">else</span> {
-                    <span class="comment">// this value should not appear in this segment; we</span>
-                    <span class="comment">// should be looking in a different segment</span>
-                    <span class="keyword">return</span> <span class="literal">null</span>;
-                }
-            }
-            cellKey.setAxis(i, offset);
-        }
-        <span class="keyword">if</span> (isExcluded(keys)) {
-            <span class="comment">// this value should not appear in this segment; we</span>
-            <span class="comment">// should be looking in a different segment</span>
-            <span class="keyword">return</span> <span class="literal">null</span>;
-        }
-        <span class="keyword">if</span> (missed &gt; <span class="number">0</span>) {
-            <span class="comment">// the value should be in this segment, but isn't, because one</span>
-            <span class="comment">// or more of its keys does have any values</span>
-            <span class="keyword">return</span> <span class="type">FunUtil</span>.nullValue;
-        } <span class="keyword">else</span> {
-            <span class="comment">//cellkey是对一组维度的值得定义</span>
-            <span class="type">Object</span> o = data.getObject(cellKey);
-            <span class="keyword">if</span> (o == <span class="literal">null</span>) {
-                o = <span class="type">FunUtil</span>.nullValue;
-            }
-            <span class="keyword">return</span> o;
-        }
-    }
-}    
-</code></pre><p>在这里，SegmentWithData包装了Segment与它单元值之间的关系，通过SegmentAxis来判断当前比较的值是否相同。</p>
-<p>下图是有两个限定列的两个segment的描述(注:其中roadid列虽然指定了8个候选值，但由于使用了空行/列过滤，最后只剩下两个路线有值，故最后segment结果集的单元数也只有两个，对应于G010和G318的)：<br><img src="/img/2014/mondrian_agg3.png" alt=""><br><img src="/img/2014/mondrian_agg4.png" alt=""><br>其中第二个对应的dataset为：<br>[317.769, 120.604]<br>对应的透视界面为(参见其中的“观测里程”度量值，与上面的dataset一致)：<br><img src="/img/2014/mondrian_agg5.png" alt=""></p>
-<p>再譬如有三个限定列的segment描述，它们位于另一个aggreation对象中：(其中timeId列的any代表所以可能的时间值，共有2003~2005三个年，所以最终该segment共有3个cell值)<br><img src="/img/2014/mondrian_agg6.png" alt=""><br>对应的dataset为：<br>[129.910, 129.909, 57.950]<br>对应的透视界面为(显然该aggreation还有另外一个segment，其中的roadId对应于G010—宁波梁辉)：<br><img src="/img/2014/mondrian_agg7.png" alt=""></p>
-<p>再譬如维度中有多个层次的情况时，一个维度会对应多个列：</p>
-<pre><code><span class="type">Query</span> query = connection.parseQuery(
-    <span class="string">"SELECT"</span> +
-    <span class="string">" {[Time].[1997],"</span> +
-    <span class="string">" [Time].[1997].Children} ON COLUMNS,"</span> +
-    <span class="string">" {[Customer].[USA],"</span> +
-    <span class="string">" [Customer].[USA].[OR],"</span> +
-    <span class="string">" [Customer].[USA].[WA]} ON ROWS"</span> +
-    <span class="string">"FROM [Sales]"</span>);
-<span class="type">Result</span> <span class="literal">result</span> = connection.execute(query);
-</code></pre><p>该语句执行后产生的segment分别为(除了第一个外，其他segment都会包含多个cell，因为它们的限定列中含有多值的情况)：</p>
-<pre><code>Segment YN<span class="comment">#1    Year Nation Unit Sales</span>
-                <span class="number">1997</span> USA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA
-
-Segment YNS<span class="comment">#1    Year Nation State Unit Sales</span>
-                <span class="number">1997</span> USA    OR    xxx
-                <span class="number">1997</span> USA    WA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
-
-Segment YQN<span class="comment">#1    Year Quarter Nation Unit Sales</span>
-                <span class="number">1997</span> Q1      USA    xxx
-                <span class="number">1997</span> Q2      USA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA
-
-Segment YQNS<span class="comment">#1    Year Quarter Nation State Unit Sales</span>
-                <span class="number">1997</span> Q1      USA    OR    xxx
-                <span class="number">1997</span> Q1      USA    WA    xxx
-                <span class="number">1997</span> Q2      USA    OR    xxx
-                <span class="number">1997</span> Q2      USA    WA    xxx
-Predicates: <span class="variable">Year=</span><span class="number">1997</span>, <span class="variable">Quarter=</span>any, <span class="variable">Nation=</span>USA, <span class="variable">State=</span>{OR, WA}
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/java/">java</a>
-	</div>
-
 
       
       <div class="clearfix"></div>
