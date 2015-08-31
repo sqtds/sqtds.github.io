@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://sqtds.github.io/"/>
-  <updated>2015-08-31T13:36:29.000Z</updated>
+  <updated>2015-08-22T11:11:43.000Z</updated>
   <id>http://sqtds.github.io/</id>
   
   <author>
@@ -13,30 +13,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title><![CDATA[离职]]></title>
-    <link href="http://sqtds.github.io/2015/08/31/%E7%A6%BB%E8%81%8C/"/>
-    <id>http://sqtds.github.io/2015/08/31/离职/</id>
-    <published>2015-08-31T13:19:03.000Z</published>
-    <updated>2015-08-31T13:36:29.000Z</updated>
-    <content type="html"><![CDATA[<p>还有2个星期就要走了，在这个公司收获了很多。以后不知道自己会怎么样，但是在公司写代码还是挺开心的，不需要产品经理总是改需求。</p>
-<h2 id="一，工作">一，工作</h2><h3 id="1，代码">1，代码</h3><p>有时候发现，写代码也不是那么枯燥无味。总比什么都不干坐在那等死的好。<br>13年4月22日入职到公司以来，已经过了2年半了。代码大概也写了这么长时间，很感激老大给了我这么一段安静的时光写代码，不需要为需求改来改去。</p>
-<p>由于svn的地址更换，很早以前的代码记录找不到了，仅仅找到了14年3月到现在的提交记录。如下是代码统计：</p>
-<p><img src="/img/2015/svn-statictis.png" alt=""><br><img src="/img/2015/svn-author.png" alt=""><br><img src="/img/2015/svn-authorship.png" alt=""><br><img src="/img/2015/svn-date.png" alt=""></p>
-<h3 id="2，项目">2，项目</h3><p>主要做了2个项目，综合数据平台和BI分析引擎。</p>
-<h2 id="二，生活">二，生活</h2><h3 id="1，女友">1，女友</h3><p>没有女朋友，没有女朋友，没有女朋友，重要的事情说三遍。<br>找个女朋友太难了，本来在公司遇到一个自己喜欢的。无奈怎么说也不喜欢我，最后跟别人结婚了。有时候感觉好伤心好无助，为什么无论怎样都不对我看一眼。算了，不提了。</p>
-<h3 id="2，运动">2，运动</h3><p>计划的爬山也都没去，好想跟几个搭档一起去爬山，可是一直苦于没有机会。<br>现在基本上每个星期都会跑一下步，以前是在清华操场跑，8圈左右，大概2二点多公里。后面去了一次奥森，彻底被奥森折服了。于是经常去那跑，基本上都是一圈5公里的路程。</p>
-<h3 id="3，周末">3，周末</h3><p>周末没事做，有时候看看书，打打酱油，写写文章，就过去了。</p>
-<h2 id="三，nothing">三，nothing</h2>]]></content>
-    <summary type="html">
-    <![CDATA[<p>还有2个星期就要走了，在这个公司收获了很多。以后不知道自己会怎么样，但是在公司写代码还是挺开心的，不需要产品经理总是改需求。</p>
-<h2 id="一，工作">一，工作</h2><h3 id="1，代码">1，代码</h3><p>有时候发现，写代码也不是那么枯燥无味。总比]]>
-    </summary>
-    
-      <category term="随笔" scheme="http://sqtds.github.io/tags/%E9%9A%8F%E7%AC%94/"/>
-    
-  </entry>
   
   <entry>
     <title><![CDATA[列式压缩技术汇总]]></title>
@@ -3426,6 +3402,25 @@ PSH 尽可能的将数据送往接收进程
       <category term="java核心系列" scheme="http://sqtds.github.io/tags/java%E6%A0%B8%E5%BF%83%E7%B3%BB%E5%88%97/"/>
     
       <category term="java" scheme="http://sqtds.github.io/categories/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[GPU基础知识普及]]></title>
+    <link href="http://sqtds.github.io/2015/05/24/2015/gpu-base-konwledge/"/>
+    <id>http://sqtds.github.io/2015/05/24/2015/gpu-base-konwledge/</id>
+    <published>2015-05-24T07:35:38.000Z</published>
+    <updated>2015-05-24T07:47:50.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="/info/从显卡历史说起.pptx">从显卡历史说起.pptx</a><br>本ppt用于部门内部的演讲，主要讲述了显卡的渲染机制，由于本人水平有限，难免存在瑕疵，有需要的同学可以拿去看看。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="/info/从显卡历史说起.pptx">从显卡历史说起.pptx</a><br>本ppt用于部门内部的演讲，主要讲述了显卡的渲染机制，由于本人水平有限，难免存在瑕疵，有需要的同学可以拿去看看。</p>
+]]>
+    </summary>
+    
+      <category term="计算机原理" scheme="http://sqtds.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/"/>
+    
+      <category term="计算机原理" scheme="http://sqtds.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/"/>
     
   </entry>
   
