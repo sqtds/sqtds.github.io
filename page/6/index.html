@@ -61,136 +61,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-2014/mondrian-source-code-6" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/26/2014/mondrian-source-code-6/" class="article-date">
-  <time datetime="2014-10-26T10:07:05.000Z" itemprop="datePublished">2014-10-26</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-6/">mondrian 源码解读（六）-创建CUBE</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在第4节中，构建query的时候，有一个非常重要的东西被我忽略了，那就是构建cube <code>Util.lookupCube(statement.getSchemaReader(), cube, true)</code>，下面我们来谈谈cube是如何构建的。</p>
-<h2 id="Cube是什么？">Cube是什么？</h2><p>在第2节中，我们已经谈论了cube，即维度和度量的组合。</p>
-<h2 id="RolapCube">RolapCube</h2><p>在理解了Cube后，我们就可以理解RolapCube了。根据字面意思，我们也可以理解为关系型联机分析处理cube。我们看看它里面主要是实体对象：</p>
-<pre><code><span class="comment">//不解释</span>
-<span class="keyword">protected</span> Dimension[] dimensions;
-
-<span class="comment">//</span>
-<span class="keyword">private</span> <span class="keyword">final</span> RolapHierarchy measuresHierarchy;
-
-<span class="comment">/**
- * List of calculated members.
- * 定义在schema中的计算成员，注意公式是如何转换的呢？
- */</span>
-<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Formula&gt; calculatedMemberList = <span class="keyword">new</span> ArrayList&lt;Formula&gt;();
-
-<span class="keyword">private</span> RolapStar star; <span class="comment">//关联的星型模型</span>
-
-<span class="comment">//在Evaluator中用于计算当前成员是否为空，如果当前度量成员中有count聚合，即为当前成员，如果没有找到，创建一个虚拟的count聚合为测量的成员。</span>
-RolapBaseCubeMeasure factCountMeasure;
-</code></pre><p>calculatedMemberList这里谈一下。如何将schema中定义的计算成员转换成已近解析好的Formula？<br>这里其实很简单，通过构造一个特定的mdx：<br><code>with member [Measures].[aa] as &#39;expression1&#39; ,
-[Measures].[bb] as &#39;expression2&#39;select from cube</code><br>然后使用parser解析器解析mdx后返回一个query，query里面的计算成员即为此计算成员。</p>
-<h2 id="RolapStar是什么？">RolapStar是什么？</h2><p>我们可以将它理解为一个关联了物理表之间的关系的对象。通过它来生成特定的sql，查询需要的数据。<br>具体实体对象大家可以打开看看，这里不做详细的解释了。</p>
-<pre><code><span class="keyword">private</span> DataSource dataSource;
-<span class="keyword">private</span> <span class="keyword">final</span> Table factTable;
-<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList = <span class="keyword">new</span> ArrayList&lt;Column&gt;();
-
-Table对象..星型模型
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Table</span> </span>{
-    <span class="keyword">private</span> <span class="keyword">final</span> RolapStar star;
-    <span class="keyword">private</span> <span class="keyword">final</span> MondrianDef.Relation relation;
-    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">List</span>&lt;Column&gt; columnList;
-    <span class="keyword">private</span> <span class="keyword">final</span> Table <span class="keyword">parent</span>;
-    <span class="keyword">private</span> <span class="keyword">List</span>&lt;Table&gt; children;
-    <span class="keyword">private</span> <span class="keyword">final</span> Condition joinCondition;
-    <span class="keyword">private</span> <span class="keyword">final</span> String alias;
-}
-</code></pre><h2 id="源码修改">源码修改</h2><p>cube的创建是根据schema中定义的属性配置来创建cube，这部分没有细看，如何创建其实我们并不关系，理解cube的数据结构就行了。</p>
-<p>我们在修改mondrian源码时，将cube创建这块全部去掉了，取而代之的使用了自己的cube创建方式。由于我们底层的存储结构不依赖与xml，而是我们自己定义好的实体间的关系，所以我们将我们的实体转换成了cube。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-6/" data-id="cietd7eor004nhwfas4ic05fb" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-2014/mondrian-source-code-5" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/10/26/2014/mondrian-source-code-5/" class="article-date">
-  <time datetime="2014-10-26T08:06:12.000Z" itemprop="datePublished">2014-10-26</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/10/26/2014/mondrian-source-code-5/">mondrian 源码解读（五）-访问者模式</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在上一节中，我们看到在resolve()方法中使用了大量的访问者模式，所以下面我们总结下：</p>
-<h2 id="什么是访问者模式">什么是访问者模式</h2><p>我发现还是GOF书中定义的最好，就拿过来了。</p>
-<h3 id="意图">意图</h3><p>表示一个作用于某对象结构中的各元素的操作。它使你可以在不改变各元素的类的前提<br>下定义作用于这些元素的新操作。</p>
-<h3 id="结构图">结构图</h3><p><img src="/img/2014/QQ图片20141026172247.jpg" alt=""><br>
-        
-          <p class="article-more-link">
-            <a href="/2014/10/26/2014/mondrian-source-code-5/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-5/" data-id="cietd7eot004qhwfa67po6z4n" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-2014/mondrian-source-code-4" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/10/26/2014/mondrian-source-code-4/" class="article-date">
@@ -245,7 +115,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-4/" data-id="cietd7eov004thwfa2vsntojm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-4/" data-id="ciete3vtg004ro8fa3474rjsy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -294,7 +164,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-3/" data-id="cietd7eox004whwfap3o2puoo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-3/" data-id="ciete3vth004uo8fahsxzwhio" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -343,7 +213,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-2/" data-id="cietd7ep0004zhwfa1f7wodhf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-2/" data-id="ciete3vtj004xo8fapuvee3cc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -392,7 +262,7 @@ Table对象..星型模型
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-1/" data-id="cietd7ep30052hwfaz2do5unu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/10/26/2014/mondrian-source-code-1/" data-id="ciete3vtk0050o8faf06u7j36" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mondrian/">mondrian</a></li></ul>
@@ -589,7 +459,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/09/03/2014/antlr4-tips/" data-id="cietd7eq8006ohwfaaqe1g1k6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/09/03/2014/antlr4-tips/" data-id="ciete3vue006mo8fanv7752l1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -634,7 +504,7 @@ IGNORE      :   .                       -&gt; more ;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/09/03/2014/antlr4-semantic-predicate/" data-id="cietd7eqg006xhwfagzpubw00" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/09/03/2014/antlr4-semantic-predicate/" data-id="ciete3vuk006vo8fa0d4rv660" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -701,7 +571,7 @@ term4  returns [Exp <span class="built_in">exp</span>]
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/09/01/2014/antlr4-use-problem/" data-id="cietd7eq6006lhwfausbj1n4k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/09/01/2014/antlr4-use-problem/" data-id="ciete3vuc006jo8farj3ueoci" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -842,7 +712,358 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/09/01/2014/antlr4-exception/" data-id="cietd7eqm0076hwfaw09f8bjh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/09/01/2014/antlr4-exception/" data-id="ciete3vup0074o8fau5ifx02o" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014/antlr4-embedd-action" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/2014/antlr4-embedd-action/" class="article-date">
+  <time datetime="2014-08-30T09:54:59.000Z" itemprop="datePublished">2014-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/30/2014/antlr4-embedd-action/">antlr4-添加嵌入式的行为(七)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一般情况下我们最好不要这么做，这会使应用代码与语法代码混淆。但是在某些情况下也有她的好处：</p>
+<ul>
+<li>简易的：有时候仅仅是简答的几个动作，避免创建监听器或访问器。</li>
+<li>有效的：在特定的资源应用中，我们不想浪费时间和内存去构建一个解析树。</li>
+<li>判断解析：在很少的情况下，我么需要依靠之前的输入流来判断解析属性。一些语法需要构建符号表来意识到将来的不同情况的输入，依赖与标识符是否是类型或者方法。</li>
+</ul>
+<h2 id="演示">演示</h2><pre><code>grammar Rows;
+
+<span class="variable">@parser</span>::members { <span class="comment">// add members to generated RowsParser</span>
+    <span class="keyword">int</span> col;
+    public RowsParser(TokenStream input, <span class="keyword">int</span> col) { <span class="comment">// custom constructor</span>
+        this(input);
+        this.col = col;
+    }
+}
+
+<span class="keyword">file</span>: (row NL)+ ;
+
+row
+locals [<span class="keyword">int</span> i=<span class="number">0</span>]   <span class="comment">//locals 本地变量表</span>
+    : (   STUFF
+          { <span class="comment">//行为 ，通过$来取出本地变量 ,col是全局变量</span>
+          <span class="variable">$i</span>++;
+          <span class="keyword">if</span> ( <span class="variable">$i</span> == col ) System.out.println(<span class="variable">$STUFF</span>.<span class="keyword">text</span>);
+          }
+      )+
+    ;
+
+TAB  :  <span class="string">'\t'</span> -&gt; skip ;   <span class="comment">// match but don't pass to the parser</span>
+NL   :  <span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// match and pass to the parser</span>
+STUFF:  ~[\t\r\n]+ ;     <span class="comment">// match any chars except tab, newline</span>
+</code></pre><h2 id="利用语法规则的外部行为">利用语法规则的外部行为</h2><pre><code>&lt;header&gt;
+public <span class="class"><span class="keyword">class</span> <span class="title">&lt;grammarName&gt;</span> <span class="title">Parser</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Parser</span> {</span>
+&lt;members&gt;
+...
+}
+</code></pre><p>package/import  statements is header and<br>class members like fields and methods is members<br>如果要指定header行为，我们用@header,如果要注入字段和方法，我们用@memers。<br>在一个合并的parser/lexer语法中，他们命名的行为应用在parser和lexer中。如果要限制生成的行为在parser或lexer中，我们可以用 @parser::name 或者 @lexer::name.</p>
+<p>通常情况下，$x.y表示y属性的x元素，x可以是token的引用或者rule引用。</p>
+<h3 id="expr例子">expr例子</h3><pre><code><span class="comment">/** Grammar from tour chapter augmented with actions */</span>
+grammar Expr;
+
+<span class="variable">@header</span> {
+<span class="comment">/**package tools;*/</span>
+import java.util.<span class="variable">*;</span>
+}
+
+<span class="variable">@parser</span>::members {
+    <span class="comment">/** "memory" for our calculator; variable/value pairs go here */</span>
+    Map&lt;String, Integer&gt; <span class="keyword">memory</span> = new HashMap&lt;String, Integer&gt;();
+
+    <span class="keyword">int</span> <span class="keyword">eval</span>(<span class="keyword">int</span> left, <span class="keyword">int</span> op, <span class="keyword">int</span> right) {
+        <span class="keyword">switch</span> ( op ) {
+            <span class="keyword">case</span> MUL : <span class="keyword">return</span> left * right;
+            <span class="keyword">case</span> DIV : <span class="keyword">return</span> left / right;
+            <span class="keyword">case</span> ADD : <span class="keyword">return</span> left + right;
+            <span class="keyword">case</span> SUB : <span class="keyword">return</span> left - right;
+        }
+        <span class="keyword">return</span> <span class="number">0</span>;
+    }
+}
+
+stat:   e NEWLINE           {System.out.println(<span class="variable">$e</span>.v);}
+    |   ID <span class="string">'='</span> e NEWLINE    {<span class="keyword">memory</span>.put(<span class="variable">$ID</span>.<span class="keyword">text</span>, <span class="variable">$e</span>.v);}
+    |   NEWLINE                   
+    ;
+
+e returns [<span class="keyword">int</span> v]
+    : a=e op=(<span class="string">'*'</span>|<span class="string">'/'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}
+    | a=e op=(<span class="string">'+'</span>|<span class="string">'-'</span>) b=e  {<span class="variable">$v</span> = <span class="keyword">eval</span>(<span class="variable">$a</span>.v, <span class="variable">$op</span>.type, <span class="variable">$b</span>.v);}  
+    | INT                   {<span class="variable">$v</span> = <span class="variable">$INT</span>.<span class="keyword">int</span>;}    
+    | ID
+      {
+      String id = <span class="variable">$ID</span>.<span class="keyword">text</span>;
+      <span class="variable">$v</span> = <span class="keyword">memory</span>.containsKey(id) ? <span class="keyword">memory</span>.get(id) : <span class="number">0</span>;
+      }
+    | <span class="string">'('</span> e <span class="string">')'</span>             {<span class="variable">$v</span> = <span class="variable">$e</span>.v;}       
+    ; 
+
+MUL : <span class="string">'*'</span> ;
+DIV : <span class="string">'/'</span> ;
+ADD : <span class="string">'+'</span> ;
+SUB : <span class="string">'-'</span> ;
+
+ID  :   [a-zA-Z]+ ;      <span class="comment">// match identifiers</span>
+INT :   [<span class="number">0</span>-<span class="number">9</span>]+ ;         <span class="comment">// match integers</span>
+NEWLINE:<span class="string">'\r'</span>? <span class="string">'\n'</span> ;     <span class="comment">// return newlines to parser (is end-statement signal)</span>
+WS  :   [ \t]+ -&gt; skip ; <span class="comment">// toss out whitespace                </span>
+</code></pre><h3 id="keyword例子">keyword例子</h3><pre><code>grammar Keywords;
+@lexer::header {    // place this header <span class="keyword">action</span> <span class="keyword">only</span> <span class="type">in</span> lexer, not the parser
+    <span class="keyword">import</span> java.util.*;
+}
+
+// explicitly define keyword token types to avoid <span class="type">implicit</span> def warnings
+tokens { BEGIN, <span class="keyword">END</span>, <span class="keyword">IF</span>, <span class="keyword">THEN</span>, <span class="keyword">WHILE</span> }
+
+@lexer::members {   // place this <span class="keyword">class</span> member <span class="keyword">only</span> <span class="type">in</span> lexer
+    Map&lt;String,<span class="type">Integer</span>&gt; keywords = new HashMap&lt;String,<span class="type">Integer</span>&gt;() &lt;<span class="comment">!--￼0--&gt;;</span>
+}
+
+
+stat:   BEGIN stat* <span class="keyword">END</span> 
+    |   <span class="keyword">IF</span> expr <span class="keyword">THEN</span> stat
+    |   <span class="keyword">WHILE</span> expr stat
+    |   ID <span class="string">'='</span> expr <span class="string">';'</span>
+    ;
+
+expr:   <span class="built_in">INT</span> | <span class="built_in">CHAR</span> ;
+
+ID  :   [a-zA-Z]+
+        {//嵌入式代码
+        <span class="keyword">if</span> ( keywords.containsKey(getText()) ) {
+            setType(keywords.get(getText())); // reset token <span class="keyword">type</span>
+        }
+        }
+    ;
+
+/** Convert <span class="number">3</span>-<span class="built_in">char</span> <span class="string">'x'</span> input <span class="keyword">sequence</span> to string x */
+<span class="built_in">CHAR</span>:   <span class="string">'\''</span> . <span class="string">'\''</span> {setText( String.valueOf(getText().charAt(<span class="number">1</span>)) );} ;
+
+<span class="built_in">INT</span> :   [<span class="number">0</span>-<span class="number">9</span>]+ ;
+
+WS  :   [ \t\n\r]+ -&gt; skip ;
+</code></pre><h3 id="csvexample">csvexample</h3><pre><code>grammar CSV;
+
+@header {
+import java.util.*;
+}
+
+<span class="comment">/** Derived from rule "file : hdr row+ ;" */</span>
+<span class="keyword">file</span>
+locals [int i=0]
+     : hdr ( rows+=row[<span class="label">$hdr</span>.text.<span class="keyword">split</span>(<span class="string">","</span>)] {<span class="label">$i</span>++;} )+
+       {
+       System.<span class="keyword">out</span>.println(<span class="label">$i</span>+<span class="string">" rows"</span>);
+       <span class="keyword">for</span> (RowContext r : <span class="label">$rows</span>) {
+           System.<span class="keyword">out</span>.println(<span class="string">"row token interval: "</span>+r.getSourceInterval());
+       }
+       }
+     ;
+
+hdr : row[null] {System.<span class="keyword">out</span>.println(<span class="string">"header: '"</span>+<span class="label">$text</span>.<span class="literal">trim</span>()+<span class="string">"'"</span>);} ;
+
+<span class="comment">/** Derived from rule "row : field (',' field)* '\r'? '\n' ;" */</span>
+<span class="comment">//参数 columns ，返回值values</span>
+row[String[] columns] returns [Map&lt;String,String&gt; values]
+locals [int col=0]
+@init {
+    <span class="label">$values</span> = new HashMap&lt;String,String&gt;();
+}
+@after {
+    <span class="keyword">if</span> (<span class="label">$values</span>!=null &amp;&amp; <span class="label">$values</span>.size()&gt;0) {
+        System.<span class="keyword">out</span>.println(<span class="string">"values = "</span>+<span class="label">$values</span>);
+    }
+}
+<span class="comment">// rule row cont'd...</span>
+    :   field
+        {
+        <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
+            <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
+        }
+        }
+        (   ',' field
+            {
+            <span class="keyword">if</span> (<span class="label">$columns</span>!=null) {
+                <span class="label">$values</span>.put(<span class="label">$columns</span>[<span class="label">$col</span>++].<span class="literal">trim</span>(), <span class="label">$field</span>.text.<span class="literal">trim</span>());
+            }
+            }
+        )* '\r'? '\<span class="keyword">n</span>'
+    ;
+
+field
+    :   TEXT
+    |   <span class="literal">STRING</span>
+    |
+    ;
+
+TEXT : ~[,\<span class="keyword">n</span>\r"]+ ;
+STRING : '<span class="string">"' ('"</span><span class="string">"'|~'"</span>')* '"' ; <span class="comment">// quote-quote is an escaped quote</span>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/08/30/2014/antlr4-embedd-action/" data-id="ciete3vuq0077o8fayas0d7e6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014/antlr4-share-context" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/08/30/2014/antlr4-share-context/" class="article-date">
+  <time datetime="2014-08-30T08:51:48.000Z" itemprop="datePublished">2014-08-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/30/2014/antlr4-share-context/">antlr4-共享上下文(六)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>当我们收集信息或者计算值的时候，最好的方式是传递参数和返回值，而不是使用全局变量或者类变量。<br>由于antlr自动对监听器生成了不带参数和返回值的方法。antlr对访问器也生成了没有应用指定参数的方法。</p>
+<p>这一小节中，我们将探索基于事件的处理方式。我们将构建3个不同的实现计算器的例子来说明问题。</p>
+<h2 id="Visitor方式">Visitor方式</h2><p>通常的访问器并没有指定返回值，在这个例子中，我们只需要返回Integer对象即可实现功能。</p>
+<pre><code>public static <span class="class"><span class="keyword">class</span> <span class="title">EvalVisitor</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">LExprBaseVisitor&lt;Integer&gt;</span> {</span>
+    public <span class="type">Integer</span> visitMult(<span class="type">LExprParser</span>.<span class="type">MultContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) * visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitAdd(<span class="type">LExprParser</span>.<span class="type">AddContext</span> ctx) {
+        <span class="keyword">return</span> visit(ctx.e(<span class="number">0</span>)) + visit(ctx.e(<span class="number">1</span>));
+    }
+
+    public <span class="type">Integer</span> visitInt(<span class="type">LExprParser</span>.<span class="type">IntContext</span> ctx) {
+        <span class="keyword">return</span> <span class="type">Integer</span>.valueOf(ctx.<span class="type">INT</span>().getText());
+    }
+}
+</code></pre><p>注意在这个例子中我们并没有对规则s进行定义，默认的实现在LExprBaseVisitor如下：</p>
+<pre><code><span class="annotation">@Override</span> <span class="keyword">public</span> <span class="function">T <span class="title">visitS</span><span class="params">(@NotNull LExprParser.SContext ctx)</span> </span>{ <span class="function"><span class="keyword">return</span> <span class="title">visitChildren</span><span class="params">(ctx)</span></span>; }
+</code></pre><p>visitChildren()方法返回最后一个子节点返回的值。</p>
+<h2 id="Listener方式">Listener方式</h2><p>在listener方式中，我们使用Stack来保存返回的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> Evaluator extends LExprBaseListener {
+    Stack&lt;Integer&gt; <span class="built_in">stack</span> = <span class="keyword">new</span> Stack&lt;Integer&gt;();
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push( left * right );
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> right = <span class="built_in">stack</span>.pop();
+        <span class="keyword">int</span> left = <span class="built_in">stack</span>.pop();
+        <span class="built_in">stack</span>.push(left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        <span class="built_in">stack</span>.push( Integer.valueOf(ctx.INT().getText()) );
+    }
+}
+</code></pre><h3 id="annotating方式">annotating方式</h3><p>为了代替在事件的方式中需要临时存储空间，我们可以存储这些值在解析树上。我们可以用树注解的方式在visitor或者listener中。下面将使用listener解释如何使用annotating。<br><img src="/img/2014/QQ图片20140830171113.jpg" alt=""><br>每个子表达式都有一个相应的子根（对一个e规则的调用）。从e节点向右的箭头指向的是一个局部的结果，我们可以认为是返回值。<br><img src="/img/2014/QQ图片20140830171636.jpg" alt=""></p>
+<p>所以，我们可以按照下面这种方式来赋值。但是不幸的是，我们不能在java中通过继承ExprContext来动态的添加字段value的值（Ruby和Python可以）。</p>
+<pre><code><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+<span class="comment">// e(0).value is the subexpression value of the first e in the alternative</span>
+    ctx.<span class="keyword">value</span> = ctx.e(<span class="number">0</span>).<span class="keyword">value</span> + ctx.e(<span class="number">1</span>).<span class="keyword">value</span>; <span class="comment">// e '+' e # Add</span>
+}
+</code></pre><p>所以，我们用一个map来保存所有的值。</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EvaluatorWithProps</span> <span class="keyword">extends</span> <span class="title">LExprBaseListener</span> </span>{
+    <span class="javadoc">/** maps nodes to integers with Map&lt;ParseTree,Integer&gt; */</span>
+    ParseTreeProperty&lt;Integer&gt; values = <span class="keyword">new</span> ParseTreeProperty&lt;Integer&gt;();
+
+    <span class="javadoc">/** Need to pass e's value out of rule s : e ; */</span>
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitS</span><span class="params">(LExprParser.SContext ctx)</span> </span>{
+        setValue(ctx, getValue(ctx.e())); <span class="comment">// like: int s() { return e(); }</span>
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitMult</span><span class="params">(LExprParser.MultContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>));  <span class="comment">// e '*' e   # Mult</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left * right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitAdd</span><span class="params">(LExprParser.AddContext ctx)</span> </span>{
+        <span class="keyword">int</span> left = getValue(ctx.e(<span class="number">0</span>)); <span class="comment">// e '+' e   # Add</span>
+        <span class="keyword">int</span> right = getValue(ctx.e(<span class="number">1</span>));
+        setValue(ctx, left + right);
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exitInt</span><span class="params">(LExprParser.IntContext ctx)</span> </span>{
+        String intText = ctx.INT().getText(); <span class="comment">// INT   # Int</span>
+        setValue(ctx, Integer.valueOf(intText));
+    }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(ParseTree node, <span class="keyword">int</span> value)</span> </span>{ values.put(node, value); }
+    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">(ParseTree node)</span> </span>{ <span class="keyword">return</span> values.get(node); }
+}
+
+<span class="comment">//保存树的节点和值的map</span>
+<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseTreeProperty</span> &lt;<span class="title">V</span>&gt; </span>{
+    <span class="keyword">protected</span> java.util.Map&lt;org.antlr.v4.runtime.tree.ParseTree,V&gt; annotations;
+
+    <span class="function"><span class="keyword">public</span> <span class="title">ParseTreeProperty</span><span class="params">()</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node, V value)</span> </span>{ <span class="comment">/* compiled code */</span> }
+
+    <span class="function"><span class="keyword">public</span> V <span class="title">removeFrom</span><span class="params">(org.antlr.v4.runtime.tree.ParseTree node)</span> </span>{ <span class="comment">/* compiled code */</span> }
+}
+</code></pre><h2 id="对比">对比</h2><ul>
+<li>本地java调用栈：访问者方法返回了用户定义的类型的值。如果访问者需要传递参数，也需要用到下面2中技术。</li>
+<li>基于栈： 栈字段模拟了java的参数和返回值。</li>
+<li>注解：map字段映射了节点和值的关系。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/08/30/2014/antlr4-share-context/" data-id="ciete3vui006so8fatgio24wf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/antlr4/">antlr4</a></li></ul>
@@ -894,7 +1115,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">11</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">六月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">十二月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">六月 2014</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">11</span></li></ul>
     </div>
   </div>
 
@@ -906,14 +1127,6 @@ public void sync(<span class="type">Parser</span> recognizer) { }
       <ul>
         
           <li>
-            <a href="/2015/09/21/test/">test</a>
-          </li>
-        
-          <li>
-            <a href="/2015/09/21/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
             <a href="/2015/08/31/离职/">离职</a>
           </li>
         
@@ -923,6 +1136,14 @@ public void sync(<span class="type">Parser</span> recognizer) { }
         
           <li>
             <a href="/2015/08/15/2015/tomcat8-sourcecode06/">tomcat8源码阅读(六)--接收请求</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/15/2015/tomcat8-sourcecode05/">tomcat8源码阅读(五)--启动四</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/15/2015/redis-study/">redis学习</a>
           </li>
         
       </ul>
@@ -937,7 +1158,7 @@ public void sync(<span class="type">Parser</span> recognizer) { }
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2015 John Doe<br>
+      &copy; 2015 sqtds<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

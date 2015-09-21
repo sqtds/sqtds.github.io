@@ -61,104 +61,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-2015/tomcat8-sourcecode01" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/08/11/2015/tomcat8-sourcecode01/" class="article-date">
-  <time datetime="2015-08-11T07:51:00.000Z" itemprop="datePublished">2015-08-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/11/2015/tomcat8-sourcecode01/">tomcat8源码阅读(一)--准备</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，前言">一，前言</h2><p>以前看过《how tomcat works》，那时候是以tomcat5.0为基础进行讲解的。现在有必要进行巩固下，更深入的了解tomcat的运行机制，也了解下tomcat6的nio方式,及最新的tomcat变化。本来最开始想研究的是tomcat7，看到市面上有很多人已经研究了，那索性来看看8。</p>
-<h2 id="二，搭建源码包">二，搭建源码包</h2><p>其实tomcat7和tomcat8搭建方式都差不多，2者本质上并无太大差异。<br>我们可以参考<a href="http://developer.51cto.com/art/201207/346156.htm" target="_blank" rel="external">Tomcat7调试运行环境搭建与源代码分析入门</a>的方法进行tomcat8的搭建。<br>搭建比较简单，我也备份了一份到github上<a href="https://github.com/sqtds/tomcat8。" target="_blank" rel="external">https://github.com/sqtds/tomcat8。</a> 如果觉得搭建麻烦，可以直接下载使用我的即可。</p>
-<h2 id="三，tomcat8整体架构">三，tomcat8整体架构</h2><p>参考我的wiki页面<a href="https://github.com/sqtds/tomcat8/wiki，这里不不多说了。" target="_blank" rel="external">https://github.com/sqtds/tomcat8/wiki，这里不不多说了。</a><br>本文主要研究的是tomcat的catalina架构，其他有时间再进行研究。</p>
-<h2 id="四，参考指南">四，参考指南</h2><ul>
-<li>how tomcat works ——不说了，大名鼎鼎的，读源码都是从它开始</li>
-<li><a href="http://tyrion.iteye.com/category/285081" target="_blank" rel="external">Tomcat7源码分析</a>——分析的挺多，还不错</li>
-<li><a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-1/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（上）</a>，<a href="http://www.infoq.com/cn/articles/zh-tomcat-http-request-2/" target="_blank" rel="external">Tomcat处理HTTP请求源码分析（下）</a>——分析了http的请求</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/11/2015/tomcat8-sourcecode01/" data-id="cietd7em50019hwfaupw05hmn" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tomcat/">tomcat</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-2015/hessian-2" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/08/10/2015/hessian-2/" class="article-date">
-  <time datetime="2015-08-10T13:31:16.000Z" itemprop="datePublished">2015-08-10</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/java/">java</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/10/2015/hessian-2/">hessian协议解析--hessian反序列化</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一，前言">一，前言</h2><p>上篇文章我们介绍了hessian的序列化机制，那么，它是怎么反序列化的呢，我们接下来看看。</p>
-<h2 id="二，常规反序列化">二，常规反序列化</h2><p>反序列化比较简单，在上一文的最后，hessian已经定义了第一个字节不同的数字代表的不同的含义。那么，我们根据这些数字进行反解即可。例如，我们遇到第一个字节为’N’的，即表示空。在x00 - x1f之间，表示长度在32之内的字符串。在x80 - xbf表示-x10到x3f之间的整数等等。好了，不多说了，直接上代码。
-        
-          <p class="article-more-link">
-            <a href="/2015/08/10/2015/hessian-2/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/10/2015/hessian-2/" data-id="cietd7enl002zhwfa9svgehcz" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-2015/hessian-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/08/08/2015/hessian-1/" class="article-date">
@@ -507,7 +409,7 @@ xf0 - xff    <span class="array"># two</span>-octet compact long (-x800 to x7ff,
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/08/2015/hessian-1/" data-id="cietd7eno0033hwfaqe02fdel" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/08/2015/hessian-1/" data-id="ciete3vsa0031o8fahb5jb7xh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
@@ -624,7 +526,7 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/01/2015/GC-turing/" data-id="cietd7enu003chwfa9fw3j0pv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/01/2015/GC-turing/" data-id="ciete3vsm003ao8fa1byaz87g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
@@ -662,7 +564,7 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/01/thread-tips/" data-id="cietd7el80008hwfaj944t2i3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/01/thread-tips/" data-id="ciete3vqm0008o8fak9eff54k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -698,7 +600,7 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/22/netty-study1/" data-id="cietd7eld000ahwfauqv2sdjw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/07/22/netty-study1/" data-id="ciete3vqn0009o8faq5i140v4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -765,7 +667,7 @@ jstack <span class="operator">-l</span> javaid | grep <span class="number">16</s
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/19/2015/netty-exception/" data-id="cietd7emk001lhwfacnuytcyc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/07/19/2015/netty-exception/" data-id="ciete3vre001jo8faacwaln9g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/netty/">netty</a></li></ul>
@@ -871,7 +773,7 @@ PSH 尽可能的将数据送往接收进程
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/06/22/2015/网络协议-传输层/" data-id="cietd7ell000khwfav8seaouh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/06/22/2015/网络协议-传输层/" data-id="ciete3vqt000io8fagiqlxmsj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
@@ -914,7 +816,7 @@ PSH 尽可能的将数据送往接收进程
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/06/21/2015/网络协议-应用层/" data-id="cietd7elj000hhwfa25osupvv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/06/21/2015/网络协议-应用层/" data-id="ciete3vqr000fo8fafzua5la1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
@@ -964,10 +866,141 @@ PSH 尽可能的将数据送往接收进程
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/06/21/2015/网络协议/" data-id="cietd7elh000chwfa0e0v5mmd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/06/21/2015/网络协议/" data-id="ciete3vqp000ao8faf9xcgeev" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机原理/">计算机原理</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015/sql 连续性" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/17/2015/sql 连续性/" class="article-date">
+  <time datetime="2015-06-17T12:42:41.000Z" itemprop="datePublished">2015-06-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/17/2015/sql 连续性/">SQL问题 找出连续日期</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在公司遇到一个有趣的sql问题，觉得挺有趣的，那就分享下。</p>
+<h2 id="问题">问题</h2><p>有如下数据，找出其中日期(rq字段)连续性大于等于3的日期。<br><img src="/img/2015/sql连续1.png" alt="图片1"></p>
+<p>即，结果为如下图所示：<br><img src="/img/2015/sql连续2.png" alt="图片2"></p>
+<h2 id="思考">思考</h2><p>最开始的时候，我想这至少得写存储过程吧，先排序这个表，然后再从前向后取，当遇到连续性大于2的就保留下来，以此类推，直到读取完毕。</p>
+<p>后来，百度了下，发现了一个更好的方法—-<a href="http://tech.it168.com/a2012/1229/1441/000001441981_all.shtml" target="_blank" rel="external">“关于数字的经典SQL编程：连续范围问题”</a>。</p>
+<h2 id="思路">思路</h2><p>在那篇文章中，题主用的是整形，我们可以类推下，整形和时间其实差不多。</p>
+<h3 id="第一步，查找每行的与rownum的差值">第一步，查找每行的与rownum的差值</h3><p>在这里我们用系统时间来确定相差的天数，保证了每个时间都有唯一的对标，然后减去rownum。</p>
+<pre><code><span class="operator"><span class="keyword">select</span> rq, <span class="keyword">floor</span>(rq - <span class="keyword">sysdate</span>) - rownum  <span class="keyword">as</span> diff ,rownum <span class="keyword">from</span> tmptable</span>
+</code></pre><p>执行结果如下图所示，我们发现，只要时间是连续的，那么他们的差值(diff字段)一定相等。<br><img src="/img/2015/sql连续3.png" alt="图片3"></p>
+<h3 id="第二步，根据分组查找大于等于3的差值">第二步，根据分组查找大于等于3的差值</h3><p>这个简单，使用havaing搞定，贴sql就行了，不多说了。</p>
+<pre><code><span class="operator"><span class="keyword">select</span> diff
+  <span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">floor</span>(rq - <span class="keyword">sysdate</span>) - rownum <span class="keyword">as</span> diff <span class="keyword">from</span> tmptable t) aa
+<span class="keyword">having</span> <span class="keyword">count</span>(*) &gt; <span class="number">2</span>
+ <span class="keyword">group</span> <span class="keyword">by</span> diff</span>
+</code></pre><p><img src="/img/2015/sql连续4.png" alt="图片3"></p>
+<h3 id="第三步，根据差值查找出所有的行">第三步，根据差值查找出所有的行</h3><p>差值都有了，这就好办啦，我们直接使用第一步的sql和第二步的sql进行关联查询，结果就出来啦。</p>
+<pre><code><span class="operator"><span class="keyword">select</span> t.rq
+  <span class="keyword">from</span> 
+  <span class="comment">-- 查找每行的与rownum的差值</span>
+        (<span class="keyword">select</span> rq, <span class="keyword">floor</span>(rq - <span class="keyword">sysdate</span>) - rownum <span class="keyword">as</span> diff <span class="keyword">from</span> tmptable) t,
+  <span class="comment">-- 根据分组查找大于等于3的差值</span>
+       (<span class="keyword">select</span> diff
+          <span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">floor</span>(rq - <span class="keyword">sysdate</span>) - rownum <span class="keyword">as</span> diff <span class="keyword">from</span> tmptable t) aa
+        <span class="keyword">having</span> <span class="keyword">count</span>(*) &gt; <span class="number">2</span>
+         <span class="keyword">group</span> <span class="keyword">by</span> diff) cg
+ <span class="keyword">where</span> t.diff = cg.diff
+ <span class="keyword">order</span> <span class="keyword">by</span> t.rq ;</span>
+</code></pre><p>好了，结果就是最开始要求的数据。</p>
+<h2 id="总结">总结</h2><p>在连续性这个问题上，只要我们找到了与连续性相关的字段（rownum），然后在这个字段上进行处理，就可以得到我们想要的结果了。</p>
+<p>从这里我们可以看到，如果需要做某件事的时候，先找是否有与它相关联的东西，如果有，那么我们可以先从相关联的的东西上入手，然后再用死方法一步一步来。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/06/17/2015/sql 连续性/" data-id="ciete3vr9001ao8fazv8wy25i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015/java-concurrent" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/24/2015/java-concurrent/" class="article-date">
+  <time datetime="2015-05-24T08:13:15.000Z" itemprop="datePublished">2015-05-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/24/2015/java-concurrent/">java核心系列（十三）—java并发编程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="并发编程概览">并发编程概览</h2><p><img src="/img/2015/并发编程.png" alt="并发编程"></p>
+<h3 id="1,容器">1,容器</h3><p>略</p>
+<h3 id="2，协作">2，协作</h3><p>略</p>
+<h3 id="3，变量同步">3，变量同步</h3><p>略</p>
+<h3 id="4，内存模型">4，内存模型</h3><p>略</p>
+<h3 id="5，参考资料">5，参考资料</h3><ul>
+<li>《java 并发编程实践》</li>
+<li><a href="http://www.infoq.com/cn/articles/java-memory-model-1?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（一）——基础</a></li>
+<li><a href="http://www.infoq.com/cn/articles/java-memory-model-2?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（二）——重排序</a></li>
+<li><a href="http://www.infoq.com/cn/articles/java-memory-model-3?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">深入理解Java内存模型（三）——顺序一致性</a></li>
+<li><a href="http://www.infoq.com/cn/articles/ftf-java-volatile?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（一）——深入分析Volatile的实现原理</a></li>
+<li><a href="http://www.infoq.com/cn/articles/java-se-16-synchronized" target="_blank" rel="external">聊聊并发（二）——Java SE1.6中的Synchronized</a></li>
+<li><a href="http://www.infoq.com/cn/articles/java-threadPool" target="_blank" rel="external">聊聊并发（三）——JAVA线程池的分析和使用</a></li>
+<li><a href="http://www.infoq.com/cn/articles/ConcurrentHashMap?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（四）——深入分析ConcurrentHashMap</a></li>
+<li><a href="http://www.infoq.com/cn/articles/atomic-operation?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（五）——原子操作的实现原理</a></li>
+<li><a href="http://www.infoq.com/cn/articles/ConcurrentLinkedQueue?utm_source=infoq&amp;utm_medium=related_content_link&amp;utm_campaign=relatedContent_articles_clk" target="_blank" rel="external">聊聊并发（六）——ConcurrentLinkedQueue的实现原理分析</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/24/2015/java-concurrent/" data-id="ciete3vs1002oo8fam0fn8aik" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java核心系列/">java核心系列</a></li></ul>
 
     </footer>
   </div>
@@ -1016,7 +1049,7 @@ PSH 尽可能的将数据送往接收进程
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">11</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">六月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">十二月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">六月 2014</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">五月 2014</a><span class="archive-list-count">11</span></li></ul>
     </div>
   </div>
 
@@ -1028,14 +1061,6 @@ PSH 尽可能的将数据送往接收进程
       <ul>
         
           <li>
-            <a href="/2015/09/21/test/">test</a>
-          </li>
-        
-          <li>
-            <a href="/2015/09/21/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
             <a href="/2015/08/31/离职/">离职</a>
           </li>
         
@@ -1045,6 +1070,14 @@ PSH 尽可能的将数据送往接收进程
         
           <li>
             <a href="/2015/08/15/2015/tomcat8-sourcecode06/">tomcat8源码阅读(六)--接收请求</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/15/2015/tomcat8-sourcecode05/">tomcat8源码阅读(五)--启动四</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/15/2015/redis-study/">redis学习</a>
           </li>
         
       </ul>
@@ -1059,7 +1092,7 @@ PSH 尽可能的将数据送往接收进程
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2015 John Doe<br>
+      &copy; 2015 sqtds<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
